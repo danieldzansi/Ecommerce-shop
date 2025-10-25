@@ -2,14 +2,16 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext'
 import { assets } from '../assets/assets'
+import RelatedProduct from '../components/RelatedProduct'
 
 const Product = () => {
   const { productId } = useParams()
-  const { products, currency } = useContext(ShopContext)
+  const { products, currency , addToCart} = useContext(ShopContext)
 
   const [size, setSize] = useState('')
   const [productData, setProductData] = useState(null)
   const [image, setImage] = useState('')
+  const [activeTab, setActiveTab] = useState("description")   // <-- NEW
 
   useEffect(() => {
     const selectedProduct = products.find((item) => item._id === productId)
@@ -74,7 +76,7 @@ const Product = () => {
                 </button>
               ))}
             </div>
-            <button className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
+            <button onClick={()=>addToCart(productData._id,size)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>ADD TO CART</button>
             <hr className='mt-6 sm:w-4/5'/>
             <div className='text-sm text-gray-500 flex flex-col gap-1'>
                 <p>100% Original product</p>
@@ -83,11 +85,51 @@ const Product = () => {
             </div>
           </div>
         </div>
-        
       </div>
+
+      {/* ------------------- DESCRIPTION / REVIEWS SECTION ------------------- */}
+      <div className="mt-16">
+        <div className="flex gap-6 border-b">
+          <button 
+            className={`pb-2 ${activeTab === "description" ? "border-b-2 border-black font-medium" : "text-gray-500"}`}
+            onClick={() => setActiveTab("description")}
+          >
+            Description
+          </button>
+
+          <button 
+            className={`pb-2 ${activeTab === "reviews" ? "border-b-2 border-black font-medium" : "text-gray-500"}`}
+            onClick={() => setActiveTab("reviews")}
+          >
+            Reviews (122)
+          </button>
+        </div>
+
+        {/* Description Content */}
+        {activeTab === "description" && (
+          <div className="mt-5 text-gray-600 leading-6">
+            <p>
+              An e-commerce website is an online platform that facilitates the buying and selling of products or services over the Internet. 
+              It serves as a virtual marketplace where businesses and individuals can showcase their products, 
+              interact with customers, and conduct transactions without the need for a physical presence.
+            </p>
+            <p className="mt-3">
+              E-commerce websites typically display products along with detailed descriptions, images, prices, and available variations such as size or color. 
+              Each product usually has a dedicated page with the necessary information.
+            </p>
+          </div>
+        )}
+
+        {/* Reviews Content */}
+        {activeTab === "reviews" && (
+          <div className="mt-5 text-gray-600">
+            <p>No reviews yet. Be the first to review this product.</p>
+          </div>
+        )}
+      </div>
+
+      <RelatedProduct category={productData.category} subCategory={productData.subCategory}/>
     </div>
-    
-    
   )
 }
 
