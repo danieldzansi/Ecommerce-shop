@@ -6,6 +6,7 @@ import BestSeller from '../components/BestSeller'
 import OurPolicy from '../components/OurPolicy'
 import NewsLeterBox from '../components/NewsLeterBox'
 
+
 const Home = () => {
   return (
     <div>
