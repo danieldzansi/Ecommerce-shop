@@ -15,7 +15,7 @@ const About = () => {
       
       <div className="max-w-4xl mx-auto px-4 leading-relaxed space-y-6">
         <p>
-          Welcome to <span className="font-semibold text-gray-900">Bitsend</span> — your trusted digital marketplace that makes shopping simple, secure, and seamless.
+          Welcome to <span className="font-semibold text-gray-900">Forever</span> — your trusted digital marketplace that makes shopping simple, secure, and seamless.
           We connect customers with quality products and ensure a smooth checkout process using modern payment technology.
         </p>
 

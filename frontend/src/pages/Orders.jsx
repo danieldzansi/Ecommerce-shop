@@ -17,7 +17,7 @@ const Orders = () => {
             key={index}
             className='py-4 border-b border-t text-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4'
           >
-            {/* 🛍 Product Info */}
+           
             <div className='flex items-start gap-6 text-sm'>
               <img src={item.image[0]} alt={item.name} className='w-16' />
               <div>
