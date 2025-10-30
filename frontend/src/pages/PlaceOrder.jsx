@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import Title from '../components/Title';
 import { assets } from '../assets/assets';
-import { useNavigate } from 'react-router-dom';
+// removed unused useNavigate; payment flow redirects to Paystack
 import { useCartStore } from '../store/CartStore';
 import { useContext } from 'react';
 import { ShopContext } from '../context/ShopContext';
+import { products } from '../assets/assets';
 
 const PlaceOrder = () => {
-  const navigate = useNavigate();
+  // navigation handled by Paystack redirect after initialization
   const { currency, delivery_fee } = useContext(ShopContext);
   const getCartAmount = useCartStore((state) => state.getCartAmount);
+  const cartItems = useCartStore((state) => state.cartItems);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -27,7 +29,7 @@ const PlaceOrder = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (getCartAmount() === 0) {
@@ -35,8 +37,40 @@ const PlaceOrder = () => {
       return;
     }
 
-    
-    navigate('/orders'); 
+    // Build items array from cart state
+    const items = [];
+    for (const productId in cartItems) {
+      const product = products.find((p) => p._id === productId);
+      if (!product) continue;
+      let quantity = 0;
+      for (const size in cartItems[productId]) {
+        quantity += cartItems[productId][size];
+      }
+      items.push({ name: product.name, price: product.price, quantity });
+    }
+
+    const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.country}, ${formData.zipcode}`;
+    const totalAmount = getCartAmount() + delivery_fee;
+
+    try {
+      const response = await fetch('http://localhost:4000/api/paystack/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, email: formData.email, address, totalAmount }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.authorization_url) {
+        // Redirect user to Paystack checkout
+        window.location.href = data.authorization_url;
+      } else {
+        console.error('Paystack init error:', data);
+        alert('Payment initialization failed.');
+      }
+    } catch (err) {
+      console.error(err?.message || err);
+      alert('Error initializing payment. See console for details.');
+    }
   };
 
   return (
