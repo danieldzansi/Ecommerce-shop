@@ -84,7 +84,17 @@ export const verifyPayment = async (req, res) => {
         .where(eq(store.reference, reference));
     }
 
-    return res.json({ success: true, data: paymentData });
+    // If the client expects JSON (API call), return JSON. Otherwise redirect the user back to frontend.
+    const accept = req.headers.accept || '';
+    if (accept.includes('application/json')) {
+      return res.json({ success: true, data: paymentData });
+    }
+
+    const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const redirectUrl = `${frontend.replace(/\/$/, '')}/payment-result?reference=${encodeURIComponent(
+      reference
+    )}&status=${encodeURIComponent(paymentData.status)}`;
+    return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error(err?.response?.data || err.message);
     return res.status(500).json({ success: false, message: "Verification failed" });

@@ -1,7 +1,3 @@
-// config/paystack.js
-// Lightweight fetch-based wrapper that provides `post` and `get` methods
-// so existing controllers can continue to call paystack.post(...) and paystack.get(...).
-
 export const paystack = {
   async post(path, body) {
     const res = await fetch(`https://api.paystack.co${path}`, {
