@@ -1,0 +1,10 @@
+# Minimal Jekyll config: explicitly exclude backend and node_modules directories
+# This is a safety measure; if you prefer to disable Jekyll entirely, remove
+# this file and keep `.nojekyll` in the repo root.
+exclude:
+  - backend
+  - backend/**
+  - node_modules
+  - frontend/node_modules
+  - .github
+# You can add other config options here if you maintain a Jekyll site locally.
