@@ -3,9 +3,13 @@ import cors from 'cors'
 import 'dotenv/config'
 import paystackRoutes from "./routes/paystackroute.js";
 import { testConnection } from './db/index.js';
+import connectCloudinary from './config/cloudinary.js';
+import adminRouter from './routes/adminroute.js';
+
 
 const app = express()
 const port = process.env.PORT || 4000
+connectCloudinary
 
 app.use(express.json())
 app.use(cors())
@@ -15,10 +19,11 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/paystack", paystackRoutes);
+app.use("/api/admin",adminRouter)
 
 const start = async () => {
     try {
-        // Test Postgres connection if DATABASE_URL is set
+        
         await testConnection();
 
         app.listen(port, () => {

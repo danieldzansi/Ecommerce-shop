@@ -1,9 +1,8 @@
-// controllers/paystackController.js
 import { paystack } from "../config/paystack.js";
 import db, { store } from "../db/index.js";
 import { eq } from "drizzle-orm";
 
-// ✅ Initialize payment and create order
+
 export const initializePayment = async (req, res) => {
   try {
     const { items, email, address, totalAmount } = req.body;
@@ -11,7 +10,7 @@ export const initializePayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
-    // Prepare values and create order in Postgres (status: pending)
+   
     const userId = req.user?._id ?? null;
     const itemsValue = Array.isArray(items) ? items : [];
     const totalAmountValue = Number(totalAmount) || 0;
@@ -36,15 +35,15 @@ export const initializePayment = async (req, res) => {
       return res.status(500).json({ success: false, message: 'DB insert failed', error: dbErr.message });
     }
 
-    // Initialize Paystack transaction
+   
     const response = await paystack.post("/transaction/initialize", {
       email,
-      amount: Math.round(totalAmount * 100), // convert to kobo/pesewas
+      amount: Math.round(totalAmount * 100), 
       metadata: { orderId: order.id },
       callback_url: `${process.env.BASE_URL}/api/paystack/verify`,
     });
 
-    // Save reference to order
+   
     try {
       await db
         .update(store)
@@ -67,7 +66,7 @@ export const initializePayment = async (req, res) => {
   }
 };
 
-// ✅ Verify payment
+
 export const verifyPayment = async (req, res) => {
   const { reference } = req.query;
 
@@ -84,7 +83,7 @@ export const verifyPayment = async (req, res) => {
         .where(eq(store.reference, reference));
     }
 
-    // If the client expects JSON (API call), return JSON. Otherwise redirect the user back to frontend.
+   
     const accept = req.headers.accept || '';
     if (accept.includes('application/json')) {
       return res.json({ success: true, data: paymentData });
@@ -101,8 +100,8 @@ export const verifyPayment = async (req, res) => {
   }
 };
 
-// ✅ Webhook (optional but recommended)
 export const paystackWebhook = async (req, res) => {
+  console.log("Webhook Payload:", JSON.stringify(req.body, null, 2));
   const crypto = await import("crypto");
   const hash = crypto
     .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
@@ -117,6 +116,7 @@ export const paystackWebhook = async (req, res) => {
   const event = req.body;
   if (event.event === "charge.success") {
     const ref = event.data.reference;
+    console.log(`Payment Successful. Reference: ${ref}`);
     const [order] = await db.select().from(store).where(eq(store.reference, ref)).limit(1);
     if (order) {
       await db

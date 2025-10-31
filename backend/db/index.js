@@ -9,8 +9,7 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
-// Initialize Postgres connection and Drizzle ORM
-const connectionString = process.env.DATABASE_URL || process.env.MONGO_URI || '';
+const connectionString = process.env.DATABASE_URL ;
 if (!connectionString) {
   console.warn('DATABASE_URL is not set. Postgres connection will not be established.');
 }
@@ -18,7 +17,7 @@ if (!connectionString) {
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle(pool);
 
-// Define store table using Drizzle's schema builder
+
 export const store = pgTable('store', {
   id: serial('id').primaryKey(),
   user_id: text('user_id'),
@@ -33,7 +32,6 @@ export const store = pgTable('store', {
   updated_at: timestamp('updated_at').defaultNow(),
 });
 
-// Test connection once when required
 export const testConnection = async () => {
   try {
     const client = await pool.connect();
