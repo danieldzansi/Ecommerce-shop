@@ -5,11 +5,12 @@ import paystackRoutes from "./routes/paystackroute.js";
 import { testConnection } from './db/index.js';
 import connectCloudinary from './config/cloudinary.js';
 import adminRouter from './routes/adminroute.js';
+import productRouter from './routes/productroute.js';
 
 
 const app = express()
 const port = process.env.PORT || 4000
-connectCloudinary
+connectCloudinary();
 
 app.use(express.json())
 app.use(cors())
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/paystack", paystackRoutes);
 app.use("/api/admin",adminRouter)
+app.use('/api/product',productRouter)
 
 const start = async () => {
     try {

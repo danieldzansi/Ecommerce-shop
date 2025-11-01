@@ -1,12 +1,14 @@
-import { defineConfig } from "drizzle-kit";
+import { defineConfig } from 'drizzle-kit';
+import * as dotenv from 'dotenv';
+import path from 'path';
 
-// Plain JavaScript ESM config. This avoids TypeScript typing problems
-// while keeping the same runtime config expected by drizzle-kit.
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 export default defineConfig({
-  driver: "pg",
+  dialect: 'postgresql',
+  schema: ['./db/index.js', './models/admin.js', './models/productModel.js'],// adjust this path if your schema file is elsewhere
+  out: './drizzle',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL,
   },
-  migrationsFolder: "./migrations",
-  out: "./drizzle",
 });
