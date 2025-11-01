@@ -63,7 +63,10 @@ const removeProduct = async (req, res) => {
     const { id } = req.body;  
     
     await db.delete(products).where(eq(products.id, id));
-    
+    if (!deletedCount) {
+      return res.json({ success: false, message: "Product not found" });
+    }
+
     res.json({ success: true, message: "Product Removed" });
   } catch (error) {
     console.log(error);
@@ -71,19 +74,24 @@ const removeProduct = async (req, res) => {
   }
 };
 
-const singleProduct =async (req,res)=>{
+const singleProduct = async (req, res) => {
+  try {
+    const { id } = req.params; 
 
-    try {
-        const { id } = req.body;  
-    
-    const product= db.find(products).where(eq(products.id, id));
-    
-    res.json({ success: true, message: "product found "});
-    } catch (error) {
-        
+    const [product] = await db .select() .from(products) .where(eq(products.id, Number(id)));
+
+    if (!product) {
+      return res.json({ success: false, message: "Product not found" });
     }
 
-}
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
 
 
 export {listProduct,addProduct,removeProduct,singleProduct}
