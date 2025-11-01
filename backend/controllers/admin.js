@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" }); // optional expiration
+  return jwt.sign({ id }, process.env.JWT_SECRET)
 };
 
 const adminLogin = async (req, res) => {

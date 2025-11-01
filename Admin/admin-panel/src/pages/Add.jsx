@@ -4,7 +4,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../App";
 
-const Add = () => {
+
+
+const Add = ({ token }) => {
+  const [loading, setLoading] = useState(false);
   const [image1, setImage1] = useState(false);
   const [image2, setImage2] = useState(false);
   const [image3, setImage3] = useState(false);
@@ -18,53 +21,65 @@ const Add = () => {
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      if (!image1) return toast.error("Please upload at least one image");
+ const onSubmitHandler = async (e) => {
+  e.preventDefault();
 
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("category", category);
-      formData.append("subCategory", subCategory);
-      formData.append("bestseller", bestseller);
-      formData.append("sizes", JSON.stringify(sizes));
-      formData.append("image1", image1);
-      if (image2) formData.append("image2", image2);
-      if (image3) formData.append("image3", image3);
-      if (image4) formData.append("image4", image4);
+  if (!image1) {
+    toast.error("Please upload at least one image");
+    return;
+  }
 
-      const response = await axios.post(
-        `${backendUrl}/api/product/add`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+  setLoading(true); // move this AFTER image validation
 
-      if (response.data.success) {
-        toast.success("Product added successfully!");
-        setImage1(false);
-        setImage2(false);
-        setImage3(false);
-        setImage4(false);
-        setName("");
-        setDescription("");
-        setPrice("");
-        setCategory("Men");
-        setSubCategory("Topwear");
-        setBestseller(false);
-        setSizes([]);
-      } else {
-        toast.error(response.data.message);
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("category", category);
+    formData.append("subCategory", subCategory);
+    formData.append("bestseller", bestseller);
+    formData.append("sizes", JSON.stringify(sizes));
+    formData.append("image1", image1);
+    if (image2) formData.append("image2", image2);
+    if (image3) formData.append("image3", image3);
+    if (image4) formData.append("image4", image4);
+
+    const response = await axios.post(
+      `${backendUrl}/api/product/add`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+    );
+
+    if (response.data.success) {
+      toast.success("Product added successfully!");
+      setImage1(false);
+      setImage2(false);
+      setImage3(false);
+      setImage4(false);
+      setName("");
+      setDescription("");
+      setPrice("");
+      setCategory("Men");
+      setSubCategory("Topwear");
+      setBestseller(false);
+      setSizes([]);
+    } else {
+      toast.error(response.data.message);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong");
+  } finally {
+    setLoading(false); 
+  }
+};
+
 
   return (
     <form
@@ -201,9 +216,21 @@ const Add = () => {
 
       <button
         type="submit"
-        className="w-28 py-3 mt-4 bg-black text-white rounded"
+        disabled={loading}
+        className={`w-28 py-3 mt-4 rounded text-white flex items-center justify-center gap-2 ${
+          loading
+            ? "bg-gray-500 cursor-not-allowed"
+            : "bg-black hover:bg-gray-800"
+        }`}
       >
-        Add
+        {loading ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span>Adding...</span>
+          </>
+        ) : (
+          "Add"
+        )}
       </button>
     </form>
   );
