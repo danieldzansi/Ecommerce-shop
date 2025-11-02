@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
-import Title from '../components/Title';
-import { assets } from '../assets/assets';
-import { useNavigate } from 'react-router-dom';
-import { useCartStore } from '../store/CartStore';
-import { ShopContext } from '../context/ShopContext';
+import React, { useEffect, useState, useContext } from "react";
+import Title from "../components/Title";
+import { assets } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
+import { useCartStore } from "../store/CartStore";
+import { ShopContext } from "../context/ShopContext";
 
 const Cart = () => {
   const { products, currency } = useContext(ShopContext);
-  const { cartItems, addToCart, removeFromCart, getCartAmount } = useCartStore();
+  const { cartItems, addToCart, removeFromCart } = useCartStore();
+  const [loadingProceed, setLoadingProceed] = useState(false);
   const navigate = useNavigate();
   const [cartData, setCartData] = useState([]);
 
-  // 🧩 Update cart display whenever Zustand cart changes
+ 
   useEffect(() => {
     const tempData = [];
 
@@ -31,12 +32,12 @@ const Cart = () => {
     setCartData(tempData);
   }, [cartItems]);
 
-  // ➕ Increase quantity
+ 
   const handleIncrease = (productId, size) => {
     addToCart(productId, size);
   };
 
-  // ➖ Decrease quantity
+
   const handleDecrease = (productId, size) => {
     const currentQty = cartItems[productId]?.[size];
     if (currentQty && currentQty > 1) {
@@ -48,21 +49,24 @@ const Cart = () => {
     }
   };
 
-  // 🗑️ Remove item completely
   const handleRemove = (productId, size) => {
     removeFromCart(productId, size);
   };
 
-  // 💰 Get totals directly from Zustand
-  const subtotal = getCartAmount();
+  const subtotal = cartData.reduce((acc, item) => {
+    const prod = products.find((p) => p._id === item._id);
+    if (!prod) return acc;
+    return acc + prod.price * item.quantity;
+  }, 0);
+
   const shipping = cartData.length > 0 ? 10 : 0;
   const total = subtotal + shipping;
 
-  // 🛒 Render cart items
+
   return (
     <div className="pt-14">
       <div className="text-2xl mb-3">
-        <Title text1={'YOUR'} text2={'CART'} />
+        <Title text1={"YOUR"} text2={"CART"} />
       </div>
 
       <div>
@@ -78,9 +82,13 @@ const Cart = () => {
                 key={index}
                 className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_2fr_1fr_0.5fr] items-center gap-4"
               >
-                {/* 🛍️ Product Info */}
+            
                 <div className="flex items-start gap-6">
-                  <img className="w-16 sm:w-20" src={productData.image[0]} alt="" />
+                  <img
+                    className="w-16 sm:w-20"
+                    src={productData.image[0]}
+                    alt=""
+                  />
                   <div className="text-xs sm:text-lg font-medium">
                     <p>{productData.name}</p>
                     <p className="text-gray-500 text-sm">Size: {item.size}</p>
@@ -91,7 +99,6 @@ const Cart = () => {
                   </div>
                 </div>
 
-                {/* 🔢 Quantity Counter */}
                 <div className="flex items-center gap-2">
                   <button
                     disabled={item.quantity === 1}
@@ -100,9 +107,6 @@ const Cart = () => {
                   >
                     -
                   </button>
-                  <div className="px-4 py-1 text-lg border-t border-b border-gray-300">
-                    {item.quantity}
-                  </div>
                   <button
                     onClick={() => handleIncrease(item._id, item.size)}
                     className="px-3 py-1 text-lg bg-gray-200 hover:bg-gray-300 rounded-r-lg"
@@ -114,8 +118,6 @@ const Cart = () => {
                   {currency}
                   {productData.price * item.quantity}
                 </p>
-
-                {/* 🗑️ Remove */}
                 <img
                   src={assets.bin_icon}
                   alt="Remove"
@@ -127,8 +129,6 @@ const Cart = () => {
           })
         )}
       </div>
-
-      {/* 🧾 Total Summary Section */}
       {cartData.length > 0 && (
         <div className="flex justify-end my-20">
           <div className="w-full sm:w-[450px] border-t pt-6">
@@ -156,10 +156,21 @@ const Cart = () => {
 
             <div className="w-full text-end">
               <button
-                onClick={() => navigate('/place-order')}
-                className="bg-black text-white text-sm my-8 px-8 py-3"
+                onClick={() => {
+                  setLoadingProceed(true);
+                  navigate("/place-order");
+                }}
+                disabled={loadingProceed}
+                className="bg-black text-white text-sm my-8 px-8 py-3 flex items-center justify-center disabled:opacity-60"
               >
-                PROCEED TO CHECKOUT
+                {loadingProceed ? (
+                  <span className="inline-flex items-center">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Processing...
+                  </span>
+                ) : (
+                  "PROCEED TO CHECKOUT"
+                )}
               </button>
             </div>
           </div>

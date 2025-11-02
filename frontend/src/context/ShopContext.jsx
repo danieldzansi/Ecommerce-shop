@@ -20,7 +20,14 @@ const ShopContextProvider = (props) => {
     try {
       const response = await axios.get(`${backend_url}/api/product/list`);
       if (response.data.success) {
-        setProducts(response.data.allproducts);
+        // Normalize backend product shape: backend returns `id` (UUID)
+        // while the frontend components expect `_id`. Copy `id` -> `_id`
+        // so existing components continue to work unchanged.
+        const normalized = response.data.allproducts.map((p) => ({
+          ...p,
+          _id: p.id,
+        }));
+        setProducts(normalized);
         toast.success("Products loaded successfully!", {
           position: "top-right",
         });
@@ -47,13 +54,11 @@ const ShopContextProvider = (props) => {
     setShowSearch,
     navigate,
     backend_url,
-    getProductData, 
+    getProductData,
   };
 
   return (
-    <ShopContext.Provider value={value}>
-      {props.children}
-    </ShopContext.Provider>
+    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
   );
 };
 

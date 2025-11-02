@@ -81,9 +81,12 @@ const removeProduct = async (req, res) => {
 
 const singleProduct = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
 
-    const [product] = await db .select() .from(products) .where(eq(products.id, Number(id)));
+    if (!id || id === 'undefined') {
+      return res.status(400).json({ success: false, message: "Product id is required" });
+    }
+    const [product] = await db.select().from(products).where(eq(products.id, id));
 
     if (!product) {
       return res.json({ success: false, message: "Product not found" });
