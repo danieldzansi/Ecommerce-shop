@@ -20,8 +20,8 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/paystack", paystackRoutes);
-app.use("/api/admin",adminRouter)
-app.use('/api/product',productRouter)
+app.use("/api/admin",adminRouter);
+app.use('/api/product',productRouter);
 
 const start = async () => {
     try {
