@@ -1,0 +1,11 @@
+node_modules
+frontend
+Admin
+dist
+.git
+*.log
+/.cache
+/.next
+/.vercel
+frontend/node_modules
+backend/node_modules
