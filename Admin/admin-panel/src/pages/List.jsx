@@ -1,33 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import { backendUrl, Currency } from '../App'
+import React, { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { backendUrl, Currency } from "../config";
 
 const List = ({ token }) => {
-  const [list, setList] = useState([])
+  const [list, setList] = useState([]);
 
-  
   const fetchList = useCallback(async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      console.log('API response:', response.data)
+      });
+      console.log("API response:", response.data);
 
       if (response.data.success) {
-        setList(response.data.allproducts || [])
+        setList(response.data.allproducts || []);
       } else {
-        toast.error(response.data.error)
+        toast.error(response.data.error);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message)
+      toast.error(error.response?.data?.message || error.message);
     }
-  }, [token]) 
-
+  }, [token]);
 
   useEffect(() => {
-    fetchList()
-  }, [fetchList])
+    fetchList();
+  }, [fetchList]);
 
   const handleRemove = async (id) => {
     try {
@@ -37,17 +35,17 @@ const List = ({ token }) => {
         {
           headers: { Authorization: `Bearer ${token}` },
         }
-      )
+      );
       if (response.data.success) {
-        toast.success('Product removed successfully')
-        fetchList() 
+        toast.success("Product removed successfully");
+        fetchList();
       } else {
-        toast.error(response.data.error)
+        toast.error(response.data.error);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message)
+      toast.error(error.response?.data?.message || error.message);
     }
-  }
+  };
 
   return (
     <>
@@ -93,7 +91,7 @@ const List = ({ token }) => {
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default List
+export default List;
