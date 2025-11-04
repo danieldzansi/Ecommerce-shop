@@ -97,7 +97,25 @@ export const verifyPayment = async (req, res) => {
     )}`;
   
     console.log('Paystack verify redirect ->', redirectUrl);
-    return res.redirect(302, redirectUrl);
+
+    // Return an HTML page that performs a client-side redirect. Using a
+    // client-side redirect avoids ERR_INVALID_REDIRECT when the Location
+    // header would otherwise be malformed (for example if FRONTEND_URL
+    // is a comma-separated list or contains invalid characters).
+    const safeHtml = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url=${redirectUrl}">
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    <p>Redirecting to the site… If you are not redirected automatically, <a href="${redirectUrl}">click here</a>.</p>
+    <script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
+  </body>
+</html>`;
+
+    return res.status(200).type('html').send(safeHtml);
   } catch (err) {
     console.error(err?.response?.data || err.message);
     return res.status(500).json({ success: false, message: "Verification failed" });
