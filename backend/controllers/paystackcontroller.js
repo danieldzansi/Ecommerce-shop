@@ -10,14 +10,12 @@ export const initializePayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
-   
     const userId = req.user?._id ?? null;
     const itemsValue = Array.isArray(items) ? items : [];
     const totalAmountValue = Number(totalAmount) || 0;
 
     let order;
     try {
-      console.log('Inserting order with', { userId, items: itemsValue, email, address, totalAmountValue });
       const inserted = await db
         .insert(store)
         .values({
@@ -30,29 +28,26 @@ export const initializePayment = async (req, res) => {
         })
         .returning();
       order = inserted[0];
-    } catch (dbErr) {
-      console.error('DB insert failed', dbErr);
-      return res.status(500).json({ success: false, message: 'DB insert failed', error: dbErr.message });
+    } catch (err) {
+      console.error("DB insert failed", err);
+      return res.status(500).json({ success: false, message: "DB insert failed" });
     }
 
-   
+    // ✅ Change callback_url to FRONTEND
+    const frontendURL = (process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || "https://ecommerce-shop-lovat-pi.vercel.app")
+      .replace(/\/$/, "");
+
     const response = await paystack.post("/transaction/initialize", {
       email,
-      amount: Math.round(totalAmount * 100), 
+      amount: Math.round(totalAmount * 100),
       metadata: { orderId: order.id },
-      callback_url: `${process.env.BASE_URL}/api/paystack/verify`,
+      callback_url: `${frontendURL}/payment-result?orderId=${order.id}`,
     });
 
-   
-    try {
-      await db
-        .update(store)
-        .set({ reference: response.data.data.reference })
-        .where(eq(store.id, order.id));
-    } catch (upErr) {
-      console.error('DB update reference failed', upErr);
-      return res.status(500).json({ success: false, message: 'DB update failed', error: upErr.message });
-    }
+    await db
+      .update(store)
+      .set({ reference: response.data.data.reference })
+      .where(eq(store.id, order.id));
 
     return res.json({
       success: true,
@@ -60,11 +55,13 @@ export const initializePayment = async (req, res) => {
       reference: response.data.data.reference,
       orderId: order.id,
     });
+
   } catch (err) {
     console.error(err?.response?.data || err.message);
     return res.status(500).json({ success: false, message: "Payment init failed" });
   }
 };
+
 
 
 // export const verifyPayment = async (req, res) => {

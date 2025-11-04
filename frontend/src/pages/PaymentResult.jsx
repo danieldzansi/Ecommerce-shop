@@ -1,53 +1,44 @@
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 
 const PaymentResult = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const clearCart = useCartStore((state) => state.clearCart);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const reference = searchParams.get("reference");
 
-    const reference = params.get("reference") || params.get("trxref");
-
-    const backend = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") 
-      || "https://ecommerce-shop-production-ddc9.up.railway.app";
+    const backend = (import.meta.env.VITE_BACKEND_URL || "")
+      .replace(/\/$/, "") || "https://ecommerce-shop-production-ddc9.up.railway.app";
 
     const verifyPayment = async () => {
       try {
         if (!reference) {
-          console.warn("No payment reference was found in the URL.");
+          console.warn("No payment reference found");
           return navigate("/");
         }
 
-        // ✅ Send both reference and trxref to backend
-        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}&trxref=${reference}`;
+        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}`;
 
         const response = await fetch(verifyUrl, {
           method: "GET",
-          headers: { Accept: "application/json" },
+          headers: { "Accept": "application/json" }
         });
 
-        const data = await response.json();
-        console.log("Verification Response:", data);
-
-        if (data?.status === "success" || data?.message === "Payment verified") {
-          clearCart();
-          return navigate("/success");
-        } else {
-          return navigate("/failed");
-        }
-
+        const result = await response.json();
+        console.log("Payment verification result:", result);
       } catch (error) {
         console.error("Verification error:", error);
-        return navigate("/failed");
+      } finally {
+        clearCart();
+        navigate("/");
       }
     };
 
     verifyPayment();
-  }, [location, navigate, clearCart]);
+  }, [navigate, searchParams, clearCart]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "40px" }}>
