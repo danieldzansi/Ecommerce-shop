@@ -15,16 +15,16 @@ connectCloudinary();
 app.use(express.json())
 
 const rawOrigins = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
-const origins = rawOrigins
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
+const origins = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
 
-const corsOptions = origins.length > 0
-    ? { origin: (origin, cb) => cb(null, origins.includes(origin)), methods: ['GET','POST','PUT','DELETE','OPTIONS'], credentials: true }
-    : { origin: '*', methods: ['GET','POST','PUT','DELETE','OPTIONS'], credentials: true };
+const corsOptions = {
+    
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+};
 
 app.use(cors(corsOptions));
+console.log('CORS configured. Allowed origins:', origins.length ? origins : 'all (dev)');
 
 
 app.get('/', (req, res) => {

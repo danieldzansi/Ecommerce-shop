@@ -189,11 +189,11 @@ const Add = ({ token }) => {
               }
             >
               <p
-                className={`${
+                className={`px-3 py-1 cursor-pointer rounded border  ${
                   sizes.includes(size)
-                    ? "bg-pink-100 border border-pink-400"
-                    : "bg-slate-200"
-                } px-3 py-1 cursor-pointer rounded`}
+                    ? "bg-pink-100 border-pink-400 "
+                    : "bg-slate-200 border-transparent"
+                } `}
               >
                 {size}
               </p>

@@ -12,7 +12,7 @@ const PaymentResult = () => {
     const reference = params.get('reference');
 
     const verify = async () => {
-      // Best-effort verify call, but regardless of result we clear cart and return home immediately
+     
       try {
         if (reference) {
           await fetch(`http://localhost:4000/api/paystack/verify?reference=${encodeURIComponent(reference)}`, {

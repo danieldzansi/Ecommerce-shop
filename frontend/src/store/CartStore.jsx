@@ -8,7 +8,7 @@ export const useCartStore = create(
     (set, get) => ({
       cartItems: {},
 
-      // ➕ Add item or increase quantity
+
       addToCart: (itemId, size) => {
         if (!size) {
           toast.error('Select product size');
@@ -27,7 +27,7 @@ export const useCartStore = create(
         toast.success('Item added to cart');
       },
 
-      // ➖ Decrease quantity
+     
       decreaseQuantity: (itemId, size) => {
         const cartData = structuredClone(get().cartItems);
 
@@ -39,7 +39,6 @@ export const useCartStore = create(
             toast.info('Item removed from cart');
           }
 
-          // If product has no sizes left, remove product entirely
           if (cartData[itemId] && Object.keys(cartData[itemId]).length === 0) {
             delete cartData[itemId];
           }
@@ -48,7 +47,7 @@ export const useCartStore = create(
         }
       },
 
-      // 🗑️ Remove item completely
+      
       removeFromCart: (itemId, size) => {
         const cartData = structuredClone(get().cartItems);
 
@@ -56,7 +55,7 @@ export const useCartStore = create(
           delete cartData[itemId][size];
           toast.info('Item removed from cart');
 
-          // If no sizes left, remove product entirely
+          
           if (Object.keys(cartData[itemId]).length === 0) {
             delete cartData[itemId];
           }
@@ -65,7 +64,7 @@ export const useCartStore = create(
         }
       },
 
-      // 🔢 Get total item count
+      // Get total item count
       getCartCount: () => {
         let totalCount = 0;
         const cart = get().cartItems;
@@ -77,7 +76,7 @@ export const useCartStore = create(
         return totalCount;
       },
 
-      // 💰 Get total price
+      // Get total price
       getCartAmount: () => {
         let totalAmount = 0;
         const cart = get().cartItems;
@@ -94,14 +93,14 @@ export const useCartStore = create(
         return totalAmount;
       },
 
-      // 🧹 Clear entire cart
+      // Clear entire cart
       clearCart: () => {
         set({ cartItems: {} });
         toast.info('Cart cleared');
       },
     }),
     {
-      name: 'cart-storage', // key name in localStorage
+      name: 'cart-storage', 
       getStorage: () => localStorage,
     }
   )

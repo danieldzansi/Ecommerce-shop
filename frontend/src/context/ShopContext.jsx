@@ -9,7 +9,9 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = "₵";
   const delivery_fee = 10;
-  const backend_url = import.meta.env.VITE_BACKEND_URL;
+
+  const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
+  const backend_url = rawBackend.replace(/\/$/, "");
 
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -18,11 +20,10 @@ const ShopContextProvider = (props) => {
 
   const getProductData = useCallback(async () => {
     try {
-      const response = await axios.get(`${backend_url}/api/product/list`);
+     
+      const url = new URL("/api/product/list", backend_url).toString();
+      const response = await axios.get(url);
       if (response.data.success) {
-        // Normalize backend product shape: backend returns `id` (UUID)
-        // while the frontend components expect `_id`. Copy `id` -> `_id`
-        // so existing components continue to work unchanged.
         const normalized = response.data.allproducts.map((p) => ({
           ...p,
           _id: p.id,
