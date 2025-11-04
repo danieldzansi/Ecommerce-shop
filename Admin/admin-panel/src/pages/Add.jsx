@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { backendUrl } from "../App";
-
-
+import { backendUrl } from "../config";
 
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
@@ -21,65 +19,64 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
 
- const onSubmitHandler = async (e) => {
-  e.preventDefault();
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
 
-  if (!image1) {
-    toast.error("Please upload at least one image");
-    return;
-  }
-
-  setLoading(true); // move this AFTER image validation
-
-  try {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("category", category);
-    formData.append("subCategory", subCategory);
-    formData.append("bestseller", bestseller);
-    formData.append("sizes", JSON.stringify(sizes));
-    formData.append("image1", image1);
-    if (image2) formData.append("image2", image2);
-    if (image3) formData.append("image3", image3);
-    if (image4) formData.append("image4", image4);
-
-    const response = await axios.post(
-      `${backendUrl}/api/product/add`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.data.success) {
-      toast.success("Product added successfully!");
-      setImage1(false);
-      setImage2(false);
-      setImage3(false);
-      setImage4(false);
-      setName("");
-      setDescription("");
-      setPrice("");
-      setCategory("Men");
-      setSubCategory("Topwear");
-      setBestseller(false);
-      setSizes([]);
-    } else {
-      toast.error(response.data.message);
+    if (!image1) {
+      toast.error("Please upload at least one image");
+      return;
     }
-  } catch (error) {
-    console.error(error);
-    toast.error("Something went wrong");
-  } finally {
-    setLoading(false); 
-  }
-};
 
+    setLoading(true); // move this AFTER image validation
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("price", price);
+      formData.append("category", category);
+      formData.append("subCategory", subCategory);
+      formData.append("bestseller", bestseller);
+      formData.append("sizes", JSON.stringify(sizes));
+      formData.append("image1", image1);
+      if (image2) formData.append("image2", image2);
+      if (image3) formData.append("image3", image3);
+      if (image4) formData.append("image4", image4);
+
+      const response = await axios.post(
+        `${backendUrl}/api/product/add`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product added successfully!");
+        setImage1(false);
+        setImage2(false);
+        setImage3(false);
+        setImage4(false);
+        setName("");
+        setDescription("");
+        setPrice("");
+        setCategory("Men");
+        setSubCategory("Topwear");
+        setBestseller(false);
+        setSizes([]);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form
