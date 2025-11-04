@@ -96,6 +96,8 @@ export const verifyPayment = async (req, res) => {
     const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(
       paymentData.status
     )}`;
+    // Log redirect URL for easier debugging on production
+    console.log('Paystack verify redirect ->', redirectUrl);
     return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error(err?.response?.data || err.message);
