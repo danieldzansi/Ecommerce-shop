@@ -68,7 +68,11 @@ export const initializePayment = async (req, res) => {
 
 
 export const verifyPayment = async (req, res) => {
-  const { reference } = req.query;
+  const reference = req.query.reference || req.query.trxref;
+
+  if (!reference) {
+    return res.status(400).json({ success: false, message: "Missing transaction reference" });
+  }
 
   try {
     const response = await paystack.get(`/transaction/verify/${reference}`);
@@ -83,7 +87,6 @@ export const verifyPayment = async (req, res) => {
         .where(eq(store.reference, reference));
     }
 
-   
     const accept = req.headers.accept || '';
     if (accept.includes('application/json')) {
       return res.json({ success: true, data: paymentData });
@@ -92,22 +95,22 @@ export const verifyPayment = async (req, res) => {
     const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL ;
     const frontend = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0];
     const baseFrontend = (frontend || 'https://ecommerce-shop-lovat-pi.vercel.app').replace(/\/$/, '');
-    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(
-      paymentData.status
-    )}`;
-  
+    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(paymentData.status)}`;
+
     console.log('Paystack verify redirect ->', redirectUrl);
+
     const safeHtml = `
 <script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
 <p>Redirecting to the site… If you are not redirected automatically, <a href="${redirectUrl}">click here</a>.</p>
-`;
-
+    `;
     return res.status(200).type('html').send(safeHtml);
+
   } catch (err) {
     console.error(err?.response?.data || err.message);
     return res.status(500).json({ success: false, message: "Verification failed" });
   }
 };
+
 
 export const paystackWebhook = async (req, res) => {
   console.log("Webhook Payload:", JSON.stringify(req.body, null, 2));
