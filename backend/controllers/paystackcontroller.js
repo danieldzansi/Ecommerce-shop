@@ -14,36 +14,30 @@ export const initializePayment = async (req, res) => {
     const itemsValue = Array.isArray(items) ? items : [];
     const totalAmountValue = Number(totalAmount) || 0;
 
-    let order;
-    try {
-      const inserted = await db
-        .insert(store)
-        .values({
-          user_id: userId,
-          items: itemsValue,
-          email,
-          address,
-          total_amount: totalAmountValue,
-          status: "pending",
-        })
-        .returning();
-      order = inserted[0];
-    } catch (err) {
-      console.error("DB insert failed", err);
-      return res.status(500).json({ success: false, message: "DB insert failed" });
-    }
+    const [order] = await db
+      .insert(store)
+      .values({
+        user_id: userId,
+        items: itemsValue,
+        email,
+        address,
+        total_amount: totalAmountValue,
+        status: "pending",
+      })
+      .returning();
 
-    // ✅ Change callback_url to FRONTEND
-    const frontendURL = (process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || "https://ecommerce-shop-lovat-pi.vercel.app")
-      .replace(/\/$/, "");
+    // ✅ Your frontend URL from .env (already correct now)
+    const frontendURL = process.env.FRONTEND_URL.replace(/\/$/, "");
 
+    // ✅ Initialize Paystack
     const response = await paystack.post("/transaction/initialize", {
       email,
       amount: Math.round(totalAmount * 100),
       metadata: { orderId: order.id },
-      callback_url: `${frontendURL}/payment-result?orderId=${order.id}`,
+      callback_url: `${frontendURL}/payment-result`, // ✅ redirect to frontend
     });
 
+    // ✅ Save reference in DB
     await db
       .update(store)
       .set({ reference: response.data.data.reference })
@@ -61,6 +55,7 @@ export const initializePayment = async (req, res) => {
     return res.status(500).json({ success: false, message: "Payment init failed" });
   }
 };
+
 
 
 
