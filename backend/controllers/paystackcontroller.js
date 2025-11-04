@@ -89,10 +89,13 @@ export const verifyPayment = async (req, res) => {
       return res.json({ success: true, data: paymentData });
     }
 
-    const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const redirectUrl = `${frontend.replace(/\/$/, '')}/payment-result?reference=${encodeURIComponent(
-      reference
-    )}&status=${encodeURIComponent(paymentData.status)}`;
+    // FRONTEND_URL may contain a comma-separated list (dev). Use the first entry as the redirect target.
+    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'http://localhost:5173';
+    const frontend = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0];
+    const baseFrontend = (frontend || 'http://localhost:5173').replace(/\/$/, '');
+    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(
+      paymentData.status
+    )}`;
     return res.redirect(302, redirectUrl);
   } catch (err) {
     console.error(err?.response?.data || err.message);
