@@ -11,36 +11,44 @@ const PaymentResult = () => {
     const params = new URLSearchParams(location.search);
     const reference = params.get("reference");
 
-    const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
-    const backend = rawBackend.replace(/\/$/, "") || window.location.origin;
+    const backend = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") 
+      || "https://ecommerce-shop-production-ddc9.up.railway.app";
 
-    const verify = async () => {
+    const verifyPayment = async () => {
       try {
-        if (reference) {
-          const url = new URL(`/api/paystack/verify`, backend);
-          url.searchParams.set("reference", reference);
-          await fetch(url.toString(), {
-            headers: { Accept: "application/json" },
-          });
+        if (!reference) {
+          console.warn("No payment reference found in URL.");
+          return navigate("/");
         }
-      } catch (err) {
-      
-        console.error("verify error", err?.message || err);
+
+        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}`;
+
+        const response = await fetch(verifyUrl, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        if (!response.ok) {
+          console.error("Payment verification failed:", response.status);
+        }
+
+      } catch (error) {
+        console.error("Verification error:", error);
       } finally {
-        try {
-          clearCart();
-        } catch {
-          // ignore
-        }
+        clearCart();
         navigate("/");
       }
     };
 
-    verify();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    verifyPayment();
+  }, [location, navigate, clearCart]);
 
-  return null;
+  return (
+    <div style={{ textAlign: "center", marginTop: "40px" }}>
+      <h2>Confirming Payment...</h2>
+      <p>Please wait while we verify your transaction.</p>
+    </div>
+  );
 };
 
 export default PaymentResult;
