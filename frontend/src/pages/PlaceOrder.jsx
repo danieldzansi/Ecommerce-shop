@@ -7,11 +7,9 @@ import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 
 const PlaceOrder = () => {
-  
   const { currency, delivery_fee, products } = useContext(ShopContext);
   const cartItems = useCartStore((state) => state.cartItems);
 
-  
   const subtotal = Object.keys(cartItems).reduce((acc, productId) => {
     const prod = products.find(
       (p) => p._id === productId || p.id === productId
@@ -66,19 +64,21 @@ const PlaceOrder = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(
-        "http://localhost:4000/api/paystack/initialize",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items,
-            email: formData.email,
-            address,
-            totalAmount,
-          }),
-        }
-      );
+      
+      const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
+      const backend = rawBackend.replace(/\/$/, "") || window.location.origin;
+      const url = new URL("/api/paystack/initialize", backend).toString();
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          email: formData.email,
+          address,
+          totalAmount,
+        }),
+      });
 
       const data = await response.json();
       if (response.ok && data.authorization_url) {
