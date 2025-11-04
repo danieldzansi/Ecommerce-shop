@@ -9,7 +9,8 @@ const PaymentResult = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const reference = params.get("reference");
+
+    const reference = params.get("reference") || params.get("trxref");
 
     const backend = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") 
       || "https://ecommerce-shop-production-ddc9.up.railway.app";
@@ -17,26 +18,31 @@ const PaymentResult = () => {
     const verifyPayment = async () => {
       try {
         if (!reference) {
-          console.warn("No payment reference found in URL.");
+          console.warn("No payment reference was found in the URL.");
           return navigate("/");
         }
 
-        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}`;
+        // ✅ Send both reference and trxref to backend
+        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}&trxref=${reference}`;
 
         const response = await fetch(verifyUrl, {
           method: "GET",
           headers: { Accept: "application/json" },
         });
 
-        if (!response.ok) {
-          console.error("Payment verification failed:", response.status);
+        const data = await response.json();
+        console.log("Verification Response:", data);
+
+        if (data?.status === "success" || data?.message === "Payment verified") {
+          clearCart();
+          return navigate("/success");
+        } else {
+          return navigate("/failed");
         }
 
       } catch (error) {
         console.error("Verification error:", error);
-      } finally {
-        clearCart();
-        navigate("/");
+        return navigate("/failed");
       }
     };
 
