@@ -26,7 +26,8 @@ export const initializePayment = async (req, res) => {
       })
       .returning();
 
-    const frontendURL = process.env.FRONTEND_URL.replace(/\/$/, "");
+    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://ecommerce-shop-lovat-pi.vercel.app';
+    const frontendURL = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0].replace(/\/$/, '');
 
     const response = await paystack.post("/transaction/initialize", {
       email,
