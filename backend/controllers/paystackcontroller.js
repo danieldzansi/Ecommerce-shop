@@ -26,18 +26,15 @@ export const initializePayment = async (req, res) => {
       })
       .returning();
 
-    // ✅ Your frontend URL from .env (already correct now)
     const frontendURL = process.env.FRONTEND_URL.replace(/\/$/, "");
 
-    // ✅ Initialize Paystack
     const response = await paystack.post("/transaction/initialize", {
       email,
       amount: Math.round(totalAmount * 100),
       metadata: { orderId: order.id },
-      callback_url: `${frontendURL}/payment-result`, // ✅ redirect to frontend
+      callback_url: `${frontendURL}/payment-result`, 
     });
 
-    // ✅ Save reference in DB
     await db
       .update(store)
       .set({ reference: response.data.data.reference })
@@ -59,49 +56,49 @@ export const initializePayment = async (req, res) => {
 
 
 
-// export const verifyPayment = async (req, res) => {
-//   const reference = req.query.reference || req.query.trxref;
+export const verifyPayment = async (req, res) => {
+  const reference = req.query.reference || req.query.trxref;
 
-//   if (!reference) {
-//     return res.status(400).json({ success: false, message: "Missing transaction reference" });
-//   }
+  if (!reference) {
+    return res.status(400).json({ success: false, message: "Missing transaction reference" });
+  }
 
-//   try {
-//     const response = await paystack.get(`/transaction/verify/${reference}`);
+  try {
+    const response = await paystack.get(`/transaction/verify/${reference}`);
 
-//     const paymentData = response.data.data;
-//     const [order] = await db.select().from(store).where(eq(store.reference, reference)).limit(1);
+    const paymentData = response.data.data;
+    const [order] = await db.select().from(store).where(eq(store.reference, reference)).limit(1);
 
-//     if (paymentData.status === "success" && order) {
-//       await db
-//         .update(store)
-//         .set({ status: "paid", paid_at: new Date() })
-//         .where(eq(store.reference, reference));
-//     }
+    if (paymentData.status === "success" && order) {
+      await db
+        .update(store)
+        .set({ status: "paid", paid_at: new Date() })
+        .where(eq(store.reference, reference));
+    }
 
-//     const accept = req.headers.accept || '';
-//     if (accept.includes('application/json')) {
-//       return res.json({ success: true, data: paymentData });
-//     }
+    const accept = req.headers.accept || '';
+    if (accept.includes('application/json')) {
+      return res.json({ success: true, data: paymentData });
+    }
 
-//     const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL ;
-//     const frontend = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0];
-//     const baseFrontend = (frontend || 'https://ecommerce-shop-lovat-pi.vercel.app').replace(/\/$/, '');
-//     const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(paymentData.status)}`;
+    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL ;
+    const frontend = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0];
+    const baseFrontend = (frontend || 'https://ecommerce-shop-lovat-pi.vercel.app').replace(/\/$/, '');
+    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(paymentData.status)}`;
 
-//     console.log('Paystack verify redirect ->', redirectUrl);
+    console.log('Paystack verify redirect ->', redirectUrl);
 
-//     const safeHtml = `
-// <script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
-// <p>Redirecting to the site… If you are not redirected automatically, <a href="${redirectUrl}">click here</a>.</p>
-//     `;
-//     return res.status(200).type('html').send(safeHtml);
+    const safeHtml = `
+<script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
+<p>Redirecting to the site… If you are not redirected automatically, <a href="${redirectUrl}">click here</a>.</p>
+    `;
+    return res.status(200).type('html').send(safeHtml);
 
-//   } catch (err) {
-//     console.error(err?.response?.data || err.message);
-//     return res.status(500).json({ success: false, message: "Verification failed" });
-//   }
-// };
+  } catch (err) {
+    console.error(err?.response?.data || err.message);
+    return res.status(500).json({ success: false, message: "Verification failed" });
+  }
+};
 
 
 export const paystackWebhook = async (req, res) => {

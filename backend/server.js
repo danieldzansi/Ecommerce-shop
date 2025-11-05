@@ -14,7 +14,7 @@ connectCloudinary();
 
 app.use(express.json())
 
-const rawOrigins = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
+const rawOrigins =process.env.FRONTEND_URL ||  process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
 const origins = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
 
 const corsOptions = {
@@ -50,3 +50,4 @@ const start = async () => {
 }
 
 start()
+
