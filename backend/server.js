@@ -15,9 +15,12 @@ connectCloudinary();
 
 app.use(express.json());
 
-const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL].filter(
-  Boolean
-);
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL,
+  process.env.VITE_FRONTEND_URL,
+  process.env.VITE_ADMIN_URL,
+];
 
 console.log(
   "Allowed CORS Origins:",
@@ -33,7 +36,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.send("API is Working");
