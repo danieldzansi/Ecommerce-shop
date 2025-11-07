@@ -101,10 +101,7 @@ export const verifyPayment = async (req, res) => {
       ...paymentData,
       orderId: order?.id || null,
     };
-    const accept = req.headers.accept || "";
-    if (accept.includes("application/json")) {
-      return res.json({ success: true, data: result });
-    }
+    
 
     const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL;
     const frontend = rawFrontend.split(",").map(s => s.trim()).filter(Boolean)[0];
