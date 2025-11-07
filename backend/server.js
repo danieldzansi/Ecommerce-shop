@@ -11,38 +11,38 @@ import orderRouter from "./routes/orderroute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-
 connectCloudinary();
-
 
 app.use(express.json());
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.ADMIN_URL,
-].filter(Boolean);
-
-console.log("Allowed CORS Origins:", allowedOrigins);
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
+const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL].filter(
+  Boolean
 );
 
+console.log(
+  "Allowed CORS Origins:",
+  allowedOrigins.length ? allowedOrigins : "none (will allow all in dev)"
+);
+
+const corsOptions = {
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.send("API is Working");
 });
 
-
 app.use("/api/paystack", paystackRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/product", productRouter);
 app.use("/api/orders", orderRouter);
-
 
 const start = async () => {
   try {
