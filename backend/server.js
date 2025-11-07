@@ -8,49 +8,47 @@ import adminRouter from './routes/adminroute.js';
 import productRouter from './routes/productroute.js';
 import orderRouter from './routes/orderroute.js';
 
-
 const app = express()
 const port = process.env.PORT || 4000
+
 connectCloudinary();
 
-app.use(express.json())
+app.use(express.json());
 
-const rawOrigins = process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
-const origins = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
+const rawOrigins = process.env.FRONTEND_URL || process.env.ALLOWED_ORIGINS || "";
+const origins = rawOrigins.split(",").map(url => url.trim()).filter(Boolean);
 
-const corsOptions = {
-    
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true,
-};
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); 
+    if (origins.includes(origin)) return callback(null, true);
+    return callback(new Error("CORS blocked: " + origin));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
-app.use(cors(corsOptions));
-console.log('CORS configured. Allowed origins:', origins.length ? origins : 'all (dev)');
-
+console.log("Allowed CORS Origins:", origins);
 
 app.get('/', (req, res) => {
-    res.send('Api is Working')
-})
+  res.send('API is Working ');
+});
 
 app.use("/api/paystack", paystackRoutes);
-app.use("/api/admin",adminRouter);
-app.use('/api/product',productRouter);
+app.use("/api/admin", adminRouter);
+app.use('/api/product', productRouter);
 app.use('/api/orders', orderRouter);
 
 const start = async () => {
-    try {
-        
-        await testConnection();
-
-        app.listen(port, () => {
-            console.log('server started on PORT : ' + port)
-        })
-    } catch (err) {
-        console.error('Failed to start server:', err)
-        process.exit(1)
-    }
+  try {
+    await testConnection();
+    app.listen(port, () => {
+      console.log('Server started on PORT:', port);
+    })
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
 }
 
-start()
-
-//  process.env.FRONTEND_URL ||
+start();
