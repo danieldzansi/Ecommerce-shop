@@ -11,9 +11,10 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const backendBase = () =>
-    (import.meta.env.VITE_BACKEND_URL) 
-
+  const backendBase = () => {
+    const raw = import.meta.env.VITE_BACKEND_URL || "";
+    return raw.replace(/\/$/, "") || "http://localhost:4000";
+  };
 
   const fetchOrders = async (emailToUse) => {
     setError("");

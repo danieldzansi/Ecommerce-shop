@@ -72,8 +72,9 @@ const PlaceOrder = () => {
     try {
       setLoading(true);
 
-      const rawBackend = import.meta.env.VITE_BACKEND_URL ;
-      const url = new URL("/api/paystack/initialize", rawBackend).toString();
+      const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
+      const backend = rawBackend.replace(/\/$/, "") || "http://localhost:4000";
+      const url = new URL("/api/paystack/initialize", backend).toString();
 
       const response = await fetch(url, {
         method: "POST",
@@ -235,7 +236,6 @@ const PlaceOrder = () => {
         <div className="mt-12">
           <Title text1="PAYMENT" text2="METHOD" />
           <div className="flex gap-3 flex-col lg:flex-row mt-2">
-            
             <div className="flex items-center gap-3 p-2 px-3 cursor-pointer border rounded">
               <p className="text-gray-500 text-sm font-medium mx-4">
                 CASH ON DELIVERY

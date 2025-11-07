@@ -6,13 +6,14 @@ const PaymentResult = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const clearCart = useCartStore((state) => state.clearCart);
-  
+
   const [status, setStatus] = useState("verifying"); // "verifying" | "success" | "error"
   const [message, setMessage] = useState("Verifying your payment...");
 
   useEffect(() => {
     const reference = searchParams.get("reference");
-    const backend = import.meta.env.VITE_BACKEND_URL;
+    const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
+    const backend = rawBackend.replace(/\/$/, "") || "http://localhost:4000";
 
     const verifyPayment = async () => {
       try {
@@ -24,14 +25,28 @@ const PaymentResult = () => {
           return;
         }
 
-        const verifyUrl = `${backend}/api/paystack/verify?reference=${reference}`;
+        // Build URL robustly to avoid double-slashes if backend has a trailing slash
+        const url = new URL("/api/paystack/verify", backend);
+        url.searchParams.set("reference", reference);
+        const verifyUrl = url.toString();
 
         const response = await fetch(verifyUrl, {
           method: "GET",
           headers: { Accept: "application/json" },
         });
 
-        const result = await response.json();
+        const contentType = response.headers.get("content-type") || "";
+        let result;
+        if (contentType.includes("application/json")) {
+          result = await response.json();
+        } else {
+          const text = await response.text();
+          console.error(
+            "Verification endpoint returned non-JSON response (first 1k chars):",
+            text.slice(0, 1000)
+          );
+          throw new Error("Verification endpoint returned non-JSON response");
+        }
         console.log("Payment verification result:", result);
 
         if (!result.success) {
@@ -47,22 +62,21 @@ const PaymentResult = () => {
         // Payment successful - clear cart first
         setStatus("success");
         setMessage("Payment successful! Redirecting...");
-        
+
         // Clear cart and wait for state to update
         clearCart();
-        
+
         // Give a small delay to ensure cart is cleared and user sees success message
         setTimeout(() => {
           if (orderId) {
             navigate(`/order-details?orderId=${encodeURIComponent(orderId)}`, {
               replace: true,
-              state: { paymentSuccess: true }
+              state: { paymentSuccess: true },
             });
           } else {
             navigate("/orders", { replace: true });
           }
         }, 1500);
-
       } catch (error) {
         console.error("Verification error:", error);
         setStatus("error");
