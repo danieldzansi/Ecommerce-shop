@@ -2,16 +2,17 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl, Currency } from "../config";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
+  const [confirmId, setConfirmId] = useState(null);
 
   const fetchList = useCallback(async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("API response:", response.data);
 
       if (response.data.success) {
         setList(response.data.allproducts || []);
@@ -27,15 +28,16 @@ const List = ({ token }) => {
     fetchList();
   }, [fetchList]);
 
-  const handleRemove = async (id) => {
+  const handleRemoveConfirmed = async () => {
     try {
       const response = await axios.post(
         `${backendUrl}/api/product/remove`,
-        { id },
+        { id: confirmId },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (response.data.success) {
         toast.success("Product removed successfully");
         fetchList();
@@ -45,6 +47,8 @@ const List = ({ token }) => {
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
     }
+
+    setConfirmId(null); // close modal
   };
 
   return (
@@ -59,6 +63,7 @@ const List = ({ token }) => {
           <b>Price</b>
           <b className="text-center">Action</b>
         </div>
+
         {Array.isArray(list) && list.length > 0 ? (
           list.map((item) => (
             <div
@@ -76,12 +81,13 @@ const List = ({ token }) => {
                 {Currency}
                 {item.price}
               </p>
-              <div className="flex justify-center gap-2">
+
+              <div className="flex justify-center">
                 <button
-                  onClick={() => handleRemove(item.id)}
-                  className="text-red-500 hover:text-red-700"
+                  onClick={() => setConfirmId(item.id)} // open confirmation
+                  className="text-red-500 hover:text-red-700 font-semibold"
                 >
-                  X
+                  Remove
                 </button>
               </div>
             </div>
@@ -90,6 +96,14 @@ const List = ({ token }) => {
           <p className="text-center text-gray-500 py-4">No products found.</p>
         )}
       </div>
+
+      {confirmId && (
+        <ConfirmDialog
+          message="Are you sure you want to remove this product?"
+          onConfirm={handleRemoveConfirmed}
+          onCancel={() => setConfirmId(null)}
+        />
+      )}
     </>
   );
 };

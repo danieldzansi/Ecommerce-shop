@@ -1,5 +1,6 @@
 import { paystack } from "../config/paystack.js";
 import db, { store } from "../db/index.js";
+import { products } from "../models/productModel.js";
 import { eq } from "drizzle-orm";
 
 
@@ -14,19 +15,38 @@ export const initializePayment = async (req, res) => {
     const itemsValue = Array.isArray(items) ? items : [];
     const totalAmountValue = Number(totalAmount) || 0;
 
+    const enhancedItems = [];
+    for (const it of itemsValue) {
+      const newItem = { ...it };
+      try {
+        if (!newItem.image && newItem.id) {
+          const [prod] = await db.select().from(products).where(eq(products.id, newItem.id)).limit(1);
+          if (prod && prod.image && Array.isArray(prod.image) && prod.image.length > 0) {
+            newItem.image = prod.image[0];
+          }
+        }
+      } catch (e) {
+
+        console.warn('Could not enrich order item with image', e?.message || e);
+      }
+      enhancedItems.push(newItem);
+    }
+
     const [order] = await db
       .insert(store)
       .values({
         user_id: userId,
-        items: itemsValue,
+        items: enhancedItems,
         email,
         address,
         total_amount: totalAmountValue,
         status: "pending",
       })
       .returning();
+     
+      
 
-    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://ecommerce-shop-lovat-pi.vercel.app';
+    const rawFrontend =  process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://ecommerce-shop-lovat-pi.vercel.app';
     const frontendURL = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0].replace(/\/$/, '');
 
     const response = await paystack.post("/transaction/initialize", {

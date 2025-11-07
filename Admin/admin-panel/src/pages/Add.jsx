@@ -27,7 +27,7 @@ const Add = ({ token }) => {
       return;
     }
 
-    setLoading(true); // move this AFTER image validation
+    setLoading(true); 
 
     try {
       const formData = new FormData();

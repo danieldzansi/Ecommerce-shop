@@ -15,14 +15,13 @@ if (!connectionString) {
   console.warn('DATABASE_URL is not set. Postgres connection will not be established.');
 }
 
-// Disable automatic array parsing
-pg.types.setTypeParser(1016, val => val); // _int4 array
-pg.types.setTypeParser(1009, val => val); // _text array
+pg.types.setTypeParser(1016, val => val); 
+pg.types.setTypeParser(1009, val => val); 
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // ✅ Required for Render/Railway/Neon
+    rejectUnauthorized: false, 
   },
 });
 

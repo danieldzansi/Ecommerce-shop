@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Title from "../components/Title";
-import { assets } from "../assets/assets";
-// removed unused useNavigate; payment flow redirects to Paystack
 import { useCartStore } from "../store/CartStore";
 import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
@@ -56,7 +54,16 @@ const PlaceOrder = () => {
       for (const size in cartItems[productId]) {
         quantity += cartItems[productId][size];
       }
-      items.push({ name: product.name, price: product.price, quantity });
+      // include product id and a best-effort image (first image) so backend can persist for order details
+      items.push({
+        id: product._id || product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+        image: Array.isArray(product.image)
+          ? product.image[0]
+          : product.image || null,
+      });
     }
 
     const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.country}, ${formData.zipcode}`;
@@ -64,10 +71,9 @@ const PlaceOrder = () => {
 
     try {
       setLoading(true);
-      
-      const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
-      const backend = rawBackend.replace(/\/$/, "") || window.location.origin;
-      const url = new URL("/api/paystack/initialize", backend).toString();
+
+      const rawBackend = import.meta.env.VITE_BACKEND_URL ;
+      const url = new URL("/api/paystack/initialize", rawBackend).toString();
 
       const response = await fetch(url, {
         method: "POST",
@@ -81,6 +87,7 @@ const PlaceOrder = () => {
       });
 
       const data = await response.json();
+
       if (response.ok && data.authorization_url) {
         window.location.href = data.authorization_url;
       } else {
@@ -228,12 +235,7 @@ const PlaceOrder = () => {
         <div className="mt-12">
           <Title text1="PAYMENT" text2="METHOD" />
           <div className="flex gap-3 flex-col lg:flex-row mt-2">
-            <div className="flex items-center gap-3 p-2 px-3 cursor-pointer border rounded">
-              <img className="h-5 mx-5" src={assets.stripe_logo} alt="" />
-            </div>
-            <div className="flex items-center gap-3 p-2 px-3 cursor-pointer border rounded">
-              <img className="h-5 mx-5" src={assets.razorpay_logo} alt="" />
-            </div>
+            
             <div className="flex items-center gap-3 p-2 px-3 cursor-pointer border rounded">
               <p className="text-gray-500 text-sm font-medium mx-4">
                 CASH ON DELIVERY

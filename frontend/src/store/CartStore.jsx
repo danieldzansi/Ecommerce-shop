@@ -8,78 +8,84 @@ export const useCartStore = create(
     (set, get) => ({
       cartItems: {},
 
-
       addToCart: (itemId, size) => {
         if (!size) {
           toast.error('Select product size');
           return;
         }
 
-        const cartData = structuredClone(get().cartItems);
+        set((state) => {
+          const cart = { ...state.cartItems };
 
-        if (cartData[itemId]) {
-          cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
-        } else {
-          cartData[itemId] = { [size]: 1 };
-        }
+          if (!cart[itemId]) {
+            cart[itemId] = {};
+          }
 
-        set({ cartItems: cartData });
-        toast.success('Item added to cart');
+          cart[itemId] = {
+            ...cart[itemId],
+            [size]: (cart[itemId][size] || 0) + 1,
+          };
+
+          toast.success('Item added to cart');
+          return { cartItems: cart };
+        });
       },
 
-     
       decreaseQuantity: (itemId, size) => {
-        const cartData = structuredClone(get().cartItems);
+        set((state) => {
+          const cart = { ...state.cartItems };
+          const currentQty = cart[itemId]?.[size];
 
-        if (cartData[itemId] && cartData[itemId][size]) {
-          if (cartData[itemId][size] > 1) {
-            cartData[itemId][size] -= 1;
+          if (!currentQty) return state;
+
+          if (currentQty > 1) {
+            cart[itemId] = { ...cart[itemId], [size]: currentQty - 1 };
           } else {
-            delete cartData[itemId][size];
+            delete cart[itemId][size];
             toast.info('Item removed from cart');
           }
 
-          if (cartData[itemId] && Object.keys(cartData[itemId]).length === 0) {
-            delete cartData[itemId];
+          if (Object.keys(cart[itemId]).length === 0) {
+            delete cart[itemId];
           }
 
-          set({ cartItems: cartData });
-        }
+          return { cartItems: cart };
+        });
       },
 
-      
       removeFromCart: (itemId, size) => {
-        const cartData = structuredClone(get().cartItems);
+        set((state) => {
+          const cart = { ...state.cartItems };
 
-        if (cartData[itemId] && cartData[itemId][size]) {
-          delete cartData[itemId][size];
-          toast.info('Item removed from cart');
+          if (cart[itemId]?.[size]) {
+            delete cart[itemId][size];
+            toast.info('Item removed from cart');
 
-          
-          if (Object.keys(cartData[itemId]).length === 0) {
-            delete cartData[itemId];
+            if (Object.keys(cart[itemId]).length === 0) {
+              delete cart[itemId];
+            }
           }
 
-          set({ cartItems: cartData });
-        }
+          return { cartItems: cart };
+        });
       },
 
-      // Get total item count
       getCartCount: () => {
-        let totalCount = 0;
         const cart = get().cartItems;
+        let totalCount = 0;
+
         for (const productId in cart) {
           for (const size in cart[productId]) {
             totalCount += cart[productId][size];
           }
         }
+
         return totalCount;
       },
 
-      // Get total price
       getCartAmount: () => {
-        let totalAmount = 0;
         const cart = get().cartItems;
+        let totalAmount = 0;
 
         for (const itemId in cart) {
           const itemInfo = products.find((p) => p._id === itemId);
@@ -93,14 +99,13 @@ export const useCartStore = create(
         return totalAmount;
       },
 
-      // Clear entire cart
       clearCart: () => {
         set({ cartItems: {} });
         toast.info('Cart cleared');
       },
     }),
     {
-      name: 'cart-storage', 
+      name: 'cart-storage',
       getStorage: () => localStorage,
     }
   )

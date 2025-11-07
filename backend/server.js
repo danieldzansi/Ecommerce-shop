@@ -6,6 +6,7 @@ import { testConnection } from './db/index.js';
 import connectCloudinary from './config/cloudinary.js';
 import adminRouter from './routes/adminroute.js';
 import productRouter from './routes/productroute.js';
+import orderRouter from './routes/orderroute.js';
 
 
 const app = express()
@@ -14,7 +15,7 @@ connectCloudinary();
 
 app.use(express.json())
 
-const rawOrigins = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
+const rawOrigins = process.env.VITE_FRONTEND_URL || process.env.ALLOWED_ORIGINS || '';
 const origins = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
 
 const corsOptions = {
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
 app.use("/api/paystack", paystackRoutes);
 app.use("/api/admin",adminRouter);
 app.use('/api/product',productRouter);
+app.use('/api/orders', orderRouter);
 
 const start = async () => {
     try {
@@ -50,3 +52,5 @@ const start = async () => {
 }
 
 start()
+
+//  process.env.FRONTEND_URL ||

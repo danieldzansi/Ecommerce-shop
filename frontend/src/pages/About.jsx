@@ -1,6 +1,6 @@
 import React from 'react'
 import Title from '../components/Title'
-import { assets } from '../assets/assets'
+
 
 const About = () => {
   return (
@@ -10,7 +10,7 @@ const About = () => {
         <Title text1={'ABOUT'} text2={'US'} />
       </div>
       <div className='my-10 flex-col md:flex pt-8 border-t'>
-         <img className='w-full md:max-[450px]:' src={assets.about_img} alt="" />
+         {/* <img className='w-full md:max-[450px]:' src={assets.about_img} alt="" /> */}
       </div>
       
       <div className="max-w-4xl mx-auto px-4 leading-relaxed space-y-6">
@@ -33,7 +33,6 @@ const About = () => {
           Thank you for choosing us! We’re constantly improving our platform to serve you better and bring you the latest products at the best prices.
         </p>
 
-        {/* 🌍 Mission Section */}
         <div className="mt-10">
           <h2 className="text-xl font-semibold mb-2 text-gray-900">Our Mission</h2>
           <p>
@@ -42,7 +41,6 @@ const About = () => {
           </p>
         </div>
 
-        {/* 👥 Vision Section */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2 text-gray-900">Our Vision</h2>
           <p>

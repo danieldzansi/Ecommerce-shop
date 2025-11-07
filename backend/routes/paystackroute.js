@@ -1,4 +1,3 @@
-// routes/paystackRoutes.js
 import express from "express";
 import {
   initializePayment,

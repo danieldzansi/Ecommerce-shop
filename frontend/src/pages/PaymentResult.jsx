@@ -10,10 +10,9 @@ const PaymentResult = () => {
   useEffect(() => {
     const reference = searchParams.get("reference");
 
-    const backend = (import.meta.env.VITE_BACKEND_URL || "")
-      .replace(/\/$/, "") || "https://ecommerce-shop-production-ddc9.up.railway.app";
+    const backend=(import.meta.env.VITE_BACKEND_URL)
 
-    const verifyPayment = async () => {
+      const verifyPayment = async () => {
       try {
         if (!reference) {
           console.warn("No payment reference found");
@@ -24,28 +23,41 @@ const PaymentResult = () => {
 
         const response = await fetch(verifyUrl, {
           method: "GET",
-          headers: { "Accept": "application/json" }
+          headers: { Accept: "application/json" },
         });
 
         const result = await response.json();
         console.log("Payment verification result:", result);
+
+        const payment = result.data || {};
+
+        const orderId = payment?.metadata?.orderId || payment?.order_id || null;
+       
+        clearCart();
+
+        if (orderId ) {
+          return navigate(
+            `/order-details?orderId=${encodeURIComponent(
+              orderId
+            )}`
+          );
+        }
+        return navigate("/orders");
       } catch (error) {
         console.error("Verification error:", error);
-      } finally {
-        clearCart();
-        navigate("/");
+        return navigate("/orders");
       }
     };
 
     verifyPayment();
   }, [navigate, searchParams, clearCart]);
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "40px" }}>
-      <h2>Confirming Payment...</h2>
-      <p>Please wait while we verify your transaction.</p>
-    </div>
-  );
+  // return (
+  //   <div style={{ textAlign: "center", marginTop: "40px" }}>
+  //     {/* <h2>Confirming Payment...</h2>
+  //     <p>Please wait while we verify your transaction.</p> */}
+  //   </div>
+  // );
 };
 
 export default PaymentResult;

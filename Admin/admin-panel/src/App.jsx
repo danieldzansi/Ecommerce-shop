@@ -21,6 +21,8 @@ const App = () => {
     localStorage.setItem("token", token);
   }, [token]);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer />
@@ -28,17 +30,22 @@ const App = () => {
         <Login setToken={setToken} />
       ) : (
         <>
-          <Navbar setToken={setToken} />
+          <Navbar
+            setToken={setToken}
+            onToggleSidebar={() => setSidebarOpen((s) => !s)}
+          />
           <hr />
-          <div className="flex w-full">
-            <Sidebar />
-            <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
+
+          <div className="flex w-full relative">
+           
+            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6">
               <Routes>
                 <Route path="/add" element={<Add token={token} />} />
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
               </Routes>
-            </div>
+            </main>
           </div>
         </>
       )}
