@@ -29,9 +29,9 @@ const ShopContextProvider = (props) => {
           _id: p.id,
         }));
         setProducts(normalized);
-        toast.success("Products loaded successfully!", {
-          position: "top-right",
-        });
+        // toast.success("Products loaded successfully!", {
+        //   position: "top-right",
+        // });
       } else {
         toast.error("Failed to load products", { position: "top-right" });
       }

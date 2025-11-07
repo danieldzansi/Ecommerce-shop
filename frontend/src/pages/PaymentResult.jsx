@@ -7,7 +7,7 @@ const PaymentResult = () => {
   const [searchParams] = useSearchParams();
   const clearCart = useCartStore((state) => state.clearCart);
 
-  const [status, setStatus] = useState("verifying"); // "verifying" | "success" | "error"
+  const [status, setStatus] = useState("verifying"); 
   const [message, setMessage] = useState("Verifying your payment...");
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const PaymentResult = () => {
           return;
         }
 
-        // Build URL robustly to avoid double-slashes if backend has a trailing slash
         const url = new URL("/api/paystack/verify", backend);
         url.searchParams.set("reference", reference);
         const verifyUrl = url.toString();
@@ -59,14 +58,11 @@ const PaymentResult = () => {
         const payment = result.data || {};
         const orderId = payment?.metadata?.orderId || payment?.orderId || null;
 
-        // Payment successful - clear cart first
-        setStatus("success");
-        setMessage("Payment successful! Redirecting...");
+        // setStatus("success");
+        // setMessage("Payment successful! Redirecting...");
 
-        // Clear cart and wait for state to update
         clearCart();
 
-        // Give a small delay to ensure cart is cleared and user sees success message
         setTimeout(() => {
           if (orderId) {
             navigate(`/order-details?orderId=${encodeURIComponent(orderId)}`, {
@@ -122,9 +118,9 @@ const PaymentResult = () => {
                 </svg>
               </div>
             </div>
-            <h2 className="text-2xl font-semibold text-green-600 mb-2">
+            {/* <h2 className="text-2xl font-semibold text-green-600 mb-2">
               Payment Successful!
-            </h2>
+            </h2> */}
             <p className="text-gray-600">{message}</p>
           </>
         )}
