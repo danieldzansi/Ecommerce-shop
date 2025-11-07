@@ -86,8 +86,8 @@ export const verifyPayment = async (req, res) => {
 
   try {
     const response = await paystack.get(`/transaction/verify/${reference}`);
-
     const paymentData = response.data.data;
+
     const [order] = await db.select().from(store).where(eq(store.reference, reference)).limit(1);
 
     if (paymentData.status === "success" && order) {
@@ -97,29 +97,34 @@ export const verifyPayment = async (req, res) => {
         .where(eq(store.reference, reference));
     }
 
-    const accept = req.headers.accept || '';
-    if (accept.includes('application/json')) {
-      return res.json({ success: true, data: paymentData });
+    const result = {
+      ...paymentData,
+      orderId: order?.id || null,
+    };
+    const accept = req.headers.accept || "";
+    if (accept.includes("application/json")) {
+      return res.json({ success: true, data: result });
     }
 
-    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL ;
-    const frontend = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0];
+    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL;
+    const frontend = rawFrontend.split(",").map(s => s.trim()).filter(Boolean)[0];
     const baseFrontend = (frontend || 'https://ecommerce-shop-lovat-pi.vercel.app').replace(/\/$/, '');
-    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&status=${encodeURIComponent(paymentData.status)}`;
 
-    console.log('Paystack verify redirect ->', redirectUrl);
+    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&orderId=${order?.id || ''}&status=${encodeURIComponent(paymentData.status)}`;
 
-    const safeHtml = `
-<script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
-<p>Redirecting to the site… If you are not redirected automatically, <a href="${redirectUrl}">click here</a>.</p>
-    `;
-    return res.status(200).type('html').send(safeHtml);
+    console.log("Paystack verify redirect ->", redirectUrl);
+
+    return res.status(200).send(`
+      <script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
+      <p>If you are not redirected, <a href="${redirectUrl}">click here</a>.</p>
+    `);
 
   } catch (err) {
     console.error(err?.response?.data || err.message);
     return res.status(500).json({ success: false, message: "Verification failed" });
   }
 };
+
 
 
 export const paystackWebhook = async (req, res) => {
