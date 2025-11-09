@@ -6,7 +6,7 @@ let _resendInitialized = false;
 
 // Sender and admin emails
 const fromAddress = process.env.SEND_FROM || "no-reply@yourshop.com";
-const adminEmail = process.env.ADMIN_EMAIL || "admin@yourshop.com";
+const adminEmail = process.env.ADMIN_USER || "admin@yourshop.com";
 
 /**
  * Lazy-load Resend
