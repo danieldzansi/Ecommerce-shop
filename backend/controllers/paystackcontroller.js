@@ -2,13 +2,16 @@ import { paystack } from "../config/paystack.js";
 import db, { store } from "../db/index.js";
 import { products } from "../models/productModel.js";
 import { eq } from "drizzle-orm";
-
+import { sendOrderEmails } from "../utils/email.js";
 
 export const initializePayment = async (req, res) => {
   try {
     const { items, email, address, totalAmount } = req.body;
+
     if (!email || !totalAmount) {
-      return res.status(400).json({ success: false, message: "Missing fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing fields" });
     }
 
     const userId = req.user?._id ?? null;
@@ -16,22 +19,30 @@ export const initializePayment = async (req, res) => {
     const totalAmountValue = Number(totalAmount) || 0;
 
     const enhancedItems = [];
+
     for (const it of itemsValue) {
       const newItem = { ...it };
+
       try {
-        if (!newItem.image && newItem.id) {
-          const [prod] = await db.select().from(products).where(eq(products.id, newItem.id)).limit(1);
-          if (prod && prod.image && Array.isArray(prod.image) && prod.image.length > 0) {
-            newItem.image = prod.image[0];
-          }
+        // Always fetch product to normalize image format
+        const [prod] = await db
+          .select()
+          .from(products)
+          .where(eq(products.id, newItem.id))
+          .limit(1);
+
+        if (prod && prod.image) {
+          // Ensure image is always stored as an array
+          newItem.image = Array.isArray(prod.image) ? prod.image : [prod.image];
         }
       } catch (e) {
-
-        console.warn('Could not enrich order item with image', e?.message || e);
+        console.warn("Could not enrich order item with image", e?.message || e);
       }
+
       enhancedItems.push(newItem);
     }
 
+    // Store order with normalized item images
     const [order] = await db
       .insert(store)
       .values({
@@ -43,17 +54,23 @@ export const initializePayment = async (req, res) => {
         status: "pending",
       })
       .returning();
-     
-      
 
-    const rawFrontend =  process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://ecommerce-shop-lovat-pi.vercel.app';
-    const frontendURL = rawFrontend.split(',').map(s => s.trim()).filter(Boolean)[0].replace(/\/$/, '');
+    const rawFrontend =
+      process.env.FRONTEND_URL ||
+      process.env.VITE_FRONTEND_URL ||
+      "https://ecommerce-shop-lovat-pi.vercel.app";
+
+    const frontendURL = rawFrontend
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)[0]
+      .replace(/\/$/, "");
 
     const response = await paystack.post("/transaction/initialize", {
       email,
       amount: Math.round(totalAmount * 100),
       metadata: { orderId: order.id },
-      callback_url: `${frontendURL}/payment-result`, 
+      callback_url: `${frontendURL}/payment-result`,
     });
 
     await db
@@ -67,34 +84,55 @@ export const initializePayment = async (req, res) => {
       reference: response.data.data.reference,
       orderId: order.id,
     });
-
   } catch (err) {
     console.error(err?.response?.data || err.message);
-    return res.status(500).json({ success: false, message: "Payment init failed" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Payment init failed" });
   }
 };
-
-
-
 
 export const verifyPayment = async (req, res) => {
   const reference = req.query.reference || req.query.trxref;
 
   if (!reference) {
-    return res.status(400).json({ success: false, message: "Missing transaction reference" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing transaction reference" });
   }
 
   try {
     const response = await paystack.get(`/transaction/verify/${reference}`);
     const paymentData = response.data.data;
 
-    const [order] = await db.select().from(store).where(eq(store.reference, reference)).limit(1);
+    const [order] = await db
+      .select()
+      .from(store)
+      .where(eq(store.reference, reference))
+      .limit(1);
 
     if (paymentData.status === "success" && order) {
-      await db
-        .update(store)
-        .set({ status: "paid", paid_at: new Date() })
-        .where(eq(store.reference, reference));
+      if (order.status !== "paid") {
+        await db
+          .update(store)
+          .set({ status: "paid", paid_at: new Date() })
+          .where(eq(store.reference, reference));
+
+        // reload order after update
+        const [updatedOrder] = await db
+          .select()
+          .from(store)
+          .where(eq(store.reference, reference))
+          .limit(1);
+
+        // send confirmation emails to user & admin
+        console.log("📧 Sending emails from verifyPayment...");
+        try {
+          await sendOrderEmails(updatedOrder);
+        } catch (e) {
+          console.warn("Failed to send order emails:", e?.message || e);
+        }
+      }
     }
 
     const result = {
@@ -106,11 +144,21 @@ export const verifyPayment = async (req, res) => {
       return res.json({ success: true, data: result });
     }
 
-    const rawFrontend = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL;
-    const frontend = rawFrontend.split(",").map(s => s.trim()).filter(Boolean)[0];
-    const baseFrontend = (frontend || 'https://ecommerce-shop-lovat-pi.vercel.app').replace(/\/$/, '');
+    const rawFrontend =
+      process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL;
+    const frontend = rawFrontend
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)[0];
+    const baseFrontend = (
+      frontend || "https://ecommerce-shop-lovat-pi.vercel.app"
+    ).replace(/\/$/, "");
 
-    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(reference)}&orderId=${order?.id || ''}&status=${encodeURIComponent(paymentData.status)}`;
+    const redirectUrl = `${baseFrontend}/payment-result?reference=${encodeURIComponent(
+      reference
+    )}&orderId=${order?.id || ""}&status=${encodeURIComponent(
+      paymentData.status
+    )}`;
 
     console.log("Paystack verify redirect ->", redirectUrl);
 
@@ -118,17 +166,17 @@ export const verifyPayment = async (req, res) => {
       <script>window.location.replace(${JSON.stringify(redirectUrl)});</script>
       <p>If you are not redirected, <a href="${redirectUrl}">click here</a>.</p>
     `);
-
   } catch (err) {
     console.error(err?.response?.data || err.message);
-    return res.status(500).json({ success: false, message: "Verification failed" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Verification failed" });
   }
 };
 
-
-
 export const paystackWebhook = async (req, res) => {
   console.log("Webhook Payload:", JSON.stringify(req.body, null, 2));
+
   const crypto = await import("crypto");
   const hash = crypto
     .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
@@ -137,19 +185,59 @@ export const paystackWebhook = async (req, res) => {
 
   const signature = req.headers["x-paystack-signature"];
   if (hash !== signature) {
+    console.error("❌ Invalid webhook signature");
     return res.status(400).send("Invalid signature");
   }
 
   const event = req.body;
+
   if (event.event === "charge.success") {
     const ref = event.data.reference;
-    console.log(`Payment Successful. Reference: ${ref}`);
-    const [order] = await db.select().from(store).where(eq(store.reference, ref)).limit(1);
-    if (order) {
-      await db
-        .update(store)
-        .set({ status: "paid", paid_at: new Date() })
-        .where(eq(store.reference, ref));
+    console.log(`✅ Payment Successful. Reference: ${ref}`);
+
+    try {
+      // Get the order
+      const [order] = await db
+        .select()
+        .from(store)
+        .where(eq(store.reference, ref))
+        .limit(1);
+
+      if (!order) {
+        console.warn(`⚠️ Order not found for reference: ${ref}`);
+        return res.json({ received: true });
+      }
+
+      // Update order status if not already paid
+      if (order.status !== "paid") {
+        await db
+          .update(store)
+          .set({ status: "paid", paid_at: new Date() })
+          .where(eq(store.reference, ref));
+
+        // Fetch updated order
+        const [updatedOrder] = await db
+          .select()
+          .from(store)
+          .where(eq(store.reference, ref))
+          .limit(1);
+
+        // Send emails
+        console.log("📧 Sending emails from webhook...");
+        try {
+          await sendOrderEmails(updatedOrder);
+          console.log("✅ Webhook: Order emails sent successfully");
+        } catch (e) {
+          console.error(
+            "❌ Webhook: Failed to send order emails",
+            e?.message || e
+          );
+        }
+      } else {
+        console.log("ℹ️ Order already marked as paid, skipping email");
+      }
+    } catch (e) {
+      console.error("❌ Webhook error:", e?.message || e);
     }
   }
 

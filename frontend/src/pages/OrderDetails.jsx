@@ -18,7 +18,7 @@ const OrderDetails = () => {
     const fetchOrder = async () => {
       const orderId = searchParams.get("orderId");
       if (!orderId) {
-        setError("Missing orderId or email in the URL");
+        setError("Missing orderId in the URL");
         setLoading(false);
         return;
       }
@@ -67,68 +67,62 @@ const OrderDetails = () => {
       <h1 className="text-3xl font-semibold mb-6">Order #{order.id}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="border rounded-lg p-6">
+        <div className="border rounded-lg p-6 shadow-sm">
           <h3 className="font-semibold mb-3">Customer Information</h3>
-          <div className="font-semibold mb-3">
-            <p>
-              <strong>Email:</strong> {order.email}
-            </p>
-            <p>
-              <strong>Status:</strong> {order.status}
-            </p>
+          <p><strong>Email:</strong> {order.email}</p>
+          <p><strong>Status:</strong> {order.status}</p>
 
-            <p className="mt-3">
-              <strong>Billing Details</strong>
-            </p>
-            {addressParts.map((line, i) => (
-              <div key={i}>{line}</div>
-            ))}
-          </div>
+          <p className="mt-4 font-semibold">Billing Details</p>
+          {addressParts.map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
         </div>
 
-        <div className="border rounded-lg p-6">
+        <div className="border rounded-lg p-6 shadow-sm">
           <h3 className="font-semibold mb-3">Order Summary</h3>
-          <p>
-            <strong>Total:</strong> {currencySymbol}{" "}
-            {formatMoney(order.total_amount)}
-          </p>
-          <p>
-            <strong>Reference:</strong> {order.reference || "—"}
-          </p>
+          <p><strong>Total:</strong> {currencySymbol} {formatMoney(order.total_amount)}</p>
+          <p><strong>Reference:</strong> {order.reference || "—"}</p>
         </div>
       </div>
 
-      <div className="border rounded-lg p-6">
+      <div className="border rounded-lg p-6 shadow-sm">
         <h3 className="font-semibold mb-4">Order Items</h3>
+
         {items.map((it, idx) => (
-          <div key={idx} className="flex justify-between mb-2">
-            <div>
-              {it.name} x {it.quantity}
+          <div
+            key={idx}
+            className="flex items-center justify-between mb-4 border-b pb-4"
+          >
+            <div className="flex items-center gap-4">
+              <img
+                src={it.image?.[0]}
+                alt={it.name}
+                className="w-20 h-20 object-cover rounded-md border"
+              />
+              <div>
+                <p className="font-medium">{it.name}</p>
+                <p className="text-sm text-gray-600">Qty: {it.quantity}</p>
+              </div>
             </div>
-            <div>
+
+            <div className="font-semibold">
               {currencySymbol} {formatMoney(it.price)}
             </div>
           </div>
         ))}
 
-        <div className="border-t pt-4 mt-4">
+        <div className="border-t pt-4 mt-4 space-y-2">
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>
-              {currencySymbol} {formatMoney(subtotal)}
-            </span>
+            <span>{currencySymbol} {formatMoney(subtotal)}</span>
           </div>
           <div className="flex justify-between">
             <span>Shipping</span>
-            <span>
-              {currencySymbol} {formatMoney(shipping)}
-            </span>
+            <span>{currencySymbol} {formatMoney(shipping)}</span>
           </div>
           <div className="flex justify-between font-semibold text-lg">
             <span>Total</span>
-            <span>
-              {currencySymbol} {formatMoney(order.total_amount)}
-            </span>
+            <span>{currencySymbol} {formatMoney(order.total_amount)}</span>
           </div>
         </div>
       </div>

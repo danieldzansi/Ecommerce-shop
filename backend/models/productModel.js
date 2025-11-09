@@ -12,3 +12,5 @@ export const products = pgTable("products", {
   sizes: jsonb("sizes").notNull(),
   bestseller: boolean("bestseller").default(false),
 });
+
+
