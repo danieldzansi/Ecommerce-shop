@@ -24,7 +24,7 @@ export const initializePayment = async (req, res) => {
       const newItem = { ...it };
 
       try {
-        // Always fetch product to normalize image format
+       
         const [prod] = await db
           .select()
           .from(products)
@@ -32,7 +32,7 @@ export const initializePayment = async (req, res) => {
           .limit(1);
 
         if (prod && prod.image) {
-          // Ensure image is always stored as an array
+        
           newItem.image = Array.isArray(prod.image) ? prod.image : [prod.image];
         }
       } catch (e) {
@@ -41,8 +41,6 @@ export const initializePayment = async (req, res) => {
 
       enhancedItems.push(newItem);
     }
-
-    // Store order with normalized item images
     const [order] = await db
       .insert(store)
       .values({
@@ -118,15 +116,13 @@ export const verifyPayment = async (req, res) => {
           .set({ status: "paid", paid_at: new Date() })
           .where(eq(store.reference, reference));
 
-        // reload order after update
         const [updatedOrder] = await db
           .select()
           .from(store)
           .where(eq(store.reference, reference))
           .limit(1);
 
-        // send confirmation emails to user & admin
-        console.log("📧 Sending emails from verifyPayment...");
+        console.log("Sending emails from verifyPayment...");
         try {
           await sendOrderEmails(updatedOrder);
         } catch (e) {
@@ -185,7 +181,7 @@ export const paystackWebhook = async (req, res) => {
 
   const signature = req.headers["x-paystack-signature"];
   if (hash !== signature) {
-    console.error("❌ Invalid webhook signature");
+    console.error("Invalid webhook signature");
     return res.status(400).send("Invalid signature");
   }
 
@@ -193,10 +189,10 @@ export const paystackWebhook = async (req, res) => {
 
   if (event.event === "charge.success") {
     const ref = event.data.reference;
-    console.log(`✅ Payment Successful. Reference: ${ref}`);
+    console.log(`Payment Successful. Reference: ${ref}`);
 
     try {
-      // Get the order
+  
       const [order] = await db
         .select()
         .from(store)
@@ -204,40 +200,38 @@ export const paystackWebhook = async (req, res) => {
         .limit(1);
 
       if (!order) {
-        console.warn(`⚠️ Order not found for reference: ${ref}`);
+        console.warn(`Order not found for reference: ${ref}`);
         return res.json({ received: true });
       }
 
-      // Update order status if not already paid
+
       if (order.status !== "paid") {
         await db
           .update(store)
           .set({ status: "paid", paid_at: new Date() })
           .where(eq(store.reference, ref));
 
-        // Fetch updated order
         const [updatedOrder] = await db
           .select()
           .from(store)
           .where(eq(store.reference, ref))
           .limit(1);
 
-        // Send emails
-        console.log("📧 Sending emails from webhook...");
+        console.log("Sending emails from webhook...");
         try {
           await sendOrderEmails(updatedOrder);
-          console.log("✅ Webhook: Order emails sent successfully");
+          console.log("Webhook: Order emails sent successfully");
         } catch (e) {
           console.error(
-            "❌ Webhook: Failed to send order emails",
+            "Webhook: Failed to send order emails",
             e?.message || e
           );
         }
       } else {
-        console.log("ℹ️ Order already marked as paid, skipping email");
+        console.log("ℹOrder already marked as paid, skipping email");
       }
     } catch (e) {
-      console.error("❌ Webhook error:", e?.message || e);
+      console.error("Webhook error:", e?.message || e);
     }
   }
 

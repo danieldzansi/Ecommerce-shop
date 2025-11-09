@@ -1,21 +1,15 @@
-// utils/email.js
 import { Resend } from "resend";
 
 let resend = null;
 let _resendInitialized = false;
 
-// Sender and admin emails
 const fromAddress = process.env.SEND_FROM || "no-reply@yourshop.com";
 const adminEmail = process.env.ADMIN_USER || "admin@yourshop.com";
 
-// Brand colors - customize these
-const brandColor = "#4F46E5"; // Indigo
-const successColor = "#10B981"; // Green
+const brandColor = "#4F46E5"; 
+const successColor = "#10B981"; 
 const backgroundColor = "#F9FAFB";
 
-/**
- * Lazy-load Resend
- */
 async function ensureResend() {
   if (_resendInitialized) return;
   _resendInitialized = true;
@@ -28,16 +22,14 @@ async function ensureResend() {
 
   try {
     resend = new Resend(key);
-    console.log("Resend initialized ✅");
+    console.log("Resend initialized ");
   } catch (err) {
     console.warn("Failed to initialize Resend:", err?.message || err);
     resend = null;
   }
 }
 
-/**
- * Format order items into HTML table rows
- */
+
 function formatItemsHtml(items) {
   if (!Array.isArray(items)) return "";
   return items
@@ -56,9 +48,7 @@ function formatItemsHtml(items) {
     .join("\n");
 }
 
-/**
- * Create professional email template wrapper
- */
+
 function emailWrapper(content, isAdmin = false) {
   return `
 <!DOCTYPE html>
@@ -83,9 +73,7 @@ function emailWrapper(content, isAdmin = false) {
   `;
 }
 
-/**
- * Send order emails to user and admin
- */
+
 export async function sendOrderEmails(order) {
   console.log("📧 sendOrderEmails called with order:", order.id);
   
@@ -95,24 +83,22 @@ export async function sendOrderEmails(order) {
     return;
   }
   
-  console.log("✅ Resend client initialized");
 
   const itemsHtml = formatItemsHtml(order.items || []);
   const subtotal = (order.items || []).reduce(
     (s, it) => s + Number(it.price || 0) * Number(it.quantity || 1),
     0
   );
-  const shipping = 10; // Add your shipping cost logic
+  const shipping = 10;
   const total = Number(order.total_amount || 0);
 
-  // Format date
   const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
 
-  // User email content
+  
   const userContent = `
     <!-- Header -->
     <tr>
@@ -214,7 +200,6 @@ export async function sendOrderEmails(order) {
     </tr>
   `;
 
-  // Admin email content
   const adminContent = `
     <!-- Header -->
     <tr>
@@ -329,9 +314,9 @@ export async function sendOrderEmails(order) {
   const adminHtml = emailWrapper(adminContent, true);
 
   try {
-    // Send to user
+    
     if (order.email) {
-      console.log(`📤 Sending email to user: ${order.email}`);
+      console.log(`Sending email to user: ${order.email}`);
       console.log(`   From: ${fromAddress}`);
       const userResult = await resend.emails.send({
         from: fromAddress,
@@ -339,27 +324,26 @@ export async function sendOrderEmails(order) {
         subject: `✓ Order Confirmation #${order.id}`,
         html: userHtml,
       });
-      console.log("✅ User email sent:", JSON.stringify(userResult, null, 2));
+      console.log(" User email sent:", JSON.stringify(userResult, null, 2));
     } else {
-      console.warn("⚠️ No customer email in order");
+      console.warn("No customer email in order");
     }
 
-    // Send to admin
     if (adminEmail) {
-      console.log(`📤 Sending email to admin: ${adminEmail}`);
+      console.log(`Sending email to admin: ${adminEmail}`);
       console.log(`   From: ${fromAddress}`);
       const adminResult = await resend.emails.send({
         from: fromAddress,
         to: adminEmail,
-        subject: `🛍️ New Order #${order.id} - GH₵ ${total.toFixed(2)}`,
+        subject: `New Order #${order.id} - GH₵ ${total.toFixed(2)}`,
         html: adminHtml,
       });
-      console.log("✅ Admin email sent:", JSON.stringify(adminResult, null, 2));
+      console.log("Admin email sent:", JSON.stringify(adminResult, null, 2));
     }
 
-    console.log("🎉 Order emails sent successfully ✅");
+    console.log("Order emails sent successfully ");
   } catch (err) {
-    console.error("❌ Error sending order emails:", err?.message || err);
+    console.error("Error sending order emails:", err?.message || err);
     console.error("Full error object:", JSON.stringify(err, null, 2));
     if (err?.response) {
       console.error("Error response:", JSON.stringify(err.response, null, 2));
