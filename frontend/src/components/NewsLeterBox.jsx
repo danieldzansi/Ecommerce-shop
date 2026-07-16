@@ -5,17 +5,18 @@ const NewsLeterBox = () => {
       event.preventDefault()
   }
   return (
-    <div className='text-center'>
-      <p className='text-2xl font-medium text-gray-800'>Subscribe now and get 20% off</p>
-      <p className='text-gray-400 mt-3'>
-        Stay in the loop! Subscribe to our newsletter for exclusive deals, style tips, and updates on our latest collections.
+    <section className='page-x section-y text-center'>
+      <p className='eyebrow'>Private list</p>
+      <h2 className='editorial-serif mx-auto mt-3 max-w-2xl text-4xl font-semibold leading-tight text-[#1d1115] md:text-5xl'>First look at the next edit</h2>
+      <p className='mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6f5860]'>
+        Get early access to new drops, quiet restocks, and styling notes made for a more intentional wardrobe.
       </p>
-      <form onSubmit={onSubmitHandler} className='w-full sm:w-1/2 flex items-center gap-3 mx-auto my-6 border pl-3 '>
-         <input className='w-full sm:flex outline-none' type="email" placeholder='Enter your email' required />
-        <button className='bg-black text-white text-xs px-10 py-4' type='submit'>SUBSCRIBE</button>
+      <form onSubmit={onSubmitHandler} className='mx-auto mt-8 flex w-full max-w-xl flex-col border border-[#DBCCB7] bg-white p-2 sm:flex-row'>
+         <input className='min-h-12 flex-1 px-4 outline-none' type="email" placeholder='Email address' required />
+        <button className='btn-primary' type='submit'>Join the list</button>
       </form>
      
-    </div>
+    </section>
   )
 }
 

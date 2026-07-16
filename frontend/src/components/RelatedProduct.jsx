@@ -15,12 +15,12 @@ const RelatedProduct = ({ category, subCategory }) => {
   }, [products, category, subCategory])
 
   return (
-    <div className='my-24'>
-      <div className='text-center text-3xl py-2'>
-        <Title text1={'RELATED'} text2={'PRODUCTS'} />
+    <section className='mt-24 border-t border-[#DBCCB7]/60 pt-14'>
+      <div className='mb-10'>
+        <Title text1={'You may also like'} text2={'Complete the look'} />
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
+      <div className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5'>
         {related.map((item, index) => (
           <ProductItem 
             key={index} 
@@ -31,7 +31,7 @@ const RelatedProduct = ({ category, subCategory }) => {
           />
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 

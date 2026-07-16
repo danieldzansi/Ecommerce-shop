@@ -85,26 +85,26 @@ const PaymentResult = () => {
   }, [navigate, searchParams, clearCart]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
+    <div className="page-x flex min-h-[70vh] items-center justify-center bg-white">
+      <div className="w-full max-w-md border border-[#DBCCB7] bg-white p-8 text-center">
         {status === "verifying" && (
           <>
             <div className="flex justify-center mb-4">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500"></div>
+              <div className="h-14 w-14 animate-spin rounded-full border-2 border-[#5A0019] border-t-transparent"></div>
             </div>
             {/* <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Verifying Payment
             </h2> */}
-            <p className="text-gray-600">{message}</p>
+            <p className="text-[#6f5860]">{message}</p>
           </>
         )}
 
         {status === "success" && (
           <>
             <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-green-100 p-4">
+              <div className="rounded-full bg-[#f1f7ef] p-4">
                 <svg
-                  className="h-16 w-16 text-green-500"
+                  className="h-14 w-14 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -121,16 +121,16 @@ const PaymentResult = () => {
             {/* <h2 className="text-2xl font-semibold text-green-600 mb-2">
               Payment Successful!
             </h2> */}
-            <p className="text-gray-600">{message}</p>
+            <p className="text-[#6f5860]">{message}</p>
           </>
         )}
 
         {status === "error" && (
           <>
             <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-red-100 p-4">
+              <div className="rounded-full bg-red-50 p-4">
                 <svg
-                  className="h-16 w-16 text-red-500"
+                  className="h-14 w-14 text-red-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -144,10 +144,10 @@ const PaymentResult = () => {
                 </svg>
               </div>
             </div>
-            <h2 className="text-2xl font-semibold text-red-600 mb-2">
+            <h2 className="editorial-serif mb-2 text-2xl font-semibold text-red-600">
               Payment Verification Failed
             </h2>
-            <p className="text-gray-600">{message}</p>
+            <p className="text-[#6f5860]">{message}</p>
           </>
         )}
       </div>

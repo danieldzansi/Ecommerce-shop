@@ -17,16 +17,17 @@ const BestSeller = () => {
   }, [products]);
 
   return (
-    <div className="my-10">
-      <div className="text-center text-3xl py-8">
-        <Title text1={"BEST"} text2={"SELLERS"} />
-        <p className="w-3/4 m-auto text-xs sm:text-base text-gray-600">
-          Our most popular picks — trusted by hundreds of happy customers. Shop
-          the best-selling items everyone’s talking about.
+    <section className="page-x section-y bg-white">
+      <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+        <div>
+          <Title text1={"Most loved"} text2={"The pieces people come back for"} />
+        </div>
+        <p className="max-w-xl text-sm leading-6 text-[#6f5860]">
+          Customer favorites with the kind of finish that makes simple outfits feel considered.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+      <div className="grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
         {bestSeller.map((item, index) => (
           <ProductItem
             key={index}
@@ -37,7 +38,7 @@ const BestSeller = () => {
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

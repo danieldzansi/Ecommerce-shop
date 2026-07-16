@@ -3,6 +3,7 @@ import { assets } from '../assets/assets';
 import { NavLink, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { useCartStore } from '../store/CartStore';
+import AssetImage from './AssetImage';
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
@@ -11,97 +12,93 @@ const Navbar = () => {
   const cartCount = useCartStore((state) => state.getCartCount());
 
   return (
-    <div className='flex items-center justify-between py-5 font-medium relative'>
-      
-      <Link to='/'>
-        <img src={assets.logo} className='w-36' alt="Logo" />
+    <header className='sticky top-0 z-40 border-b border-[#DBCCB7]/70 bg-white/95 backdrop-blur'>
+      <div className='page-x flex h-[68px] items-center justify-between'>
+      <Link to='/' className='flex items-center gap-3'>
+        <img src={assets.logo} className='h-10 w-auto max-w-[180px] object-contain' alt="Èclat De Lee logo" />
       </Link>
-      <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-        <NavLink to='/' className='flex flex-col items-center gap-1'>
-          <p>HOME</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+
+      <ul className='hidden items-center gap-9 text-[12px] font-extrabold uppercase tracking-[0.12em] text-[#1d1115] md:flex'>
+        <NavLink to='/collection' className='flex flex-col items-center gap-1 hover:text-[#5A0019]'>
+          <p>Categories</p>
+          <hr className='hidden h-[1.5px] w-2/4 border-none bg-[#5A0019]' />
         </NavLink>
 
-        <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-          <p>COLLECTION</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        <NavLink to='/collection' className='flex flex-col items-center gap-1 hover:text-[#5A0019]'>
+          <p>Shop</p>
+          <hr className='hidden h-[1.5px] w-2/4 border-none bg-[#5A0019]' />
         </NavLink>
 
-        <NavLink to='/about' className='flex flex-col items-center gap-1'>
-          <p>ABOUT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-
-        <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-          <p>CONTACT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-
-        <NavLink to='/orders' className='flex flex-col items-center gap-1'>
-          <p>ORDERS</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
+        <NavLink to='/orders' className='flex flex-col items-center gap-1 hover:text-[#5A0019]'>
+          <p>Track Order</p>
+          <hr className='hidden h-[1.5px] w-2/4 border-none bg-[#5A0019]' />
         </NavLink>
       </ul>
 
-      <div className='flex items-center gap-6'>
-        {/* Search Icon */}
-        <img
+      <div className='flex items-center gap-5 text-[#1d1115]'>
+        <AssetImage
           onClick={() => setShowSearch(true)}
-          src={assets.search_icon}
+          asset={assets.search_icon}
           className='w-5 cursor-pointer'
           alt="Search"
         />
         <Link to='/cart' className='relative'>
-          <img src={assets.cart_icon} className='w-5 min-w-5' alt="Cart" />
+          <AssetImage asset={assets.cart_icon} className='w-5 min-w-5' alt="Cart" />
           {cartCount > 0 && (
-            <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+            <p className='absolute right-[-8px] bottom-[-8px] aspect-square w-4 rounded-full bg-[#5A0019] text-center text-[8px] leading-4 text-white'>
               {cartCount}
             </p>
           )}
         </Link>
+        <Link to='/collection' aria-label='Wishlist' className='hidden md:block'>
+          <svg viewBox='0 0 24 24' className='w-5' fill='none' stroke='currentColor' strokeWidth='1.8'>
+            <path d='M20.8 4.6a5.2 5.2 0 0 0-7.4 0L12 6l-1.4-1.4a5.2 5.2 0 0 0-7.4 7.4L12 20.8l8.8-8.8a5.2 5.2 0 0 0 0-7.4Z' />
+          </svg>
+        </Link>
 
-        <img
+        <AssetImage
           onClick={() => setVisible(true)}
-          src={assets.menu_icon}
-          className='w-5 cursor-pointer sm:hidden'
+          asset={assets.menu_icon}
+          className='w-5 cursor-pointer md:hidden'
           alt="Menu"
         />
       </div>
 
       <div
-        className={`fixed top-0 right-0 h-full bg-white transition-all duration-300 ${
-          visible ? 'w-full' : 'w-0'
-        } overflow-y-auto z-50`}
+        className={`fixed top-0 right-0 h-screen bg-white shadow-2xl transition-all duration-300 ${
+          visible ? 'w-full max-w-sm' : 'w-0'
+        } overflow-hidden z-50`}
       >
-        <div className='flex flex-col text-gray-600'>
+        <div className='flex flex-col text-[#1d1115]'>
          
           <div
             onClick={() => setVisible(false)}
-            className='flex items-center gap-2 p-3 cursor-pointer'
+            className='flex cursor-pointer items-center justify-between border-b border-[#DBCCB7]/70 p-5'
           >
-            <img src={assets.dropdown_icon} className='h-4 rotate-180' alt="Back" />
-            <p>Back</p>
+            <p className='editorial-serif text-2xl'>Menu</p>
+            <AssetImage asset={assets.cross_icon} className='h-5' alt="Close" />
           </div>
 
-          <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/'>
-            HOME
+          <NavLink onClick={() => setVisible(false)} className='border-b border-[#DBCCB7]/70 px-6 py-4 text-sm font-bold uppercase tracking-[0.16em]' to='/'>
+            Home
           </NavLink>
-          <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/collection'>
-            COLLECTION
+          <NavLink onClick={() => setVisible(false)} className='border-b border-[#DBCCB7]/70 px-6 py-4 text-sm font-bold uppercase tracking-[0.16em]' to='/collection'>
+            Shop
           </NavLink>
-          <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/about'>
-            ABOUT
+          <NavLink onClick={() => setVisible(false)} className='border-b border-[#DBCCB7]/70 px-6 py-4 text-sm font-bold uppercase tracking-[0.16em]' to='/about'>
+            About
           </NavLink>
-          <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/contact'>
-            CONTACT
+          <NavLink onClick={() => setVisible(false)} className='border-b border-[#DBCCB7]/70 px-6 py-4 text-sm font-bold uppercase tracking-[0.16em]' to='/contact'>
+            Contact
           </NavLink>
-           <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/orders'>
-            ORDERS
+           <NavLink onClick={() => setVisible(false)} className='border-b border-[#DBCCB7]/70 px-6 py-4 text-sm font-bold uppercase tracking-[0.16em]' to='/orders'>
+            Track Order
           </NavLink>
 
         </div>
       </div>
-    </div>
+      </div>
+    </header>
   );
 };
 

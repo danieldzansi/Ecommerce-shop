@@ -46,9 +46,9 @@ const OrderDetails = () => {
     fetchOrder();
   }, [searchParams]);
 
-  if (loading) return <div className="p-6">Loading order…</div>;
-  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
-  if (!order) return <div className="p-6">No order found.</div>;
+  if (loading) return <div className="page-x section-y">Loading order...</div>;
+  if (error) return <div className="page-x section-y text-red-600">Error: {error}</div>;
+  if (!order) return <div className="page-x section-y">No order found.</div>;
 
   const items = Array.isArray(order.items) ? order.items : [];
   const subtotal = items.reduce(
@@ -63,12 +63,13 @@ const OrderDetails = () => {
     .filter(Boolean);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold mb-6">Order #{order.id}</h1>
+    <section className="page-x section-y mx-auto max-w-5xl">
+      <p className="eyebrow">Order details</p>
+      <h1 className="editorial-serif mt-3 mb-8 text-4xl font-semibold">Order #{order.id}</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="border rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold mb-3">Customer Information</h3>
+      <div className="mb-6 grid gap-6 md:grid-cols-2">
+        <div className="border border-[#DBCCB7] bg-white p-6">
+          <h3 className="mb-3 font-bold">Customer Information</h3>
           <p><strong>Email:</strong> {order.email}</p>
           <p><strong>Status:</strong> {order.status}</p>
 
@@ -78,30 +79,30 @@ const OrderDetails = () => {
           ))}
         </div>
 
-        <div className="border rounded-lg p-6 shadow-sm">
-          <h3 className="font-semibold mb-3">Order Summary</h3>
+        <div className="border border-[#DBCCB7] bg-white p-6">
+          <h3 className="mb-3 font-bold">Order Summary</h3>
           <p><strong>Total:</strong> {currencySymbol} {formatMoney(order.total_amount)}</p>
           <p><strong>Reference:</strong> {order.reference || "—"}</p>
         </div>
       </div>
 
-      <div className="border rounded-lg p-6 shadow-sm">
-        <h3 className="font-semibold mb-4">Order Items</h3>
+      <div className="border border-[#DBCCB7] p-6">
+        <h3 className="mb-4 font-bold">Order Items</h3>
 
         {items.map((it, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between mb-4 border-b pb-4"
+            className="mb-4 flex items-center justify-between border-b border-[#DBCCB7]/60 pb-4"
           >
             <div className="flex items-center gap-4">
               <img
                 src={it.image?.[0]}
                 alt={it.name}
-                className="w-20 h-20 object-cover rounded-md border"
+                className="h-20 w-20 border object-cover"
               />
               <div>
-                <p className="font-medium">{it.name}</p>
-                <p className="text-sm text-gray-600">Qty: {it.quantity}</p>
+                <p className="font-semibold">{it.name}</p>
+                <p className="text-sm text-[#6f5860]">Qty: {it.quantity}</p>
               </div>
             </div>
 
@@ -111,7 +112,7 @@ const OrderDetails = () => {
           </div>
         ))}
 
-        <div className="border-t pt-4 mt-4 space-y-2">
+        <div className="mt-4 space-y-2 border-t border-[#DBCCB7]/60 pt-4">
           <div className="flex justify-between">
             <span>Subtotal</span>
             <span>{currencySymbol} {formatMoney(subtotal)}</span>
@@ -126,7 +127,7 @@ const OrderDetails = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,55 +1,45 @@
 import React from 'react'
-import Title from '../components/Title'
+import { assets } from '../assets/assets'
 
 
 const About = () => {
   return (
-    <div className="border-t pt-16 text-gray-700">
-      
-      <div className="text-2xl mb-6"> 
-        <Title text1={'ABOUT'} text2={'US'} />
-      </div>
-      <div className='my-10 flex-col md:flex pt-8 border-t'>
-         {/* <img className='w-full md:max-[450px]:' src={assets.about_img} alt="" /> */}
-      </div>
-      
-      <div className="max-w-4xl mx-auto px-4 leading-relaxed space-y-6">
-        <p>
-          Welcome to <span className="font-semibold text-gray-900">Forever</span> — your trusted digital marketplace that makes shopping simple, secure, and seamless.
-          We connect customers with quality products and ensure a smooth checkout process using modern payment technology.
-        </p>
-
-        <p>
-          Our mission is to make online shopping effortless. Whether you're buying for yourself or sending gifts to loved ones,
-          we provide a fast, reliable, and transparent experience from browsing to delivery.
-        </p>
-
-        <p>
-          At <span className="font-semibold text-gray-900">Bitsend</span>, we value innovation and customer satisfaction. 
-          Our platform is designed with user convenience in mind, combining beautiful design, speed, and security.
-        </p>
-
-        <p>
-          Thank you for choosing us! We’re constantly improving our platform to serve you better and bring you the latest products at the best prices.
-        </p>
-
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-2 text-gray-900">Our Mission</h2>
-          <p>
-            To empower people across Africa to shop, pay, and connect effortlessly through technology —
-            turning every purchase into a seamless experience powered by trust and innovation.
+    <section className="page-x section-y">
+      <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div>
+          <p className="eyebrow">About</p>
+          <h1 className="editorial-serif mt-3 text-5xl font-semibold leading-tight md:text-6xl">Curated pieces for an intentional wardrobe.</h1>
+          <p className="mt-6 leading-7 text-[#6f5860]">
+            Èclat De Lee is built around the finishing touches: the bag, shoe, set, or staple that makes getting dressed feel clear and considered.
           </p>
         </div>
+        <img src={assets.heroSlides?.[1]?.image} alt="" className="h-[520px] w-full object-cover" />
+      </div>
 
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2 text-gray-900">Our Vision</h2>
+      <div className="mt-16 grid gap-8 border-t border-[#DBCCB7]/60 pt-12 md:grid-cols-3">
+        <div>
+          <p className="eyebrow">01</p>
+          <h2 className="editorial-serif mt-3 text-2xl font-semibold">Ease first</h2>
+          <p className="mt-4 leading-7 text-[#6f5860]">
+            We choose pieces that work hard without asking you to. Simple styling, strong impact.
+          </p>
+        </div>
+        <div>
+          <p className="eyebrow">02</p>
+          <h2 className="editorial-serif mt-3 text-2xl font-semibold">Polished details</h2>
           <p>
-            To become Africa’s most customer-centric eCommerce brand, where people can find and discover anything they love — 
-            all while enjoying fast, secure, and borderless payments.
+            <span className="mt-4 block leading-7 text-[#6f5860]">From texture to finish, every item is selected to bring that last, defining touch.</span>
+          </p>
+        </div>
+        <div>
+          <p className="eyebrow">03</p>
+          <h2 className="editorial-serif mt-3 text-2xl font-semibold">Reliable service</h2>
+          <p className="mt-4 leading-7 text-[#6f5860]">
+            Clear checkout, order tracking, and helpful support from browse to delivery.
           </p>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

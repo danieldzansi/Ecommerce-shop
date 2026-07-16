@@ -14,20 +14,22 @@ const LatestCollection = () => {
   }, [products]);
 
   return (
-    <div className='my-10'>
-      <div className='text-center py-8 text-3xl'>
-        <Title text1={'LATEST'} text2={'COLLECTIONS'} />
-        <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>
-          Discover our latest arrivals — carefully curated styles designed to keep you looking your best all season long.
+    <section className='page-x section-y border-b border-[#DBCCB7]/60'>
+      <div className='mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end'>
+        <div>
+          <Title text1={'New in'} text2={'Fresh arrivals'} />
+        </div>
+        <p className='max-w-xl text-sm leading-6 text-[#6f5860]'>
+          Pieces chosen for impact without the effort: polished accessories, statement staples, and everyday luxury.
         </p>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
+      <div className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5'>
         {latestProducts.map((item, index) => (
           <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

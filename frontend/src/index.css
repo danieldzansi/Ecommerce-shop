@@ -1,32 +1,111 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
 
 @import "tailwindcss";  
 
-
-
-a.active hr{
-    display: block;
+* {
+  box-sizing: border-box;
 }
 
-*{
-    font-family: Outfit;
+body {
+  margin: 0;
+  color: #1d1115;
+  background: #ffffff;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a.active hr {
+  display: block;
+}
+
+.editorial-serif {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
 .prata-regular {
-  font-family: "Prata", serif;
-  font-weight: 400;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 600;
   font-style: normal;
 }
-*{
-    font-family: "Prata" , serif;
-    font-weight: 400;
-    font-style: normal;
+
+.page-x {
+  padding-left: clamp(1.25rem, 4vw, 2rem);
+  padding-right: clamp(1.25rem, 4vw, 2rem);
 }
-::-webkit-scrollbar{
-    display: none;
+
+.section-y {
+  padding-top: clamp(3.5rem, 7vw, 6rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
-@media(max-width:640px){
-    a.active{
-        background-color: black;
-        color: white;
-    }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #5A0019;
+  color: #ffffff;
+  border: 1px solid #5A0019;
+  min-height: 48px;
+  padding: 0.85rem 1.65rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.btn-primary:hover {
+  background: #DBCCB7;
+  border-color: #DBCCB7;
+  color: #5A0019;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #5A0019;
+  border: 1px solid #DBCCB7;
+  min-height: 48px;
+  padding: 0.85rem 1.65rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.btn-secondary:hover {
+  border-color: #5A0019;
+  background: #f7f1ea;
+}
+
+.form-field {
+  width: 100%;
+  border: 1px solid #DBCCB7;
+  background: #ffffff;
+  padding: 0.9rem 1rem;
+  outline: none;
+  color: #1d1115;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.form-field:focus {
+  border-color: #5A0019;
+  box-shadow: 0 0 0 3px rgba(90, 0, 25, 0.08);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #5A0019;
 }

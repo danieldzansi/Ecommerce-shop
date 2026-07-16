@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { ShopContext } from "../context/ShopContext";
+import AssetImage from "../components/AssetImage";
 
 const Cart = () => {
   const { products, currency } = useContext(ShopContext);
@@ -27,28 +27,40 @@ const Cart = () => {
   const total = subtotal + shipping;
 
   return (
-    <div className="pt-14">
-      <div className="text-2xl mb-3">
-        <Title text1={"YOUR"} text2={"CART"} />
+    <section className="page-x section-y">
+      <div className="mb-10 flex items-end justify-between border-b border-[#DBCCB7]/60 pb-8">
+        <div>
+          <p className="eyebrow">Checkout</p>
+          <h1 className="editorial-serif mt-3 text-4xl font-semibold">Shopping Cart</h1>
+        </div>
+        <p className="hidden text-sm text-[#6f5860] sm:block">{cartData.length} item{cartData.length === 1 ? "" : "s"}</p>
       </div>
 
       {cartData.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10">Your cart is empty</p>
+        <div className="mx-auto grid max-w-md place-items-center py-20 text-center">
+          <AssetImage asset={assets.cart_icon} className="mb-5 w-14 text-[#5A0019]" alt="Empty cart" />
+          <p className="font-semibold text-[#6f5860]">Your cart is empty</p>
+          <button onClick={() => navigate("/collection")} className="btn-secondary mt-6">
+            Continue Shopping
+          </button>
+        </div>
       ) : (
-        cartData.map((item) => {
+        <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
+          <div className="divide-y divide-[#DBCCB7]/60 border-y border-[#DBCCB7]/60">
+        {cartData.map((item) => {
           const product = products.find((p) => p._id === item._id);
           if (!product) return null;
 
           return (
             <div
               key={`${item._id}-${item.size}`}
-              className="py-4 border-t border-b grid grid-cols-[4fr_2fr_1fr_0.5fr] items-center gap-4 text-gray-700"
+              className="grid grid-cols-[1fr_auto] items-center gap-5 py-5 text-[#1d1115] md:grid-cols-[1fr_160px_100px_40px]"
             >
-              <div className="flex gap-6">
-                <img className="w-16 sm:w-20" src={product.image[0]} alt="" />
-                <div className="text-xs sm:text-lg">
-                  <p>{product.name}</p>
-                  <p className="text-gray-500 text-sm">Size: {item.size}</p>
+              <div className="flex gap-5">
+                <AssetImage className="h-24 w-20 object-cover" asset={product.image?.[0]} alt={product.name} />
+                <div>
+                  <p className="font-semibold">{product.name}</p>
+                  <p className="mt-2 text-sm text-[#6f5860]">Size: {item.size}</p>
                   <p>
                     {currency}
                     {product.price}
@@ -56,65 +68,65 @@ const Cart = () => {
                 </div>
               </div>
 
-              {/* Quantity Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => decreaseItem(item._id, item.size)}
-                  className="px-3 py-1 text-lg bg-gray-200 hover:bg-gray-300"
+                  className="grid h-9 w-9 place-items-center border border-[#DBCCB7] text-lg hover:border-[#5A0019]"
                 >
                   -
                 </button>
-                <span className="px-3">{item.quantity}</span>
+                <span className="w-7 text-center">{item.quantity}</span>
                 <button
                   onClick={() => addToCart(item._id, item.size)}
-                  className="px-3 py-1 text-lg bg-gray-200 hover:bg-gray-300"
+                  className="grid h-9 w-9 place-items-center border border-[#DBCCB7] text-lg hover:border-[#5A0019]"
                 >
                   +
                 </button>
               </div>
 
-              <p className="text-sm sm:text-lg font-semibold">
+              <p className="text-right text-sm font-bold sm:text-base">
                 {currency}
                 {product.price * item.quantity}
               </p>
 
-              <img
-                src={assets.bin_icon}
+              <AssetImage
+                asset={assets.bin_icon}
                 alt="Remove"
                 className="w-5 sm:w-6 cursor-pointer hover:opacity-60"
                 onClick={() => removeFromCart(item._id, item.size)}
               />
             </div>
           );
-        })
-      )}
+        })}
+          </div>
 
-      {cartData.length > 0 && (
-        <div className="flex justify-end my-20">
-          <div className="w-full sm:w-[450px] border-t pt-6">
-            <div className="flex justify-between mb-3 text-sm">
-              <p>Subtotal</p>
-              <p>{currency}{subtotal.toFixed(2)}</p>
-            </div>
-            <div className="flex justify-between mb-3 text-sm">
-              <p>Shipping Fee</p>
-              <p>{currency}{shipping.toFixed(2)}</p>
-            </div>
-            <div className="flex justify-between font-medium text-lg">
-              <p>Total</p>
-              <p>{currency}{total.toFixed(2)}</p>
+          <aside className="h-fit border border-[#DBCCB7] bg-white p-6">
+            <p className="editorial-serif mb-5 text-2xl font-semibold">Order summary</p>
+            <div className="space-y-4 text-sm">
+              <div className="flex justify-between">
+                <p className="text-[#6f5860]">Subtotal</p>
+                <p>{currency}{subtotal.toFixed(2)}</p>
+              </div>
+              <div className="flex justify-between">
+                <p className="text-[#6f5860]">Shipping</p>
+                <p>{currency}{shipping.toFixed(2)}</p>
+              </div>
+              <div className="flex justify-between border-t border-[#DBCCB7]/60 pt-4 text-base font-bold">
+                <p>Total</p>
+                <p>{currency}{total.toFixed(2)}</p>
+              </div>
             </div>
 
             <button
               onClick={() => navigate("/place-order")}
-              className="bg-black text-white text-sm my-8 px-8 py-3 w-full"
+              className="btn-primary mt-8 w-full"
             >
-              PROCEED TO CHECKOUT
+              Proceed to checkout
             </button>
-          </div>
+          </aside>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
