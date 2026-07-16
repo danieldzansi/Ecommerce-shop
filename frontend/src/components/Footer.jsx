@@ -26,8 +26,11 @@ const Footer = () => {
          <div>
             <p className='mb-5 text-xs font-extrabold uppercase tracking-[0.2em] text-[#DBCCB7]'>Get in touch</p>
             <ul className='flex flex-col gap-3 text-sm text-white/80'>
-                <li>+233552973298</li>
-                <li>danieldzansi96@gmail.com</li>
+                <li>0535364221</li>
+                <li>@eclatdelee</li>
+                <li>www.eclatdelee.com</li>
+                <li>36 Asafoatse Kukudabi ST, Tse-Addo</li>
+                <li>Opposite the Goil Filling Station</li>
             </ul>
          </div>
       </div>

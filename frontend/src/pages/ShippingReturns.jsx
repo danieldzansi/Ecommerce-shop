@@ -128,7 +128,7 @@ const ShippingReturns = () => {
       <div className="mt-12 bg-[#5A0019] p-8 text-white">
         <h2 className="editorial-serif text-3xl font-semibold">Need help?</h2>
         <p className="mt-3 max-w-3xl leading-7 text-[#DBCCB7]">
-          Our customer care team is available Monday to Saturday, 9:00 AM - 6:00 PM GMT, to assist with orders, deliveries, exchanges, and returns.
+          Our customer care team is available Monday to Friday, 8:30am - 8:00pm, and Saturdays, 09:00am - 8:00pm. Sundays are closed.
         </p>
         <Link to="/contact" className="mt-6 inline-flex bg-white px-8 py-3 text-sm font-extrabold uppercase tracking-[0.08em] text-[#5A0019]">
           Contact us

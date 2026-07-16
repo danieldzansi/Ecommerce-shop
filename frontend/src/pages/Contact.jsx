@@ -20,10 +20,16 @@ const Contact = () => {
           </p>
 
           <div className="mt-8 space-y-4 text-sm text-[#6f5860]">
-            <p><span className="font-bold text-[#5A0019]">Address:</span> Accra, Ghana</p>
-            <p><span className="font-bold text-[#5A0019]">Phone:</span> +233 55 297 3298</p>
-            <p><span className="font-bold text-[#5A0019]">Email:</span> danieldzansi96@gmail.com</p>
-            <p><span className="font-bold text-[#5A0019]">Hours:</span> Mon - Fri, 9:00am - 6:00pm</p>
+            <p><span className="font-bold text-[#5A0019]">Address:</span> 36 Asafoatse Kukudabi ST, Tse-Addo, Opposite the Goil Filling Station</p>
+            <p><span className="font-bold text-[#5A0019]">Phone / WhatsApp:</span> 0535364221</p>
+            <p><span className="font-bold text-[#5A0019]">Instagram:</span> @eclatdelee</p>
+            <p><span className="font-bold text-[#5A0019]">Website:</span> www.eclatdelee.com</p>
+            <div>
+              <p className="font-bold text-[#5A0019]">Opening hours:</p>
+              <p className="mt-2">Monday - Friday: 8:30am - 8:00pm</p>
+              <p>Saturdays: 09:00am - 8:00pm</p>
+              <p>Sundays: Closed</p>
+            </div>
           </div>
         </div>
 
