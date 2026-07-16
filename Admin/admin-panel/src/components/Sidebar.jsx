@@ -1,6 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { FiBarChart2, FiBox, FiClock, FiGrid, FiPlusCircle, FiX } from "react-icons/fi";
+
+const links = [
+  { to: "/", label: "Dashboard", icon: FiGrid },
+  { to: "/list", label: "View Products", icon: FiBox },
+  { to: "/add", label: "Add Product", icon: FiPlusCircle },
+  { to: "/orders", label: "Orders", icon: FiClock },
+];
 
 const Sidebar = ({ open = false, onClose = () => {} }) => {
   return (
@@ -16,7 +24,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
       />
 
       <aside
-        className={`fixed top-0 left-0 z-40 h-full w-64 bg-gray-100 p-4 transform transition-transform md:static md:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 h-full w-64 transform border-r border-slate-200 bg-white p-4 transition-transform md:static md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-hidden={!open && "true"}
@@ -24,54 +32,58 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
         <div className="flex items-center justify-end md:hidden mb-4">
           <button
             onClick={onClose}
-            className="p-2 rounded hover:bg-gray-200"
+            className="rounded-[8px] p-2 text-slate-700 hover:bg-slate-100"
             aria-label="Close menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <FiX className="h-5 w-5" />
           </button>
         </div>
 
-        <nav className="flex flex-col gap-4">
-          <NavLink
-            to="/add"
-            onClick={() => onClose()}
-            className="flex items-center gap-3 px-3 py-2 border border-gray-300 rounded hover:bg-gray-200 transition"
-          >
-            <img className="w-5 h-5" src={assets.add_icon} alt="" />
-            <p className={`${open ? "block" : "hidden"} md:block`}>Add Items</p>
-          </NavLink>
-
-          <NavLink
-            to="/list"
-            onClick={() => onClose()}
-            className="flex items-center gap-3 px-3 py-2 border border-gray-300 rounded hover:bg-gray-200 transition"
-          >
-            <img className="w-5 h-5" src={assets.order_icon} alt="" />
-            <p className={`${open ? "block" : "hidden"} md:block`}>
-              List Items
+        <div className="mb-8 hidden items-center gap-3 md:flex">
+          <div className="grid h-12 w-14 place-items-center rounded-[8px] bg-white p-1.5 ring-1 ring-slate-200">
+            <img className="max-h-9 w-full object-contain" src={assets.logo} alt="" />
+          </div>
+          <div>
+            <p className="font-bold text-slate-950">Eclat</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#5A0019]">
+              Admin
             </p>
-          </NavLink>
+          </div>
+        </div>
 
-          <NavLink
-            to="/orders"
-            onClick={() => onClose()}
-            className="flex items-center gap-3 px-3 py-2 border border-gray-300 rounded hover:bg-gray-200 transition"
-          >
-            <img className="w-5 h-5" src={assets.order_icon} alt="" />
-            <p className={`${open ? "block" : "hidden"} md:block`}>Orders</p>
-          </NavLink>
+        <nav className="flex flex-col gap-3">
+          {links.map((link) => {
+            const Icon = link.icon;
+            return (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.to === "/"}
+              onClick={() => onClose()}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-[8px] border px-3 py-3 text-sm font-semibold transition ${
+                  isActive
+                    ? "border-[#DBCCB7] bg-[#5A0019] text-white shadow-sm"
+                    : "border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-[#5A0019]"
+                }`
+              }
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-[8px] bg-slate-100">
+                <Icon />
+              </span>
+              <p className={`${open ? "block" : "hidden"} md:block`}>{link.label}</p>
+            </NavLink>
+          )})}
         </nav>
+        <div className="absolute bottom-5 left-4 right-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <FiBarChart2 className="text-[#5A0019]" />
+            Store console
+          </div>
+          <p className="mt-2 text-xs leading-5 text-slate-500">
+            Products, orders, and revenue are loaded from your backend.
+          </p>
+        </div>
       </aside>
     </>
   );

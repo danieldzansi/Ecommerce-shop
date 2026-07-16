@@ -3,13 +3,11 @@ import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../config";
+import { FiImage, FiPlusCircle } from "react-icons/fi";
 
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
-  const [image1, setImage1] = useState(false);
-  const [image2, setImage2] = useState(false);
-  const [image3, setImage3] = useState(false);
-  const [image4, setImage4] = useState(false);
+  const [images, setImages] = useState([false, false, false, false]);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -22,7 +20,7 @@ const Add = ({ token }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    if (!image1) {
+    if (!images[0]) {
       toast.error("Please upload at least one image");
       return;
     }
@@ -38,10 +36,9 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
-      formData.append("image1", image1);
-      if (image2) formData.append("image2", image2);
-      if (image3) formData.append("image3", image3);
-      if (image4) formData.append("image4", image4);
+      images.forEach((image, index) => {
+        if (image) formData.append(`image${index + 1}`, image);
+      });
 
       const response = await axios.post(
         `${backendUrl}/api/product/add`,
@@ -56,10 +53,7 @@ const Add = ({ token }) => {
 
       if (response.data.success) {
         toast.success("Product added successfully!");
-        setImage1(false);
-        setImage2(false);
-        setImage3(false);
-        setImage4(false);
+        setImages([false, false, false, false]);
         setName("");
         setDescription("");
         setPrice("");
@@ -78,29 +72,49 @@ const Add = ({ token }) => {
     }
   };
 
+  const updateImage = (index, file) => {
+    setImages((prev) => prev.map((image, imageIndex) => (imageIndex === index ? file : image)));
+  };
+
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex flex-col w-full gap-3 items-start"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-6"
     >
       <div>
-        <p className="mb-2">Upload Images</p>
-        <div className="flex gap-2">
-          {[1, 2, 3, 4].map((num) => (
-            <label key={num} htmlFor={`image${num}`}>
+        <p className="text-xs font-bold uppercase tracking-[0.35em] text-slate-400">
+          Catalog
+        </p>
+        <h1 className="mt-3 text-3xl font-bold text-slate-950">Add product</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          Create a new storefront item with images, pricing, sizing, and category details.
+        </p>
+      </div>
+
+      <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+        <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+          <FiImage className="text-[#5A0019]" />
+          Product images
+        </p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {images.map((image, index) => (
+            <label
+              key={index}
+              htmlFor={`image${index + 1}`}
+              className="group cursor-pointer rounded-[8px] border border-dashed border-slate-300 bg-slate-50 p-3 transition hover:border-[#5A0019]/40"
+            >
               <img
-                className="w-20 h-20 object-cover border rounded"
-                src={
-                  !eval(`image${num}`)
-                    ? assets.upload_area
-                    : URL.createObjectURL(eval(`image${num}`))
-                }
+                className="aspect-square w-full rounded-[8px] object-cover"
+                src={!image ? assets.upload_area : URL.createObjectURL(image)}
                 alt=""
               />
+              <p className="mt-2 text-center text-xs font-semibold text-slate-500">
+                Image {index + 1}
+              </p>
               <input
-                onChange={(e) => eval(`setImage${num}`)(e.target.files[0])}
+                onChange={(e) => updateImage(index, e.target.files[0])}
                 type="file"
-                id={`image${num}`}
+                id={`image${index + 1}`}
                 hidden
               />
             </label>
@@ -108,12 +122,13 @@ const Add = ({ token }) => {
         </div>
       </div>
 
+      <div className="grid gap-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
       <div className="w-full">
-        <p className="mb-2">Product Name</p>
+        <p className="mb-2 text-sm font-semibold text-slate-700">Product Name</p>
         <input
           onChange={(e) => setName(e.target.value)}
           value={name}
-          className="w-full max-w-[500px] px-3 py-2 border rounded"
+          className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           type="text"
           placeholder="Type here"
           required
@@ -121,11 +136,11 @@ const Add = ({ token }) => {
       </div>
 
       <div className="w-full">
-        <p className="mb-2">Product Description</p>
+        <p className="mb-2 text-sm font-semibold text-slate-700">Product Description</p>
         <textarea
           onChange={(e) => setDescription(e.target.value)}
           value={description}
-          className="w-full max-w-[500px] px-3 py-2 border rounded"
+          className="min-h-32 w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           placeholder="Write here"
           required
         ></textarea>
@@ -133,11 +148,11 @@ const Add = ({ token }) => {
 
       <div className="flex flex-col sm:flex-row gap-4 w-full sm:gap-8">
         <div>
-          <p className="mb-2">Product Category</p>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Product Category</p>
           <select
             onChange={(e) => setCategory(e.target.value)}
             value={category}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
             <option value="Men">Men</option>
             <option value="Women">Women</option>
@@ -146,11 +161,11 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <p className="mb-2">Sub Category</p>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Sub Category</p>
           <select
             onChange={(e) => setSubCategory(e.target.value)}
             value={subCategory}
-            className="w-full px-3 py-2 border rounded"
+            className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
             <option value="Topwear">Topwear</option>
             <option value="Bottomwear">Bottomwear</option>
@@ -159,11 +174,11 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <p className="mb-2">Product Price</p>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Product Price</p>
           <input
             onChange={(e) => setPrice(e.target.value)}
             value={price}
-            className="w-full px-3 py-2 border rounded sm:w-[120px]"
+            className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50 sm:w-[140px]"
             type="number"
             placeholder="34"
             required
@@ -172,7 +187,7 @@ const Add = ({ token }) => {
       </div>
 
       <div>
-        <p className="mb-2">Product Sizes</p>
+        <p className="mb-2 text-sm font-semibold text-slate-700">Product Sizes</p>
         <div className="flex gap-3">
           {["S", "M", "L", "XL", "XXL"].map((size) => (
             <div
@@ -188,8 +203,8 @@ const Add = ({ token }) => {
               <p
                 className={`px-3 py-1 cursor-pointer rounded border  ${
                   sizes.includes(size)
-                    ? "bg-pink-100 border-pink-400 "
-                    : "bg-slate-200 border-transparent"
+                    ? "border-[#DBCCB7] bg-[#5A0019] text-white"
+                    : "border-slate-200 bg-slate-50 text-slate-600"
                 } `}
               >
                 {size}
@@ -206,7 +221,7 @@ const Add = ({ token }) => {
           type="checkbox"
           id="bestseller"
         />
-        <label className="cursor-pointer" htmlFor="bestseller">
+        <label className="cursor-pointer text-sm font-semibold text-slate-700" htmlFor="bestseller">
           Add to Bestseller
         </label>
       </div>
@@ -214,10 +229,10 @@ const Add = ({ token }) => {
       <button
         type="submit"
         disabled={loading}
-        className={`w-28 py-3 mt-4 rounded text-white flex items-center justify-center gap-2 ${
+        className={`mt-4 flex w-48 items-center justify-center gap-2 rounded-[8px] py-3 font-bold text-white ${
           loading
             ? "bg-gray-500 cursor-not-allowed"
-            : "bg-black hover:bg-gray-800"
+            : "bg-[#5A0019] hover:bg-[#720022]"
         }`}
       >
         {loading ? (
@@ -226,9 +241,10 @@ const Add = ({ token }) => {
             <span>Adding...</span>
           </>
         ) : (
-          "Add"
+          <span className="inline-flex items-center gap-2"><FiPlusCircle /> Add product</span>
         )}
       </button>
+      </div>
     </form>
   );
 };
