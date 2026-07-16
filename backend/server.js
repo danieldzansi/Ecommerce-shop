@@ -15,20 +15,37 @@ connectCloudinary();
 
 app.use(express.json());
 
-const allowedOrigins = [
+const localDevOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+];
+
+const envOrigins = [
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
   process.env.VITE_FRONTEND_URL,
   process.env.VITE_ADMIN_URL,
-];
+]
+  .filter(Boolean)
+  .map((origin) => origin.replace(/\/$/, ""));
+
+const allowedOrigins = [...new Set([...envOrigins, ...localDevOrigins])];
 
 console.log(
   "Allowed CORS Origins:",
-  allowedOrigins.length ? allowedOrigins : "none (will allow all in dev)"
+  allowedOrigins.length ? allowedOrigins : "none"
 );
 
 const corsOptions = {
-  origin: allowedOrigins.length ? allowedOrigins : true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
