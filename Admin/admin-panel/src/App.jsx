@@ -32,7 +32,7 @@ const App = () => {
             onToggleSidebar={() => setSidebarOpen((s) => !s)}
           />
 
-          <div className="relative flex w-full">
+          <div className="relative flex w-full items-start">
             <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             <main className="min-h-[calc(100vh-73px)] flex-1 overflow-hidden border-l border-slate-200 bg-slate-50 px-4 py-6 md:px-8">
               <Routes>

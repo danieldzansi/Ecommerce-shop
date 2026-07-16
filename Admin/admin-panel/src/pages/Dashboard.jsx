@@ -27,6 +27,85 @@ const validDate = (value) => {
 const monthLabel = (date) =>
   date.toLocaleString("en-US", { month: "short", year: "2-digit" });
 
+const RevenueChart = ({ data }) => {
+  if (data.length === 0) {
+    return (
+      <div className="grid h-72 place-items-center rounded-[8px] border border-dashed border-slate-200 bg-slate-50 text-center">
+        <div>
+          <p className="font-bold text-slate-700">No confirmed payments yet</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Paid orders will appear here once payment is confirmed.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const width = 640;
+  const height = 250;
+  const padding = 28;
+  const maxValue = Math.max(...data.map(([, value]) => value), 1);
+  const points = data.map(([, value], index) => {
+    const x =
+      data.length === 1
+        ? width / 2
+        : padding + (index / (data.length - 1)) * (width - padding * 2);
+    const y = height - padding - (value / maxValue) * (height - padding * 2);
+    return { x, y, value };
+  });
+  const line = points.map((point) => `${point.x},${point.y}`).join(" ");
+  const area = `${padding},${height - padding} ${line} ${width - padding},${height - padding}`;
+
+  return (
+    <div className="h-72 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full" role="img">
+        <defs>
+          <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#5A0019" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#5A0019" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        {[0, 1, 2, 3].map((lineIndex) => {
+          const y = padding + lineIndex * ((height - padding * 2) / 3);
+          return (
+            <line
+              key={lineIndex}
+              x1={padding}
+              x2={width - padding}
+              y1={y}
+              y2={y}
+              stroke="#E2E8F0"
+              strokeDasharray="4 6"
+            />
+          );
+        })}
+        <polyline points={area} fill="url(#revenueFill)" stroke="none" />
+        <polyline
+          points={line}
+          fill="none"
+          stroke="#5A0019"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {points.map((point, index) => (
+          <g key={data[index][0]}>
+            <circle cx={point.x} cy={point.y} r="6" fill="#5A0019" />
+            <text
+              x={point.x}
+              y={height - 6}
+              textAnchor="middle"
+              className="fill-slate-500 text-[13px]"
+            >
+              {data[index][0]}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+};
+
 const statusTone = {
   pending: "bg-amber-50 text-amber-700 ring-amber-200",
   paid: "bg-emerald-50 text-emerald-700 ring-emerald-200",
@@ -117,7 +196,7 @@ const Dashboard = ({ token }) => {
       return acc;
     }, {});
 
-    const monthlyRevenueMap = orders.reduce((acc, order) => {
+    const monthlyRevenueMap = paidOrders.reduce((acc, order) => {
       const date = validDate(order.created_at);
       if (!date) return acc;
       const key = monthLabel(date);
@@ -135,6 +214,7 @@ const Dashboard = ({ token }) => {
       pendingOrders: pendingOrders.length,
       totalOrderValue,
       paidValue,
+      pendingValue: totalOrderValue - paidValue,
       catalogValue,
       bestsellers: products.filter((product) => product.bestseller).length,
       statusCounts,
@@ -160,7 +240,6 @@ const Dashboard = ({ token }) => {
     [products]
   );
 
-  const maxMonth = Math.max(...stats.monthlyRevenue.map(([, value]) => value), 1);
   const maxCategory = Math.max(...Object.values(stats.categoryCounts), 1);
   const orderTotal = Math.max(orders.length, 1);
 
@@ -243,9 +322,9 @@ const Dashboard = ({ token }) => {
               icon={<FiShoppingBag className="h-5 w-5" />}
             />
             <MetricCard
-              title="Order value"
-              value={money(stats.totalOrderValue)}
-              note={`${money(stats.paidValue)} confirmed paid`}
+              title="Confirmed paid"
+              value={money(stats.paidValue)}
+              note={`${money(stats.pendingValue)} still pending/unpaid`}
               icon={<FiDollarSign className="h-5 w-5" />}
             />
             <MetricCard
@@ -261,29 +340,13 @@ const Dashboard = ({ token }) => {
               <div className="mb-6 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-slate-950">Revenue overview</h2>
-                  <p className="text-sm text-slate-500">Monthly order value</p>
+                  <p className="text-sm text-slate-500">Confirmed paid revenue only</p>
                 </div>
                 <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700">
-                  {money(stats.totalOrderValue)}
+                  {money(stats.paidValue)}
                 </span>
               </div>
-              <div className="flex h-72 items-end gap-3 border-b border-l border-slate-200 px-3 pt-8">
-                {(stats.monthlyRevenue.length ? stats.monthlyRevenue : [["No orders", 0]]).map(
-                  ([label, value]) => (
-                    <div key={label} className="flex flex-1 flex-col items-center gap-3">
-                      <div className="flex h-56 w-full items-end">
-                        <div
-                          className="w-full rounded-t-[8px] bg-[#5A0019]"
-                          style={{
-                            height: `${Math.max((value / maxMonth) * 100, value ? 8 : 3)}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs text-slate-500">{label}</span>
-                    </div>
-                  )
-                )}
-              </div>
+              <RevenueChart data={stats.monthlyRevenue} />
             </div>
 
             <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
