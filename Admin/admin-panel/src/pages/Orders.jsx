@@ -44,6 +44,9 @@ const Orders = ({ token }) => {
                 </p>
                 <p className="text-sm text-gray-600">Email: {o.email}</p>
                 <p className="text-sm text-gray-600">Total: {o.total_amount}</p>
+                {o.address && (
+                  <p className="text-sm text-gray-600">Delivery: {o.address}</p>
+                )}
               </div>
               <div className="text-right">
                 <p className="text-sm">

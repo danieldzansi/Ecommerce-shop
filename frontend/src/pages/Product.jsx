@@ -47,30 +47,32 @@ const Product = () => {
 
   return (
     <section className="page-x section-y transition-opacity ease-in duration-100">
-      <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]">
      
-        <div className="flex gap-4">
-          <div className="flex w-20 shrink-0 flex-col gap-3 overflow-y-auto">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-[80px_minmax(0,1fr)]">
+          <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:w-20 sm:shrink-0 sm:flex-col sm:overflow-y-auto">
             {productData.image.map((img, index) => (
               <AssetImage
                 key={index}
                 asset={img}
                 onClick={() => setImage(img)}
                 alt={`${productData.name} thumbnail ${index + 1}`}
-                className="aspect-[3/4] w-20 cursor-pointer border border-[#DBCCB7] object-cover hover:border-[#5A0019]"
+                className="aspect-[3/4] w-20 shrink-0 cursor-pointer border border-[#DBCCB7] object-cover hover:border-[#5A0019]"
               />
             ))}
           </div>
 
-          <AssetImage
-            asset={image}
-            alt={productData.name}
-            className="min-h-[520px] flex-1 bg-white object-cover"
-          />
+          <div className="order-1 min-w-0 overflow-hidden bg-white sm:order-2">
+            <AssetImage
+              asset={image}
+              alt={productData.name}
+              className="h-[420px] w-full object-cover sm:h-[520px]"
+            />
+          </div>
         </div>
 
     
-        <div>
+        <div className="relative z-10 bg-white">
           <p className="eyebrow">{productData.category}</p>
           <h1 className="editorial-serif mt-3 text-4xl font-semibold leading-tight md:text-5xl">{productData.name}</h1>
 

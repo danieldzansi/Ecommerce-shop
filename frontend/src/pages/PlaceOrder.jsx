@@ -24,9 +24,7 @@ const PlaceOrder = () => {
     email: "",
     street: "",
     city: "",
-    state: "",
-    zipcode: "",
-    country: "",
+    region: "",
     phone: "",
   });
   const [loading, setLoading] = useState(false);
@@ -65,7 +63,28 @@ const PlaceOrder = () => {
       });
     }
 
-    const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.country}, ${formData.zipcode}`;
+    const deliveryDetails = {
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      street: formData.street.trim(),
+      city: formData.city.trim(),
+      region: formData.region.trim(),
+      country: "Ghana",
+    };
+
+    const address = [
+      `${deliveryDetails.firstName} ${deliveryDetails.lastName}`,
+      deliveryDetails.phone,
+      deliveryDetails.street,
+      deliveryDetails.city,
+      deliveryDetails.region,
+      "Ghana",
+    ]
+      .filter(Boolean)
+      .join(", ");
+
     const totalAmount = subtotal + delivery_fee;
 
     try {
@@ -82,6 +101,7 @@ const PlaceOrder = () => {
           items,
           email: formData.email,
           address,
+          deliveryDetails,
           totalAmount,
         }),
       });
@@ -112,7 +132,7 @@ const PlaceOrder = () => {
         <p className="eyebrow">Checkout</p>
         <h1 className="editorial-serif mt-3 text-4xl font-semibold">Delivery information</h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-[#6f5860]">
-          Tell us where to send your pieces. You will confirm payment after the order details are ready.
+          We currently deliver within Ghana only. Tell us where to send your pieces.
         </p>
 
         <div className="mt-8 grid gap-4">
@@ -160,7 +180,7 @@ const PlaceOrder = () => {
           <input
             type="text"
             name="city"
-            placeholder="City"
+            placeholder="City / town"
             value={formData.city}
             onChange={handleChange}
             className="form-field"
@@ -168,30 +188,9 @@ const PlaceOrder = () => {
           />
           <input
             type="text"
-            name="state"
-            placeholder="State"
-            value={formData.state}
-            onChange={handleChange}
-            className="form-field"
-            required
-          />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <input
-            type="number"
-            name="zipcode"
-            placeholder="Zipcode"
-            value={formData.zipcode}
-            onChange={handleChange}
-            className="form-field"
-            required
-          />
-          <input
-            type="text"
-            name="country"
-            placeholder="Country"
-            value={formData.country}
+            name="region"
+            placeholder="Region"
+            value={formData.region}
             onChange={handleChange}
             className="form-field"
             required
@@ -199,9 +198,9 @@ const PlaceOrder = () => {
         </div>
 
         <input
-          type="number"
+          type="tel"
           name="phone"
-          placeholder="Phone"
+          placeholder="Phone number"
           value={formData.phone}
           onChange={handleChange}
           className="form-field"

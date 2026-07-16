@@ -4,14 +4,73 @@ import { products } from "../models/productModel.js";
 import { eq } from "drizzle-orm";
 import { sendOrderEmails } from "../utils/email.js";
 
+const requiredDeliveryFields = [
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+  "street",
+  "city",
+  "region",
+];
+
+const normalizeDeliveryDetails = (deliveryDetails = {}, fallbackAddress = "") => {
+  const normalized = requiredDeliveryFields.reduce((acc, field) => {
+    acc[field] = String(deliveryDetails[field] || "").trim();
+    return acc;
+  }, {});
+
+  normalized.country = "Ghana";
+
+  const missingFields = requiredDeliveryFields.filter((field) => !normalized[field]);
+  if (missingFields.length > 0 && !fallbackAddress) {
+    return {
+      error: `Missing delivery fields: ${missingFields.join(", ")}`,
+      address: "",
+      deliveryDetails: normalized,
+    };
+  }
+
+  const address =
+    fallbackAddress ||
+    [
+      `${normalized.firstName} ${normalized.lastName}`,
+      normalized.phone,
+      normalized.street,
+      normalized.city,
+      normalized.region,
+      "Ghana",
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+  return {
+    error: "",
+    address,
+    deliveryDetails: normalized,
+  };
+};
+
 export const initializePayment = async (req, res) => {
   try {
-    const { items, email, address, totalAmount } = req.body;
+    const { items, email, address, deliveryDetails, totalAmount } = req.body;
 
     if (!email || !totalAmount) {
       return res
         .status(400)
         .json({ success: false, message: "Missing fields" });
+    }
+
+    const normalizedDelivery = normalizeDeliveryDetails(
+      deliveryDetails,
+      String(address || "").trim()
+    );
+
+    if (normalizedDelivery.error) {
+      return res.status(400).json({
+        success: false,
+        message: normalizedDelivery.error,
+      });
     }
 
     const userId = req.user?._id ?? null;
@@ -47,7 +106,7 @@ export const initializePayment = async (req, res) => {
         user_id: userId,
         items: enhancedItems,
         email,
-        address,
+        address: normalizedDelivery.address,
         total_amount: totalAmountValue,
         status: "pending",
       })
@@ -67,7 +126,11 @@ export const initializePayment = async (req, res) => {
     const response = await paystack.post("/transaction/initialize", {
       email,
       amount: Math.round(totalAmount * 100),
-      metadata: { orderId: order.id },
+      metadata: {
+        orderId: order.id,
+        deliveryCountry: "Ghana",
+        deliveryRegion: normalizedDelivery.deliveryDetails.region,
+      },
       callback_url: `${frontendURL}/payment-result`,
     });
 
