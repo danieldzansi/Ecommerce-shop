@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { assets } from '../assets/assets'
 
 const Footer = () => {
@@ -8,16 +9,18 @@ const Footer = () => {
          <div>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-8 h-16 w-auto bg-white object-contain p-2' />
             <p className='max-w-xl text-sm leading-7 text-[#DBCCB7]'>
-                 Elegance and style for polished everyday dressing. Discover pieces that feel effortless, intentional, and ready for the moments you are dressing for.
+                 Luxury. Style. Confidence. Delivered to your door.
             </p>
          </div>
          <div>
             <p  className='mb-5 text-xs font-extrabold uppercase tracking-[0.2em] text-[#DBCCB7]'>Company</p>
             <ul className='flex flex-col gap-3 text-sm text-white/80'>
-               <li>Home</li>
-               <li>About</li>
-               <li>Shop</li>
-               <li>Track order</li>
+               <li><Link to="/">Home</Link></li>
+               <li><Link to="/about">About</Link></li>
+               <li><Link to="/collection">Shop</Link></li>
+               <li><Link to="/orders">Track order</Link></li>
+               <li><Link to="/faq">FAQ</Link></li>
+               <li><Link to="/shipping-returns">Shipping & Returns</Link></li>
             </ul>
          </div>
          <div>

@@ -10,6 +10,8 @@ import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
 import PaymentResult from "./pages/PaymentResult";
 import OrderDetails from "./pages/OrderDetails";
+import FAQ from "./pages/FAQ";
+import ShippingReturns from "./pages/ShippingReturns";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
@@ -34,6 +36,8 @@ const App = () => {
           <Route path="/orders" element={<Orders />} />
           <Route path="/payment-result" element={<PaymentResult />} />
           <Route path="/order-details" element={<OrderDetails />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/shipping-returns" element={<ShippingReturns />} />
         </Routes>
       </main>
       <Footer />
