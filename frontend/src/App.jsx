@@ -15,6 +15,7 @@ import ShippingReturns from "./pages/ShippingReturns";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
+import WhatsAppButton from "./components/WhatsAppButton";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,6 +42,7 @@ const App = () => {
         </Routes>
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 };
