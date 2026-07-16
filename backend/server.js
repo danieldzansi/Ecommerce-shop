@@ -22,16 +22,28 @@ const localDevOrigins = [
   "http://127.0.0.1:5174",
 ];
 
+const productionOrigins = [
+  "https://eclatdelee.com",
+  "https://www.eclatdelee.com",
+];
+
+const parseOrigins = (value) =>
+  String(value || "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+
 const envOrigins = [
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
   process.env.VITE_FRONTEND_URL,
   process.env.VITE_ADMIN_URL,
 ]
-  .filter(Boolean)
-  .map((origin) => origin.replace(/\/$/, ""));
+  .flatMap(parseOrigins);
 
-const allowedOrigins = [...new Set([...envOrigins, ...localDevOrigins])];
+const allowedOrigins = [
+  ...new Set([...envOrigins, ...productionOrigins, ...localDevOrigins]),
+];
 
 console.log(
   "Allowed CORS Origins:",
