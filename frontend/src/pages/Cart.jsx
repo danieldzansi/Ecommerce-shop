@@ -30,8 +30,8 @@ const Cart = () => {
     <section className="page-x section-y">
       <div className="mb-10 flex items-end justify-between border-b border-[#DBCCB7]/60 pb-8">
         <div>
-          <p className="eyebrow">Checkout</p>
-          <h1 className="editorial-serif mt-3 text-4xl font-semibold">Shopping Cart</h1>
+          <p className="eyebrow">Cart</p>
+          <h1 className="editorial-serif mt-3 text-4xl font-semibold">Your Cart</h1>
         </div>
         <p className="hidden text-sm text-[#6f5860] sm:block">{cartData.length} item{cartData.length === 1 ? "" : "s"}</p>
       </div>

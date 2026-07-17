@@ -40,7 +40,11 @@ const Footer = () => {
                     <span>@eclatdelee</span>
                   </a>
                 </li>
-                <li>www.eclatdelee.com</li>
+                <li>
+                  <a href="mailto:hello@eclatdelee.com" className="transition hover:text-[#DBCCB7]">
+                    hello@eclatdelee.com
+                  </a>
+                </li>
                 <li>36 Asafoatse Kukudabi ST, Tse-Addo</li>
                 <li>Opposite the Goil Filling Station</li>
             </ul>

@@ -5,6 +5,18 @@ import { toast } from "react-toastify";
 import { backendUrl } from "../config";
 import { FiImage, FiPlusCircle } from "react-icons/fi";
 
+const productCategories = [
+  "Handbags",
+  "Shoes",
+  "Wallets & Purses",
+  "Accessories",
+  "Sunglasses",
+  "Watches",
+  "Travel Bags",
+  "Perfumes",
+  "Belts",
+];
+
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([false, false, false, false]);
@@ -12,8 +24,8 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("Men");
-  const [subCategory, setSubCategory] = useState("Topwear");
+  const [category, setCategory] = useState("Handbags");
+  const [subCategory, setSubCategory] = useState("Accessories");
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
 
@@ -57,8 +69,8 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
-        setCategory("Men");
-        setSubCategory("Topwear");
+        setCategory("Handbags");
+        setSubCategory("Accessories");
         setBestseller(false);
         setSizes([]);
       } else {
@@ -154,9 +166,9 @@ const Add = ({ token }) => {
             value={category}
             className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            {productCategories.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
           </select>
         </div>
 
@@ -167,9 +179,9 @@ const Add = ({ token }) => {
             value={subCategory}
             className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            {productCategories.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
           </select>
         </div>
 

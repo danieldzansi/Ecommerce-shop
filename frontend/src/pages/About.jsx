@@ -22,7 +22,7 @@ const About = () => {
           <p className="eyebrow">About</p>
           <h1 className="editorial-serif mt-3 text-5xl font-semibold leading-tight md:text-6xl">Elegance meets everyday luxury.</h1>
           <p className="mt-6 leading-7 text-[#6f5860]">
-            We believe luxury should be accessible, stylish, and unforgettable. Our carefully selected collection features premium handbags, shoes, accessories, and fashion pieces designed for women who appreciate quality, sophistication, and confidence.
+            We believe luxury should be accessible, stylish, and unforgettable. Our carefully selected collection features premium handbags, shoes, accessories, and fashion pieces designed for people who appreciate quality, sophistication, and confidence.
           </p>
           <p className="mt-4 leading-7 text-[#6f5860]">
             Whether you are dressing for work, a special occasion, or everyday elegance, Èclat De Lee brings you pieces that make a lasting impression.
@@ -70,7 +70,7 @@ const About = () => {
         <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#DBCCB7]">Our promise</p>
         <h2 className="editorial-serif mt-3 text-3xl font-semibold">Luxury. Style. Confidence. Delivered to your door.</h2>
         <p className="mt-4 max-w-3xl leading-7 text-[#DBCCB7]">
-          Every handbag, shoe, accessory, and fashion piece is carefully selected for its quality, style, and craftsmanship. We are dedicated to providing exceptional customer service and ensuring every shopping experience is enjoyable from checkout to delivery.
+          Every piece in our collection is chosen by hand, never in bulk. We check the quality before it is listed and again before it ships. What arrives at your door is exactly what you saw online.
         </p>
       </div>
     </section>
