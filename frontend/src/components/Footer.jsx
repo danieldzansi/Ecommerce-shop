@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaInstagram } from 'react-icons/fa'
 import { assets } from '../assets/assets'
+import { paymentMethods } from '../assets/paymentMethods'
 
 const Footer = () => {
   return (
@@ -12,6 +13,22 @@ const Footer = () => {
             <p className='max-w-xl text-sm leading-7 text-[#DBCCB7]'>
                  Luxury. Style. Confidence. Delivered to your door.
             </p>
+            <div className='mt-8'>
+              <p className='mb-4 text-xs font-extrabold uppercase tracking-[0.2em] text-[#DBCCB7]'>
+                Accepted payment methods
+              </p>
+              <div className='flex max-w-md flex-wrap items-center gap-x-5 gap-y-4 bg-white p-4'>
+                {paymentMethods.map((method) => (
+                  <img
+                    key={method.name}
+                    src={method.logo}
+                    alt={method.name}
+                    className={`${method.className} max-w-[86px] object-contain grayscale`}
+                    loading='lazy'
+                  />
+                ))}
+              </div>
+            </div>
          </div>
          <div>
             <p  className='mb-5 text-xs font-extrabold uppercase tracking-[0.2em] text-[#DBCCB7]'>Company</p>
