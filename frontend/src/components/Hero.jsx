@@ -14,11 +14,18 @@ const Hero = () => {
   if (!slide) return null
 
   return (
-    <section className='relative min-h-[560px] overflow-hidden bg-white text-white md:min-h-[620px]'>
+    <section
+      className='relative min-h-[560px] overflow-hidden bg-white text-white md:min-h-[620px]'
+      style={{ backgroundColor: slide.background || undefined }}
+    >
       <img
         src={slide.image}
         alt=""
         className='absolute inset-0 h-full w-full object-cover'
+        style={{
+          objectFit: slide.fit || 'cover',
+          objectPosition: slide.position || 'center center',
+        }}
       />
       <div className='absolute inset-0 bg-black/30' />
 

@@ -172,9 +172,12 @@ export const assets = {
         {
             image: heroLook,
             eyebrow: 'Fresh picks',
-            title: 'Pieces that bring the whole look together',
+            title: 'Fresh pieces. Polished finish.',
             text: 'Explore polished fashion finds selected for confidence, ease, and everyday style.',
             cta: 'Shop now',
+            fit: 'contain',
+            position: 'center center',
+            background: '#b8946f',
         },
     ],
     hero_img,
