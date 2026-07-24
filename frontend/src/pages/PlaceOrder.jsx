@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useCartStore } from "../store/CartStore";
 import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { paymentMethods } from "../assets/paymentMethods";
 
 const PlaceOrder = () => {
   const { currency, delivery_fee, products } = useContext(ShopContext);
@@ -247,6 +248,22 @@ const PlaceOrder = () => {
                 <span className="h-2 w-2 rounded-full bg-[#5A0019]" />
               </span>
               <p className="text-sm font-bold">Online payment</p>
+            </div>
+            <div className="mt-5 border-t border-[#DBCCB7]/60 pt-4">
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#6f5860]">
+                Accepted payment methods
+              </p>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                {paymentMethods.map((method) => (
+                  <img
+                    key={method.name}
+                    src={method.logo}
+                    alt={method.name}
+                    className={`${method.className} max-w-[90px] object-contain grayscale`}
+                    loading="lazy"
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
