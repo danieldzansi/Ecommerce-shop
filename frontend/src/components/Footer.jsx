@@ -62,8 +62,8 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:hello@eclatdelee.com" className="transition hover:text-[#DBCCB7]">
-                    hello@eclatdelee.com
+                  <a href="mailto:eclatdelee26@gmail.com" className="transition hover:text-[#DBCCB7]">
+                    eclatdelee26@gmail.com
                   </a>
                 </li>
                 <li>36 Asafoatse Kukudabi ST, Tse-Addo</li>
