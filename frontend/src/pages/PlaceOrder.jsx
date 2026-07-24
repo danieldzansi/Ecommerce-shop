@@ -246,7 +246,7 @@ const PlaceOrder = () => {
               <span className="grid h-4 w-4 place-items-center rounded-full border border-[#5A0019]">
                 <span className="h-2 w-2 rounded-full bg-[#5A0019]" />
               </span>
-              <p className="text-sm font-bold">Cash on delivery</p>
+              <p className="text-sm font-bold">Online payment</p>
             </div>
           </div>
 
@@ -262,7 +262,7 @@ const PlaceOrder = () => {
                   Processing...
                 </span>
               ) : (
-                "Place order"
+                "Pay online"
               )}
             </button>
           </div>

@@ -85,7 +85,7 @@ useEffect(() => {
       </div>
 
       <div className='page-x border-b border-[#DBCCB7]/60 py-4 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-[#5A0019]'>
-        Delivery across Ghana · Cash on delivery · Order tracking included · WhatsApp support during opening hours
+        Delivery across Ghana · Secure online payment · Order tracking included · WhatsApp support during opening hours
       </div>
 
       <div className='page-x py-10'>

@@ -8,7 +8,7 @@ const faqs = [
   },
   {
     question: 'What payment methods do you accept?',
-    answer: 'We currently support cash on delivery for Ghana orders. Any additional secure payment options will appear at checkout when available.',
+    answer: 'We currently accept secure online payments at checkout for Ghana orders.',
   },
   {
     question: 'Do you offer delivery?',

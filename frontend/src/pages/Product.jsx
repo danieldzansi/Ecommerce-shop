@@ -116,7 +116,7 @@ const Product = () => {
             <hr className="mt-6 border-[#DBCCB7]/60" />
             <div className="grid gap-3 text-sm text-[#6f5860]">
               <p>Curated quality, selected for everyday polish.</p>
-              <p>Cash on delivery is available on this product.</p>
+              <p>Secure online payment is available at checkout.</p>
               <p>Easy return and exchange support within 7 days.</p>
             </div>
           </div>
