@@ -2,6 +2,7 @@ import React from 'react'
 import logo from './image.png'
 import heroDior from './Dior.jpeg'
 import heroBag from './bag.jpeg'
+import heroLook from './image copy.png'
 
 const e = React.createElement
 
@@ -167,6 +168,13 @@ export const assets = {
             title: 'Effortless. Intentional. You.',
             text: 'Wardrobe staples and standout pieces chosen for days that ask for more.',
             cta: 'Shop the edit',
+        },
+        {
+            image: heroLook,
+            eyebrow: 'Fresh picks',
+            title: 'Pieces that bring the whole look together',
+            text: 'Explore polished fashion finds selected for confidence, ease, and everyday style.',
+            cta: 'Shop now',
         },
     ],
     hero_img,
