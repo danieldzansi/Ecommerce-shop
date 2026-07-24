@@ -17,15 +17,19 @@ const Footer = () => {
               <p className='mb-4 text-xs font-extrabold uppercase tracking-[0.2em] text-[#DBCCB7]'>
                 Accepted payment methods
               </p>
-              <div className='flex max-w-md flex-wrap items-center gap-x-5 gap-y-4 bg-white p-4'>
+              <div className='flex max-w-md flex-wrap items-center gap-x-5 gap-y-4'>
                 {paymentMethods.map((method) => (
-                  <img
+                  <span
                     key={method.name}
-                    src={method.logo}
-                    alt={method.name}
-                    className={`${method.className} max-w-[86px] object-contain grayscale`}
-                    loading='lazy'
-                  />
+                    className='inline-flex h-11 min-w-16 items-center justify-center bg-white px-3'
+                  >
+                    <img
+                      src={method.logo}
+                      alt={method.name}
+                      className={`${method.className} max-w-[86px] object-contain grayscale`}
+                      loading='lazy'
+                    />
+                  </span>
                 ))}
               </div>
             </div>
