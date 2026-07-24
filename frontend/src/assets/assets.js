@@ -156,6 +156,16 @@ export const assets = {
     logo,
     heroSlides: [
         {
+            image: heroLook,
+            eyebrow: 'Fresh picks',
+            title: 'Fresh pieces. Polished finish.',
+            text: 'Explore polished fashion finds selected for confidence, ease, and everyday style.',
+            cta: 'Shop now',
+            fit: 'contain',
+            position: 'center center',
+            background: '#b8946f',
+        },
+        {
             image: heroBag,
             eyebrow: 'New arrivals',
             title: 'The finishing touch that changes it all',
@@ -168,16 +178,6 @@ export const assets = {
             title: 'Effortless. Intentional. You.',
             text: 'Wardrobe staples and standout pieces chosen for days that ask for more.',
             cta: 'Shop the edit',
-        },
-        {
-            image: heroLook,
-            eyebrow: 'Fresh picks',
-            title: 'Fresh pieces. Polished finish.',
-            text: 'Explore polished fashion finds selected for confidence, ease, and everyday style.',
-            cta: 'Shop now',
-            fit: 'contain',
-            position: 'center center',
-            background: '#b8946f',
         },
     ],
     hero_img,
