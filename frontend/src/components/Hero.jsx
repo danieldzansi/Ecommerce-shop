@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { assets } from '../assets/assets'
 import { Link } from 'react-router-dom'
 
 const Hero = () => {
   const [active, setActive] = useState(0)
+  const touchStartX = useRef(null)
   const slides = assets.heroSlides || []
   const slide = slides[active] || slides[0]
 
@@ -13,10 +14,27 @@ const Hero = () => {
 
   if (!slide) return null
 
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null
+  }
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX.current === null) return
+
+    const touchEndX = event.changedTouches[0]?.clientX ?? touchStartX.current
+    const deltaX = touchStartX.current - touchEndX
+    touchStartX.current = null
+
+    if (Math.abs(deltaX) < 45) return
+    goToSlide(deltaX > 0 ? 1 : -1)
+  }
+
   return (
     <section
-      className='relative min-h-[560px] overflow-hidden bg-white text-white md:min-h-[620px]'
+      className='relative min-h-[560px] touch-pan-y overflow-hidden bg-white text-white md:min-h-[620px]'
       style={{ backgroundColor: slide.background || undefined }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <img
         src={slide.image}
@@ -32,7 +50,7 @@ const Hero = () => {
       <button
         type='button'
         onClick={() => goToSlide(-1)}
-        className='absolute left-5 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/35'
+        className='absolute left-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:left-5 sm:h-12 sm:w-12'
         aria-label='Previous hero slide'
       >
         <span className='text-3xl leading-none'>&lsaquo;</span>
@@ -41,7 +59,7 @@ const Hero = () => {
       <button
         type='button'
         onClick={() => goToSlide(1)}
-        className='absolute right-5 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/35'
+        className='absolute right-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:right-5 sm:h-12 sm:w-12'
         aria-label='Next hero slide'
       >
         <span className='text-3xl leading-none'>&rsaquo;</span>
