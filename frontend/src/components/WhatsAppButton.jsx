@@ -3,7 +3,7 @@ import { FaWhatsapp } from 'react-icons/fa'
 
 const WhatsAppButton = () => {
   const phone = '233535364221'
-  const message = encodeURIComponent('Hello Eclat De Lee, I need help with shopping or an order')
+  const message = encodeURIComponent('Hello Eclat De Lee, I need help with shopping or an order.')
 
   return (
     <a
