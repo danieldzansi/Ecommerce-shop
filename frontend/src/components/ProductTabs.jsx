@@ -3,9 +3,24 @@ import { ShopContext } from '../context/ShopContext'
 import ProductItem from './ProductItem'
 
 const tabs = [
-  { id: 'new', label: 'New Arrivals' },
-  { id: 'best', label: 'Best Seller' },
-  { id: 'sale', label: 'On Sale' },
+  {
+    id: 'new',
+    label: 'New Arrivals',
+    emptyTitle: 'New arrivals are coming soon.',
+    emptyText: 'Fresh pieces are being prepared for the next drop. Check back shortly for the latest edit.',
+  },
+  {
+    id: 'best',
+    label: 'Best Seller',
+    emptyTitle: 'Customer favorites are coming soon.',
+    emptyText: 'Our most-loved pieces will appear here once the collection is ready.',
+  },
+  {
+    id: 'sale',
+    label: 'On Sale',
+    emptyTitle: 'No sale pieces right now.',
+    emptyText: 'Special offers will appear here when selected items are marked down.',
+  },
 ]
 
 const isBestSeller = (product) => product?.bestseller === true || product?.bestseller === 'true'
@@ -33,6 +48,7 @@ const ProductTabs = () => {
   }, [products])
 
   const activeProducts = tabProducts[activeTab] || []
+  const activeTabDetails = tabs.find((tab) => tab.id === activeTab) || tabs[0]
 
   useLayoutEffect(() => {
     const grid = gridRef.current
@@ -90,9 +106,9 @@ const ProductTabs = () => {
         </div>
       ) : (
         <div ref={gridRef} className='mx-auto max-w-xl border border-[#DBCCB7]/70 bg-white px-6 py-12 text-center'>
-          <p className='text-lg font-semibold text-[#1d1115]'>No {tabs.find((tab) => tab.id === activeTab)?.label.toLowerCase()} products yet.</p>
+          <p className='text-lg font-semibold text-[#1d1115]'>{activeTabDetails.emptyTitle}</p>
           <p className='mt-3 text-sm leading-6 text-[#6f5860]'>
-            Add matching products from the admin panel and they will appear here automatically.
+            {activeTabDetails.emptyText}
           </p>
         </div>
       )}
