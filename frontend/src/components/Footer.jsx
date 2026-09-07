@@ -35,25 +35,6 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className='border-t border-[#e8e2da] bg-white text-[#161616]'>
-      <div className='page-x grid gap-8 border-b border-[#e8e2da] py-12 text-center md:grid-cols-4' data-gsap-reveal>
-        <div>
-          <p className='text-xl font-semibold'>14-Day Returns</p>
-          <p className='mt-3 text-[15px] leading-6 text-[#66616a]'>Risk-free shopping with easy returns.</p>
-        </div>
-        <div>
-          <p className='text-xl font-semibold'>Free Shipping</p>
-          <p className='mt-3 text-[15px] leading-6 text-[#66616a]'>No extra costs on selected Accra orders.</p>
-        </div>
-        <div>
-          <p className='text-xl font-semibold'>24/7 Support</p>
-          <p className='mt-3 text-[15px] leading-6 text-[#66616a]'>WhatsApp support, always close by.</p>
-        </div>
-        <div>
-          <p className='text-xl font-semibold'>Member Discounts</p>
-          <p className='mt-3 text-[15px] leading-6 text-[#66616a]'>Special prices for loyal customers.</p>
-        </div>
-      </div>
-
       <div className='page-x grid gap-12 py-16 lg:grid-cols-[1.45fr_0.75fr_0.9fr_1.55fr]' data-gsap-reveal>
          <div>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-5 h-12 w-auto object-contain' />
