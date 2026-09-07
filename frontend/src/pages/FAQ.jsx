@@ -75,7 +75,7 @@ const FAQ = () => {
         ))}
       </div>
 
-      <div className="mx-auto mt-12 max-w-4xl bg-[#f7f1ea] p-6 text-center">
+      <div className="mx-auto mt-12 max-w-4xl border border-[#DBCCB7]/70 bg-white p-6 text-center">
         <h2 className="editorial-serif text-2xl font-semibold">Still need help?</h2>
         <p className="mt-3 text-sm leading-6 text-[#6f5860]">
           Our customer care team is happy to assist with orders, deliveries, exchanges, and returns.

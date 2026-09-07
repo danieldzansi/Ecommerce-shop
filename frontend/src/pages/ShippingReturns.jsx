@@ -125,12 +125,12 @@ const ShippingReturns = () => {
         </div>
       </div>
 
-      <div className="mt-12 bg-[#5A0019] p-8 text-white">
+      <div className="mt-12 border border-[#DBCCB7]/70 bg-white p-8 text-[#1d1115]">
         <h2 className="editorial-serif text-3xl font-semibold">Need help?</h2>
-        <p className="mt-3 max-w-3xl leading-7 text-[#DBCCB7]">
+        <p className="mt-3 max-w-3xl leading-7 text-[#6f5860]">
           Our customer care team is available Monday to Friday, 8:30am - 8:00pm, and Saturdays, 09:00am - 8:00pm. Sundays are closed.
         </p>
-        <Link to="/contact" className="mt-6 inline-flex bg-white px-8 py-3 text-sm font-extrabold uppercase tracking-[0.08em] text-[#5A0019]">
+        <Link to="/contact" className="btn-primary mt-6">
           Contact us
         </Link>
       </div>

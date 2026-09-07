@@ -70,10 +70,10 @@ const About = () => {
         </div>
       </div>
 
-      <div className="mt-16 bg-[#5A0019] px-6 py-10 text-white md:px-10">
-        <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#DBCCB7]">Our promise</p>
+      <div className="mt-16 border border-[#DBCCB7]/70 bg-white px-6 py-10 text-[#1d1115] md:px-10">
+        <p className="eyebrow">Our promise</p>
         <h2 className="editorial-serif mt-3 text-3xl font-semibold">Luxury. Style. Confidence. Delivered to your door.</h2>
-        <p className="mt-4 max-w-3xl leading-7 text-[#DBCCB7]">
+        <p className="mt-4 max-w-3xl leading-7 text-[#6f5860]">
           Every piece in our collection is chosen by hand, never in bulk. We check the quality before it is listed and again before it ships. What arrives at your door is exactly what you saw online.
         </p>
       </div>
