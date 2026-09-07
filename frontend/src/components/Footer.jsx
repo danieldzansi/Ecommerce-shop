@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaFacebookF, FaInstagram, FaPinterestP, FaTiktok } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
-import { FiArrowUpRight, FiChevronDown, FiMail, FiMapPin, FiPhone, FiSend } from 'react-icons/fi'
+import { FiArrowUpRight, FiMail, FiMapPin, FiPhone, FiSend } from 'react-icons/fi'
 import { assets } from '../assets/assets'
 import { paymentMethods } from '../assets/paymentMethods'
 
@@ -152,14 +152,6 @@ const Footer = () => {
       <div className='page-x flex flex-col gap-5 border-t border-[#e8e2da] py-5 text-[13px] text-[#4b4650] md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-wrap items-center gap-x-8 gap-y-3'>
           <p>©{new Date().getFullYear()} Èclat De Lee. All Rights Reserved.</p>
-          <button className='inline-flex items-center gap-2' type='button'>
-            <span>GHS</span>
-            <FiChevronDown className='h-4 w-4' aria-hidden='true' />
-          </button>
-          <button className='inline-flex items-center gap-2' type='button'>
-            <span>English</span>
-            <FiChevronDown className='h-4 w-4' aria-hidden='true' />
-          </button>
         </div>
         <div className='flex flex-wrap items-center gap-3'>
           <span>Payment:</span>

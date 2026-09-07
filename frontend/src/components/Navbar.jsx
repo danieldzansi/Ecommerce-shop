@@ -105,20 +105,6 @@ const Navbar = () => {
 
   return (
     <header className='sticky top-0 z-40 bg-white text-[#161616]'>
-      <div className='bg-[#111111] text-white'>
-        <div className='page-x flex min-h-12 items-center justify-between gap-4 text-[13px] font-medium'>
-          <div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-            <a href='tel:0535364221' className='transition hover:text-[#DBCCB7]'>053 536 4221</a>
-            <a href='mailto:eclatdelee26@gmail.com' className='transition hover:text-[#DBCCB7]'>eclatdelee26@gmail.com</a>
-            <Link to='/collection' className='underline underline-offset-4 transition hover:text-[#DBCCB7]'>Our Store</Link>
-          </div>
-          <div className='hidden items-center gap-5 sm:flex'>
-            <span>GHS</span>
-            <span>English</span>
-          </div>
-        </div>
-      </div>
-
       <div className='group/nav relative border-b border-[#ece7df] bg-white'>
         <div className='page-x flex h-[82px] items-center justify-between'>
           <Link to='/' className='flex items-center gap-3'>
