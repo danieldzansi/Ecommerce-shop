@@ -8,8 +8,13 @@ const Hero = () => {
   const heroRef = useRef(null)
   const imageRef = useRef(null)
   const copyRef = useRef(null)
+  const arrowRefs = useRef([])
+  const ctaRef = useRef(null)
   const slides = assets.heroSlides || []
   const slide = slides[active] || slides[0]
+  const titleLines = slide?.title?.split('. ').filter(Boolean).map((line, index, lines) => (
+    `${line}${index < lines.length - 1 ? '.' : ''}`
+  )) || []
 
   const goToSlide = (direction) => {
     setActive((current) => (current + direction + slides.length) % slides.length)
@@ -30,19 +35,40 @@ const Hero = () => {
       const gsap = gsapModule.gsap || gsapModule.default
 
       ctx = gsap.context(() => {
-        const copyItems = copyRef.current?.children ? gsap.utils.toArray(copyRef.current.children) : []
+        const eyebrow = copyRef.current?.querySelector('[data-hero-eyebrow]')
+        const titleItems = gsap.utils.toArray('[data-hero-title-line]')
+        const body = copyRef.current?.querySelector('[data-hero-body]')
+        const controls = [...arrowRefs.current.filter(Boolean), ctaRef.current].filter(Boolean)
 
         gsap.timeline()
           .fromTo(
             imageRef.current,
-            { scale: 1.06, autoAlpha: 0.8 },
-            { scale: 1, autoAlpha: 1, duration: 1.2, ease: 'power2.out' }
+            { scale: 1.08, autoAlpha: 0.82 },
+            { scale: 1, autoAlpha: 1, duration: 1.35, ease: 'power2.out' }
           )
           .fromTo(
-            copyItems,
-            { autoAlpha: 0, y: 26 },
-            { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.09, ease: 'power3.out' },
-            '-=0.8'
+            eyebrow,
+            { autoAlpha: 0, y: 14 },
+            { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out' },
+            '-=0.85'
+          )
+          .fromTo(
+            titleItems,
+            { autoAlpha: 0, yPercent: 110 },
+            { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.12, ease: 'power4.out' },
+            '-=0.25'
+          )
+          .fromTo(
+            body,
+            { autoAlpha: 0, y: 18 },
+            { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power3.out' },
+            '-=0.45'
+          )
+          .fromTo(
+            controls,
+            { autoAlpha: 0, y: 14 },
+            { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.08, ease: 'power3.out' },
+            '-=0.2'
           )
       }, heroRef)
     })
@@ -91,6 +117,7 @@ const Hero = () => {
       <div className='absolute inset-0 bg-black/30' />
 
       <button
+        ref={(element) => { arrowRefs.current[0] = element }}
         type='button'
         onClick={() => goToSlide(-1)}
         className='absolute left-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:left-5 sm:h-12 sm:w-12'
@@ -100,6 +127,7 @@ const Hero = () => {
       </button>
 
       <button
+        ref={(element) => { arrowRefs.current[1] = element }}
         type='button'
         onClick={() => goToSlide(1)}
         className='absolute right-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:right-5 sm:h-12 sm:w-12'
@@ -109,14 +137,24 @@ const Hero = () => {
       </button>
 
       <div ref={copyRef} className='relative z-10 mx-auto flex min-h-[560px] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center md:min-h-[620px]'>
-        <p className='mb-4 text-xs font-extrabold uppercase tracking-[0.28em] text-white/75'>{slide.eyebrow}</p>
+        <p data-hero-eyebrow className='mb-4 text-xs font-extrabold uppercase tracking-[0.28em] text-white/75'>{slide.eyebrow}</p>
         <h1 className='editorial-serif max-w-5xl text-5xl font-semibold leading-[0.95] text-white sm:text-7xl lg:text-8xl'>
-          {slide.title}
+          {titleLines.map((line) => (
+            <span key={line} className='block overflow-hidden'>
+              <span data-hero-title-line className='block will-change-transform'>
+                {line}
+              </span>
+            </span>
+          ))}
         </h1>
-        <p className='mt-7 max-w-2xl text-base font-medium text-white/85 sm:text-xl'>
+        <p data-hero-body className='mt-7 max-w-2xl text-base font-medium text-white/85 sm:text-xl'>
           {slide.text}
         </p>
-        <Link to='/collection' className='mt-10 bg-white px-11 py-4 text-sm font-extrabold lowercase tracking-wide text-[#5A0019] transition hover:bg-[#DBCCB7]'>
+        <Link
+          ref={ctaRef}
+          to='/collection'
+          className='mt-10 bg-white px-11 py-4 text-sm font-extrabold lowercase tracking-wide text-[#5A0019] transition hover:bg-[#DBCCB7]'
+        >
           {slide.cta}
         </Link>
 

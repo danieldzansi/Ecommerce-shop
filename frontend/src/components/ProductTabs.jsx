@@ -36,6 +36,9 @@ const ProductTabs = () => {
   const { products } = useContext(ShopContext)
   const [activeTab, setActiveTab] = useState('new')
   const gridRef = useRef(null)
+  const tabsRef = useRef(null)
+  const underlineRef = useRef(null)
+  const tabRefs = useRef({})
 
   const tabProducts = useMemo(() => {
     const sortedProducts = [...products].sort((a, b) => Number(b.date || 0) - Number(a.date || 0))
@@ -77,24 +80,70 @@ const ProductTabs = () => {
     }
   }, [activeTab, activeProducts.length])
 
+  useLayoutEffect(() => {
+    const tabsEl = tabsRef.current
+    const underline = underlineRef.current
+    const activeButton = tabRefs.current[activeTab]
+
+    if (!tabsEl || !underline || !activeButton) return undefined
+
+    let isMounted = true
+
+    const moveUnderline = (gsap, animate = true) => {
+      const tabsRect = tabsEl.getBoundingClientRect()
+      const buttonRect = activeButton.getBoundingClientRect()
+      const x = buttonRect.left - tabsRect.left
+
+      gsap.to(underline, {
+        x,
+        width: buttonRect.width,
+        duration: animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0.42 : 0,
+        ease: 'power3.out',
+      })
+    }
+
+    let handleResize = () => {}
+
+    import('gsap').then((gsapModule) => {
+      if (!isMounted) return
+
+      const gsap = gsapModule.gsap || gsapModule.default
+
+      moveUnderline(gsap)
+      handleResize = () => moveUnderline(gsap, false)
+      window.addEventListener('resize', handleResize)
+    })
+
+    return () => {
+      isMounted = false
+      window.removeEventListener('resize', handleResize)
+      import('gsap').then((gsapModule) => {
+        const gsap = gsapModule.gsap || gsapModule.default
+        gsap.killTweensOf(underline)
+      })
+    }
+  }, [activeTab])
+
   return (
     <section className='page-x section-y border-b border-[#DBCCB7]/60 bg-white' data-gsap-reveal>
       <div className='mb-10 flex justify-center'>
-        <div className='flex flex-wrap items-center justify-center gap-x-10 gap-y-4'>
+        <div ref={tabsRef} className='relative flex flex-wrap items-center justify-center gap-x-10 gap-y-4 pb-2'>
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              ref={(element) => { tabRefs.current[tab.id] = element }}
               type='button'
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-2 text-2xl font-semibold transition sm:text-3xl ${
+              className={`text-2xl font-semibold transition sm:text-3xl ${
                 activeTab === tab.id
-                  ? 'border-b-2 border-[#161616] text-[#161616]'
-                  : 'border-b-2 border-transparent text-[#4b4650] hover:text-[#161616]'
+                  ? 'text-[#161616]'
+                  : 'text-[#4b4650] hover:text-[#161616]'
               }`}
             >
               {tab.label}
             </button>
           ))}
+          <span ref={underlineRef} className='absolute bottom-0 left-0 h-0.5 bg-[#161616]' aria-hidden='true' />
         </div>
       </div>
 
