@@ -51,7 +51,7 @@ useEffect(() => {
 
   return (
     <section>
-      <div className='page-x border-b border-[#DBCCB7]/60 py-14'>
+      <div className='page-x border-b border-[#DBCCB7]/60 py-14' data-gsap-reveal>
         <p className='eyebrow'>Collection</p>
         <h1 className='editorial-serif mt-3 text-4xl font-semibold text-[#1d1115] md:text-5xl'>The Collection</h1>
         <p className='mt-4 max-w-2xl leading-7 text-[#6f5860]'>
@@ -59,7 +59,7 @@ useEffect(() => {
         </p>
       </div>
 
-      <div className='page-x flex flex-col gap-5 border-b border-[#DBCCB7]/60 py-5 md:flex-row md:items-center md:justify-between'>
+      <div className='page-x flex flex-col gap-5 border-b border-[#DBCCB7]/60 py-5 md:flex-row md:items-center md:justify-between' data-gsap-reveal>
         <div className='flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-semibold text-[#9aa2b2]'>
           <button onClick={() => setCategory([])} className={`pb-3 ${Category.length === 0 ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}>All</button>
           {productCategories.slice(0, 5).map((item) => (

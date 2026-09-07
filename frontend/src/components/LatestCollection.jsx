@@ -14,7 +14,7 @@ const LatestCollection = () => {
   }, [products]);
 
   return (
-    <section className='page-x section-y border-b border-[#DBCCB7]/60'>
+    <section className='page-x section-y border-b border-[#DBCCB7]/60' data-gsap-reveal>
       <div className='mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end'>
         <div>
           <Title text1={'New in'} text2={'Fresh arrivals'} />

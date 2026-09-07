@@ -5,7 +5,7 @@ const NewsLeterBox = () => {
       event.preventDefault()
   }
   return (
-    <section className='page-x section-y text-center'>
+    <section className='page-x section-y text-center' data-gsap-reveal>
       <p className='eyebrow'>Private list</p>
       <h2 className='editorial-serif mx-auto mt-3 max-w-2xl text-4xl font-semibold leading-tight text-[#1d1115] md:text-5xl'>First look at the next edit</h2>
       <p className='mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6f5860]'>

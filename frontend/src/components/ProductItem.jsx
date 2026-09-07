@@ -5,9 +5,9 @@ import AssetImage from './AssetImage'
 
 const ProductItem = ({ id, image, name, price }) => {
 
-    const {currency}=useContext(ShopContext)
+  const {currency}=useContext(ShopContext)
   return (
-    <Link className='group block cursor-pointer text-[#1d1115]' to={`/product/${id}`}>
+    <Link className='group block cursor-pointer text-[#1d1115]' to={`/product/${id}`} data-gsap-product>
        <div className='relative overflow-hidden bg-white'>
         <AssetImage asset={image?.[0]} className='aspect-[3/4] w-full object-cover transition duration-500 group-hover:scale-105' alt={name} />
         <button type='button' className='absolute right-3 top-3 grid h-9 w-9 place-items-center bg-white/90 text-[#5A0019] shadow-sm transition hover:bg-[#DBCCB7]' aria-label='Save item'>

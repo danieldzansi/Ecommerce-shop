@@ -35,7 +35,7 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className='border-t border-[#e8e2da] bg-white text-[#161616]'>
-      <div className='page-x grid gap-8 border-b border-[#e8e2da] py-12 text-center md:grid-cols-4'>
+      <div className='page-x grid gap-8 border-b border-[#e8e2da] py-12 text-center md:grid-cols-4' data-gsap-reveal>
         <div>
           <p className='text-xl font-semibold'>14-Day Returns</p>
           <p className='mt-3 text-[15px] leading-6 text-[#66616a]'>Risk-free shopping with easy returns.</p>
@@ -54,7 +54,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className='page-x grid gap-12 py-16 lg:grid-cols-[1.45fr_0.75fr_0.9fr_1.55fr]'>
+      <div className='page-x grid gap-12 py-16 lg:grid-cols-[1.45fr_0.75fr_0.9fr_1.55fr]' data-gsap-reveal>
          <div>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-5 h-12 w-auto object-contain' />
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>

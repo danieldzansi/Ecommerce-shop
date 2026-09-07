@@ -16,10 +16,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import WhatsAppButton from "./components/WhatsAppButton";
+import usePageAnimations from "./hooks/usePageAnimations";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
+  usePageAnimations();
+
   return (
     <div className="min-h-screen bg-white text-[#1d1115]">
       <ToastContainer />

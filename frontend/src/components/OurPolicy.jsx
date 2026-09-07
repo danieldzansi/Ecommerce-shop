@@ -4,7 +4,7 @@ import AssetImage from './AssetImage'
 
 const OurPolicy = () => {
   return (
-    <section className='page-x grid gap-6 border-y border-[#DBCCB7]/60 py-12 text-sm text-[#1d1115] md:grid-cols-3'>
+    <section className='page-x grid gap-6 border-y border-[#DBCCB7]/60 py-12 text-sm text-[#1d1115] md:grid-cols-3' data-gsap-reveal>
       <div className='flex items-start gap-4'>  
         <AssetImage asset={assets.exchange_icon} className='mt-1 w-8' alt="Exchange" />
         <div>

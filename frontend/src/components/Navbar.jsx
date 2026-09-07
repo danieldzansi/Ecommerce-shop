@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { assets } from '../assets/assets';
 import { NavLink, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
@@ -60,9 +60,48 @@ const pageLinks = [
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const drawerRef = useRef(null);
   const { setShowSearch } = useContext(ShopContext);
 
   const cartCount = useCartStore((state) => state.getCartCount());
+
+  useLayoutEffect(() => {
+    const drawer = drawerRef.current;
+    if (!drawer) return undefined;
+
+    let isMounted = true;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    import('gsap').then((gsapModule) => {
+      if (!isMounted) return;
+
+      const gsap = gsapModule.gsap || gsapModule.default;
+
+      if (prefersReducedMotion) {
+        gsap.set(drawer, { xPercent: visible ? 0 : 100, autoAlpha: visible ? 1 : 0 });
+        return;
+      }
+
+      gsap.to(drawer, {
+        xPercent: visible ? 0 : 100,
+        autoAlpha: visible ? 1 : 0,
+        duration: visible ? 0.48 : 0.3,
+        ease: visible ? 'power3.out' : 'power2.in',
+      });
+
+      if (visible) {
+        gsap.fromTo(
+          drawer.querySelectorAll('a'),
+          { x: 18, autoAlpha: 0 },
+          { x: 0, autoAlpha: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', delay: 0.12 }
+        );
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [visible]);
 
   return (
     <header className='sticky top-0 z-40 bg-white text-[#161616]'>
@@ -177,9 +216,10 @@ const Navbar = () => {
       </div>
 
       <div
-        className={`fixed top-0 right-0 z-50 h-screen overflow-hidden bg-white shadow-2xl transition-all duration-300 ${
-          visible ? 'w-full max-w-sm' : 'w-0'
-        }`}
+        ref={drawerRef}
+        className='fixed top-0 right-0 z-50 h-screen w-full max-w-sm overflow-hidden bg-white shadow-2xl'
+        style={{ transform: 'translateX(100%)', opacity: 0, pointerEvents: visible ? 'auto' : 'none' }}
+        aria-hidden={!visible}
       >
         <div className='flex min-w-[320px] flex-col text-[#1d1115]'>
           <button

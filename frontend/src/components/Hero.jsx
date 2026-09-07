@@ -1,16 +1,57 @@
-import React, { useRef, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import { assets } from '../assets/assets'
 import { Link } from 'react-router-dom'
 
 const Hero = () => {
   const [active, setActive] = useState(0)
   const touchStartX = useRef(null)
+  const heroRef = useRef(null)
+  const imageRef = useRef(null)
+  const copyRef = useRef(null)
   const slides = assets.heroSlides || []
   const slide = slides[active] || slides[0]
 
   const goToSlide = (direction) => {
     setActive((current) => (current + direction + slides.length) % slides.length)
   }
+
+  useLayoutEffect(() => {
+    if (!slide) return undefined
+
+    let ctx
+    let isMounted = true
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion) return undefined
+
+    import('gsap').then((gsapModule) => {
+      if (!isMounted) return
+
+      const gsap = gsapModule.gsap || gsapModule.default
+
+      ctx = gsap.context(() => {
+        const copyItems = copyRef.current?.children ? gsap.utils.toArray(copyRef.current.children) : []
+
+        gsap.timeline()
+          .fromTo(
+            imageRef.current,
+            { scale: 1.06, autoAlpha: 0.8 },
+            { scale: 1, autoAlpha: 1, duration: 1.2, ease: 'power2.out' }
+          )
+          .fromTo(
+            copyItems,
+            { autoAlpha: 0, y: 26 },
+            { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.09, ease: 'power3.out' },
+            '-=0.8'
+          )
+      }, heroRef)
+    })
+
+    return () => {
+      isMounted = false
+      ctx?.revert()
+    }
+  }, [active, slide])
 
   if (!slide) return null
 
@@ -31,12 +72,14 @@ const Hero = () => {
 
   return (
     <section
+      ref={heroRef}
       className='relative min-h-[560px] touch-pan-y overflow-hidden bg-white text-white md:min-h-[620px]'
       style={{ backgroundColor: slide.background || undefined }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       <img
+        ref={imageRef}
         src={slide.image}
         alt=""
         className='absolute inset-0 h-full w-full object-cover'
@@ -65,7 +108,7 @@ const Hero = () => {
         <span className='text-3xl leading-none'>&rsaquo;</span>
       </button>
 
-      <div className='relative z-10 mx-auto flex min-h-[560px] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center md:min-h-[620px]'>
+      <div ref={copyRef} className='relative z-10 mx-auto flex min-h-[560px] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center md:min-h-[620px]'>
         <p className='mb-4 text-xs font-extrabold uppercase tracking-[0.28em] text-white/75'>{slide.eyebrow}</p>
         <h1 className='editorial-serif max-w-5xl text-5xl font-semibold leading-[0.95] text-white sm:text-7xl lg:text-8xl'>
           {slide.title}

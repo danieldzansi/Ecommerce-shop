@@ -17,7 +17,7 @@ const BestSeller = () => {
   }, [products]);
 
   return (
-    <section className="page-x section-y bg-white">
+    <section className="page-x section-y bg-white" data-gsap-reveal>
       <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div>
           <Title text1={"Most loved"} text2={"The pieces people come back for"} />
