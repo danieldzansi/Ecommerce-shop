@@ -53,6 +53,13 @@ const List = ({ token }) => {
     setConfirmId(null); // close modal
   };
 
+  const isOnSale = (item) => {
+    const price = Number(item.price || 0);
+    const compareAtPrice = Number(item.compareAtPrice || 0);
+
+    return (item.onSale || compareAtPrice > price) && compareAtPrice > price;
+  };
+
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
       <div>
@@ -90,6 +97,11 @@ const List = ({ token }) => {
               <p className="font-bold text-slate-950">
                 {Currency}
                 {item.price}
+                {isOnSale(item) && (
+                  <span className="mt-1 block text-xs font-semibold text-rose-600">
+                    Sale from {Currency}{item.compareAtPrice}
+                  </span>
+                )}
               </p>
 
               <div className="flex flex-wrap justify-start gap-2 md:justify-center">

@@ -40,6 +40,8 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [compareAtPrice, setCompareAtPrice] = useState("");
+  const [onSale, setOnSale] = useState(false);
   const [category, setCategory] = useState(productCategoryGroups[0].name);
   const [subCategory, setSubCategory] = useState(productCategoryGroups[0].subCategories[0]);
   const [bestseller, setBestseller] = useState(false);
@@ -62,6 +64,11 @@ const Add = ({ token }) => {
       return;
     }
 
+    if (onSale && (!compareAtPrice || Number(compareAtPrice) <= Number(price))) {
+      toast.error("Original price must be higher than the sale price");
+      return;
+    }
+
     setLoading(true); 
 
     try {
@@ -69,6 +76,8 @@ const Add = ({ token }) => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
+      formData.append("compareAtPrice", compareAtPrice);
+      formData.append("onSale", onSale);
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
@@ -94,6 +103,8 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
+        setCompareAtPrice("");
+        setOnSale(false);
         setCategory(productCategoryGroups[0].name);
         setSubCategory(productCategoryGroups[0].subCategories[0]);
         setBestseller(false);
@@ -221,6 +232,19 @@ const Add = ({ token }) => {
             required
           />
         </div>
+
+        <div>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Original Price</p>
+          <input
+            onChange={(e) => setCompareAtPrice(e.target.value)}
+            value={compareAtPrice}
+            className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50 sm:w-[150px]"
+            type="number"
+            placeholder="45"
+            min="0"
+          />
+          <p className="mt-1 text-xs text-slate-500">Use only for sale items.</p>
+        </div>
       </div>
 
       <div>
@@ -251,16 +275,29 @@ const Add = ({ token }) => {
         </div>
       </div>
 
-      <div className="flex gap-2 mt-2">
-        <input
-          onChange={() => setBestseller(!bestseller)}
-          checked={bestseller}
-          type="checkbox"
-          id="bestseller"
-        />
-        <label className="cursor-pointer text-sm font-semibold text-slate-700" htmlFor="bestseller">
-          Add to Bestseller
-        </label>
+      <div className="flex flex-wrap gap-5 mt-2">
+        <div className="flex gap-2">
+          <input
+            onChange={() => setBestseller(!bestseller)}
+            checked={bestseller}
+            type="checkbox"
+            id="bestseller"
+          />
+          <label className="cursor-pointer text-sm font-semibold text-slate-700" htmlFor="bestseller">
+            Add to Bestseller
+          </label>
+        </div>
+        <div className="flex gap-2">
+          <input
+            onChange={() => setOnSale(!onSale)}
+            checked={onSale}
+            type="checkbox"
+            id="onSale"
+          />
+          <label className="cursor-pointer text-sm font-semibold text-slate-700" htmlFor="onSale">
+            Add to On Sale
+          </label>
+        </div>
       </div>
 
       <button

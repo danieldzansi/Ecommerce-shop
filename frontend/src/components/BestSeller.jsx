@@ -35,6 +35,8 @@ const BestSeller = () => {
             name={item.name}
             image={item.image}
             price={item.price}
+            compareAtPrice={item.compareAtPrice}
+            onSale={item.onSale}
           />
         ))}
       </div>

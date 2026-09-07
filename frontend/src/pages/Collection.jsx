@@ -123,6 +123,8 @@ useEffect(() => {
               name={item.name}
               id={item._id}
               price={item.price}
+              compareAtPrice={item.compareAtPrice}
+              onSale={item.onSale}
               image={item.image}
             />
           ))}

@@ -26,7 +26,15 @@ const LatestCollection = () => {
 
       <div className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5'>
         {latestProducts.map((item, index) => (
-          <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
+          <ProductItem
+            key={index}
+            id={item._id}
+            image={item.image}
+            name={item.name}
+            price={item.price}
+            compareAtPrice={item.compareAtPrice}
+            onSale={item.onSale}
+          />
         ))}
       </div>
     </section>

@@ -8,6 +8,13 @@
       "when": 1768297225893,
       "tag": "0000_left_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788818339761,
+      "tag": "0001_add_product_sale_fields",
+      "breakpoints": true
     }
   ]
 }

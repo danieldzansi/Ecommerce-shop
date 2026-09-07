@@ -6,11 +6,12 @@ export const products = pgTable("products", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description").notNull(),
   price: real("price").notNull(),
+  compareAtPrice: real("compareAtPrice"),
+  onSale: boolean("onSale").default(false),
   image: jsonb("image").notNull(),
   category: varchar("category", { length: 255 }).notNull(),
   subCategory: varchar("subCategory", { length: 255 }).notNull(),
   sizes: jsonb("sizes").notNull(),
   bestseller: boolean("bestseller").default(false),
 });
-
 

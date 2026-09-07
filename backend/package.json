@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "server": "nodemon server.js",
-    "migrate": "drizzle-kit migrate"
+    "migrate": "drizzle-kit migrate --config=drizzle.config.cjs",
+    "generate": "drizzle-kit generate --config=drizzle.config.cjs",
+    "push": "drizzle-kit push --config=drizzle.config.cjs"
   },
   "author": "",
   "license": "ISC",

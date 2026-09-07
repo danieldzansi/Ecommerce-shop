@@ -45,6 +45,11 @@ const Product = () => {
 
   if (!productData) return <div className="opacity-0"></div>;
 
+  const numericPrice = Number(productData.price || 0);
+  const numericCompareAtPrice = Number(productData.compareAtPrice || 0);
+  const hasSalePrice = (productData.onSale === true || productData.onSale === "true" || numericCompareAtPrice > numericPrice) && numericCompareAtPrice > numericPrice;
+  const discountPercent = hasSalePrice ? Math.round(((numericCompareAtPrice - numericPrice) / numericCompareAtPrice) * 100) : 0;
+
   return (
     <section className="page-x section-y transition-opacity ease-in duration-100">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]">
@@ -85,10 +90,23 @@ const Product = () => {
             <span className="ml-2 text-sm text-[#6f5860]">122 reviews</span>
           </div>
 
-          <p className="mt-6 text-2xl font-bold">
-            {currency}
-            {productData.price}
-          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <p className="text-2xl font-bold">
+              {currency}
+              {productData.price}
+            </p>
+            {hasSalePrice && (
+              <>
+                <p className="text-lg font-semibold text-[#8b7b82] line-through">
+                  {currency}
+                  {productData.compareAtPrice}
+                </p>
+                <span className="rounded-full bg-[#ef3f45] px-3 py-1 text-xs font-extrabold text-white">
+                  -{discountPercent}%
+                </span>
+              </>
+            )}
+          </div>
 
           <p className="mt-5 leading-7 text-[#6f5860]">{productData.description}</p>
 

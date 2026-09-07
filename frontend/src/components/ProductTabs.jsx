@@ -101,7 +101,15 @@ const ProductTabs = () => {
       {activeProducts.length > 0 ? (
         <div ref={gridRef} className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4'>
           {activeProducts.map((item) => (
-            <ProductItem key={item._id || item.id} id={item._id || item.id} image={item.image} name={item.name} price={item.price} />
+            <ProductItem
+              key={item._id || item.id}
+              id={item._id || item.id}
+              image={item.image}
+              name={item.name}
+              price={item.price}
+              compareAtPrice={item.compareAtPrice}
+              onSale={item.onSale}
+            />
           ))}
         </div>
       ) : (

@@ -5,7 +5,19 @@ import { eq } from "drizzle-orm";
 
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
+    const { name, description, price, compareAtPrice, category, subCategory, sizes, bestseller, onSale } = req.body;
+    const productPrice = Number(price);
+    const originalPrice = compareAtPrice ? Number(compareAtPrice) : null;
+    const markedOnSale = onSale === "true";
+    const isOnSale = markedOnSale || Boolean(originalPrice && originalPrice > productPrice);
+
+    if (isOnSale && !originalPrice) {
+      return res.json({ success: false, message: "Original price is required for sale products" });
+    }
+
+    if (originalPrice && originalPrice <= productPrice) {
+      return res.json({ success: false, message: "Original price must be higher than the sale price" });
+    }
 
     const image1 = req.files?.image1?.[0];
     const image2 = req.files?.image2?.[0];
@@ -25,7 +37,9 @@ const addProduct = async (req, res) => {
       name,
       description,
       category,
-      price: Number(price),
+      price: productPrice,
+      compareAtPrice: originalPrice,
+      onSale: isOnSale,
       subCategory,
       bestseller: bestseller === "true",
       sizes: JSON.parse(sizes),

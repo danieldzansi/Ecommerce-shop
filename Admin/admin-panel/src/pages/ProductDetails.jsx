@@ -10,6 +10,13 @@ const money = (value) =>
     maximumFractionDigits: 2,
   })}`;
 
+const isOnSale = (product) => {
+  const price = Number(product?.price || 0);
+  const compareAtPrice = Number(product?.compareAtPrice || 0);
+
+  return (product?.onSale || compareAtPrice > price) && compareAtPrice > price;
+};
+
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -52,6 +59,8 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  const productIsOnSale = isOnSale(product);
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -96,6 +105,11 @@ const ProductDetails = () => {
                 Price
               </div>
               <p className="mt-3 text-2xl font-bold text-slate-950">{money(product.price)}</p>
+              {productIsOnSale && (
+                <p className="mt-1 text-sm font-semibold text-rose-600">
+                  Sale from <span className="line-through">{money(product.compareAtPrice)}</span>
+                </p>
+              )}
             </div>
             <div className="rounded-[8px] border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
@@ -127,6 +141,19 @@ const ProductDetails = () => {
               <span className="text-slate-500">Bestseller</span>
               <span className="inline-flex items-center gap-2 font-bold text-slate-950">
                 {product.bestseller ? (
+                  <>
+                    <FiCheckCircle className="text-emerald-600" />
+                    Yes
+                  </>
+                ) : (
+                  "No"
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">On sale</span>
+              <span className="inline-flex items-center gap-2 font-bold text-slate-950">
+                {productIsOnSale ? (
                   <>
                     <FiCheckCircle className="text-emerald-600" />
                     Yes

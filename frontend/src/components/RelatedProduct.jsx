@@ -27,6 +27,8 @@ const RelatedProduct = ({ category, subCategory }) => {
             id={item._id} 
             name={item.name} 
             price={item.price} 
+            compareAtPrice={item.compareAtPrice}
+            onSale={item.onSale}
             image={item.image}
           />
         ))}
