@@ -5,16 +5,32 @@ import { toast } from "react-toastify";
 import { backendUrl } from "../config";
 import { FiImage, FiPlusCircle } from "react-icons/fi";
 
-const productCategories = [
-  "Handbags",
-  "Shoes",
-  "Wallets & Purses",
-  "Accessories",
-  "Sunglasses",
-  "Watches",
-  "Travel Bags",
-  "Perfumes",
-  "Belts",
+const productCategoryGroups = [
+  {
+    name: "Men",
+    subCategories: ["Bags", "Watches", "Shoes", "Accessories"],
+  },
+  {
+    name: "Women",
+    subCategories: [
+      "Bags",
+      "Crossbody Bags",
+      "Tote Bags",
+      "Top Handle Bags",
+      "Clutches",
+      "Shoes",
+      "Watches",
+      "Accessories",
+    ],
+  },
+  {
+    name: "Home Aromatics",
+    subCategories: ["Candles", "Diffusers", "Room Sprays"],
+  },
+  {
+    name: "Gift Sets",
+    subCategories: ["Gift Sets"],
+  },
 ];
 
 const Add = ({ token }) => {
@@ -24,10 +40,19 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("Handbags");
-  const [subCategory, setSubCategory] = useState("Accessories");
+  const [category, setCategory] = useState(productCategoryGroups[0].name);
+  const [subCategory, setSubCategory] = useState(productCategoryGroups[0].subCategories[0]);
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const selectedCategory = productCategoryGroups.find((item) => item.name === category) || productCategoryGroups[0];
+  const subCategoryOptions = selectedCategory.subCategories;
+
+  const handleCategoryChange = (value) => {
+    const nextCategory = productCategoryGroups.find((item) => item.name === value) || productCategoryGroups[0];
+
+    setCategory(nextCategory.name);
+    setSubCategory(nextCategory.subCategories[0]);
+  };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -69,8 +94,8 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
-        setCategory("Handbags");
-        setSubCategory("Accessories");
+        setCategory(productCategoryGroups[0].name);
+        setSubCategory(productCategoryGroups[0].subCategories[0]);
         setBestseller(false);
         setSizes([]);
       } else {
@@ -162,12 +187,12 @@ const Add = ({ token }) => {
         <div>
           <p className="mb-2 text-sm font-semibold text-slate-700">Product Category</p>
           <select
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             value={category}
             className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
-            {productCategories.map((item) => (
-              <option key={item} value={item}>{item}</option>
+            {productCategoryGroups.map((item) => (
+              <option key={item.name} value={item.name}>{item.name}</option>
             ))}
           </select>
         </div>
@@ -179,7 +204,7 @@ const Add = ({ token }) => {
             value={subCategory}
             className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
           >
-            {productCategories.map((item) => (
+            {subCategoryOptions.map((item) => (
               <option key={item} value={item}>{item}</option>
             ))}
           </select>

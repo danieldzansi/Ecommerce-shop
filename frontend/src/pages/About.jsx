@@ -4,15 +4,19 @@ import { assets } from '../assets/assets'
 
 const About = () => {
   const categories = [
-    'Luxury handbags',
-    'Designer shoes',
-    'Wallets & purses',
-    'Fashion accessories',
-    'Sunglasses',
-    'Watches',
-    'Travel bags',
-    'Perfumes & belts',
-    'New arrivals',
+    'Men bags',
+    'Men watches',
+    'Men shoes',
+    'Women bags',
+    'Crossbody bags',
+    'Tote bags',
+    'Top handle bags',
+    'Clutches',
+    'Home aromatics',
+    'Candles',
+    'Diffusers',
+    'Room sprays',
+    'Gift sets',
   ]
 
   return (
