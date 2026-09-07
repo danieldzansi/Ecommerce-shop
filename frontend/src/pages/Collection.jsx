@@ -3,15 +3,21 @@ import { ShopContext } from '../context/ShopContext'
 import ProductItem from '../components/ProductItem'
 
 const productCategories = [
-  'Handbags',
+  'Men',
+  'Women',
+  'Bags',
+  'Crossbody Bags',
+  'Tote Bags',
+  'Top Handle Bags',
+  'Clutches',
   'Shoes',
-  'Wallets & Purses',
-  'Accessories',
-  'Sunglasses',
   'Watches',
-  'Travel Bags',
-  'Perfumes',
-  'Belts',
+  'Accessories',
+  'Home Aromatics',
+  'Candles',
+  'Diffusers',
+  'Room Sprays',
+  'Gift Sets',
 ]
 
 const Collection = () => {
