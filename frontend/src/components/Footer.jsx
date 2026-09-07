@@ -1,41 +1,31 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaFacebookF, FaInstagram, FaPinterestP, FaTiktok } from 'react-icons/fa'
-import { FaXTwitter } from 'react-icons/fa6'
-import { FiArrowUpRight, FiMail, FiMapPin, FiPhone, FiSend } from 'react-icons/fi'
+import { FaInstagram } from 'react-icons/fa'
+import { FiArrowUpRight, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 import { assets } from '../assets/assets'
 import { paymentMethods } from '../assets/paymentMethods'
 
 const informationLinks = [
   ['About Us', '/about'],
-  ['Our Stories', '/about'],
-  ['Size Guide', '/faq'],
   ['Contact us', '/contact'],
-  ['Career', '/about'],
-  ['My Account', '/orders'],
+  ['Shop', '/collection'],
+  ['Track Order', '/orders'],
 ]
 
 const customerLinks = [
-  ['Shipping', '/shipping-returns'],
-  ['Return & Refund', '/shipping-returns'],
-  ['Privacy Policy', '/faq'],
-  ['Terms & Conditions', '/faq'],
+  ['Shipping & Returns', '/shipping-returns'],
   ['Orders FAQs', '/faq'],
-  ['My Wishlist', '/collection'],
+  ['Contact Support', '/contact'],
 ]
 
 const socialLinks = [
-  { label: 'Facebook', href: 'https://www.facebook.com', Icon: FaFacebookF },
-  { label: 'X', href: 'https://www.x.com', Icon: FaXTwitter },
   { label: 'Instagram', href: 'https://www.instagram.com/eclatdelee', Icon: FaInstagram },
-  { label: 'TikTok', href: 'https://www.tiktok.com', Icon: FaTiktok },
-  { label: 'Pinterest', href: 'https://www.pinterest.com', Icon: FaPinterestP },
 ]
 
 const Footer = () => {
   return (
     <footer className='border-t border-[#e8e2da] bg-white text-[#161616]'>
-      <div className='page-x grid gap-12 py-16 lg:grid-cols-[1.45fr_0.75fr_0.9fr_1.55fr]' data-gsap-reveal>
+      <div className='page-x grid gap-12 py-16 md:grid-cols-3 lg:grid-cols-[1.45fr_0.75fr_0.9fr]' data-gsap-reveal>
          <div>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-5 h-12 w-auto object-contain' />
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
@@ -90,7 +80,7 @@ const Footer = () => {
             </div>
          </div>
          <div>
-            <p className='mb-5 text-[15px] font-extrabold'>Infomation</p>
+            <p className='mb-5 text-[15px] font-extrabold'>Information</p>
             <ul className='flex flex-col gap-3.5 text-[15px] text-[#4b4650]'>
               {informationLinks.map(([label, to]) => (
                 <li key={label}><Link to={to} className='transition hover:text-[#5A0019]'>{label}</Link></li>
@@ -104,29 +94,6 @@ const Footer = () => {
                 <li key={label}><Link to={to} className='transition hover:text-[#5A0019]'>{label}</Link></li>
               ))}
             </ul>
-         </div>
-         <div>
-            <p className='mb-5 text-[15px] font-extrabold'>Newsletter</p>
-            <p className='max-w-md text-[15px] leading-7 text-[#4b4650]'>
-              Sign up for our newsletter and get 10% off your first purchase.
-            </p>
-            <form className='mt-5 flex max-w-md items-center rounded-full border border-[#161616] bg-white p-1'>
-              <input
-                type='email'
-                placeholder='Enter your e-mail'
-                className='min-w-0 flex-1 rounded-full border-0 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-[#9a949b]'
-                aria-label='Email address'
-              />
-              <button type='submit' className='inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#111111] text-white' aria-label='Subscribe'>
-                <FiSend className='h-5 w-5' aria-hidden='true' />
-              </button>
-            </form>
-            <label className='mt-5 flex max-w-md items-start gap-3 text-[13px] leading-6 text-[#161616]'>
-              <input type='checkbox' className='mt-1 h-4 w-4 shrink-0 border-[#ddd7cf]' />
-              <span>
-                By clicking subscribe, you agree to the <Link to='/faq' className='font-bold underline'>Terms of Service</Link> and <Link to='/faq' className='font-bold underline'>Privacy Policy</Link>.
-              </span>
-            </label>
          </div>
       </div>
 
