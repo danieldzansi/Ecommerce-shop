@@ -25,9 +25,15 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className='border-t border-[#e8e2da] bg-white text-[#161616]'>
-      <div className='page-x grid gap-12 py-16 md:grid-cols-3 lg:grid-cols-[1.45fr_0.75fr_0.9fr]' data-gsap-reveal>
+      <div className='page-x grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1fr_1.2fr_0.8fr_1fr]' data-gsap-reveal>
          <div>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-5 h-12 w-auto object-contain' />
+            <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
+              Elegance, style, and everyday luxury delivered with care.
+            </p>
+         </div>
+         <div>
+            <p className='mb-5 text-[15px] font-extrabold'>Contact</p>
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
               36 Asafoatse Kukudabi ST, Tse-Addo, Accra
             </p>
