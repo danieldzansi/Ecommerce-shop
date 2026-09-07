@@ -4,7 +4,7 @@ import { FiLogOut, FiMenu, FiRefreshCw } from "react-icons/fi";
 
 const Navbar = ({ setToken, onToggleSidebar }) => {
   return (
-    <div className="flex h-[73px] items-center justify-between border-b border-slate-200 bg-white px-4 py-2">
+    <div className="sticky top-0 z-50 flex h-[73px] items-center justify-between border-b border-slate-200 bg-white px-4 py-2">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
