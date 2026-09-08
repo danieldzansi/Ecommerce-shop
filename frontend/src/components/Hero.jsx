@@ -104,7 +104,9 @@ const Hero = () => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[minmax(0,1.18fr)_minmax(560px,1fr)]'>
+      <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[56px_minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[64px_minmax(0,1.18fr)_minmax(560px,1fr)]'>
+        <div className='hidden border-r border-[#e8e2da] bg-white md:block' aria-hidden='true' />
+
         <div className='relative min-h-[420px] overflow-hidden md:min-h-[620px]'>
           <img
             ref={imageRef}
