@@ -25,14 +25,35 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer className='border-t border-[#e8e2da] bg-white text-[#161616]'>
-      <div className='page-x grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1fr_1.2fr_0.8fr_1fr]' data-gsap-reveal>
-         <div>
+      <div className='mx-auto grid w-full max-w-6xl gap-12 px-7 py-16 sm:grid-cols-2 sm:px-10 lg:grid-cols-[1.05fr_1.25fr_0.85fr_1fr] lg:gap-16 lg:px-12 lg:py-20' data-gsap-reveal>
+         <div className='max-w-xs'>
             <img src={assets.logo} alt="Èclat De Lee logo" className='mb-5 h-12 w-auto object-contain' />
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
               Elegance, style, and everyday luxury delivered with care.
             </p>
+            <div className='mt-8 border-t border-[#e8e2da] pt-6'>
+              <p className='mb-4 text-sm font-bold'>Find us here:</p>
+              <div className='flex flex-wrap gap-2.5'>
+                {socialLinks.map(({ label, href, Icon }) => {
+                  const SocialIcon = Icon
+
+                  return (
+                    <a
+                      key={label}
+                      href={href}
+                      target='_blank'
+                      rel='noreferrer'
+                      aria-label={label}
+                      className='inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#161616] text-[#161616] transition hover:border-[#5A0019] hover:bg-[#5A0019] hover:text-white'
+                    >
+                      <SocialIcon className='h-4 w-4' aria-hidden='true' />
+                    </a>
+                  )
+                })}
+              </div>
+            </div>
          </div>
-         <div>
+         <div className='max-w-sm'>
             <p className='mb-5 text-[15px] font-extrabold'>Contact</p>
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
               36 Asafoatse Kukudabi ST, Tse-Addo, Accra
@@ -65,25 +86,6 @@ const Footer = () => {
                 Opposite the Goil Filling Station
               </li>
             </ul>
-
-            <div className='mt-7 flex flex-wrap gap-2.5'>
-              {socialLinks.map(({ label, href, Icon }) => {
-                const SocialIcon = Icon
-
-                return (
-                  <a
-                    key={label}
-                    href={href}
-                    target='_blank'
-                    rel='noreferrer'
-                    aria-label={label}
-                    className='inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#161616] text-[#161616] transition hover:border-[#5A0019] hover:bg-[#5A0019] hover:text-white'
-                  >
-                    <SocialIcon className='h-4 w-4' aria-hidden='true' />
-                  </a>
-                )
-              })}
-            </div>
          </div>
          <div>
             <p className='mb-5 text-[15px] font-extrabold'>Information</p>
@@ -103,7 +105,7 @@ const Footer = () => {
          </div>
       </div>
 
-      <div className='page-x flex flex-col gap-5 border-t border-[#e8e2da] py-5 text-[13px] text-[#4b4650] md:flex-row md:items-center md:justify-between'>
+      <div className='mx-auto flex w-full max-w-6xl flex-col gap-5 border-t border-[#e8e2da] px-7 py-5 text-[13px] text-[#4b4650] sm:px-10 md:flex-row md:items-center md:justify-between lg:px-12'>
         <div className='flex flex-wrap items-center gap-x-8 gap-y-3'>
           <p>©{new Date().getFullYear()} Èclat De Lee. All Rights Reserved.</p>
         </div>
