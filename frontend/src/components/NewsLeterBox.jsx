@@ -50,7 +50,7 @@ const NewsLeterBox = () => {
       <p className='mx-auto mt-4 max-w-xl text-sm leading-6 text-[#6f5860]'>
         Get early access to new drops, quiet restocks, and styling notes made for a more intentional wardrobe.
       </p>
-      <form onSubmit={onSubmitHandler} className='mx-auto mt-8 flex w-full max-w-xl flex-col border border-[#DBCCB7] bg-white p-2 sm:flex-row'>
+      <form onSubmit={onSubmitHandler} className='group mx-auto mt-8 flex w-full max-w-xl flex-col border border-[#DBCCB7] bg-white p-2 transition duration-300 focus-within:border-[#5A0019] focus-within:shadow-[0_16px_40px_rgba(90,0,25,0.08)] sm:flex-row'>
          <input
           className='min-h-12 flex-1 px-4 outline-none'
           type="email"
@@ -59,7 +59,7 @@ const NewsLeterBox = () => {
           onChange={(event) => setEmail(event.target.value)}
           required
         />
-        <button className='btn-primary disabled:cursor-not-allowed disabled:opacity-60' type='submit' disabled={loading}>
+        <button className='btn-primary transition-transform duration-300 group-focus-within:translate-x-0.5 disabled:cursor-not-allowed disabled:opacity-60' type='submit' disabled={loading}>
           {loading ? 'Joining...' : 'Join the list'}
         </button>
       </form>
