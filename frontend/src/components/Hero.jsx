@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { assets } from '../assets/assets'
 import { Link } from 'react-router-dom'
 
@@ -104,16 +104,7 @@ const Hero = () => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[56px_minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[64px_minmax(0,1.18fr)_minmax(560px,1fr)]'>
-        <aside className='hidden border-r border-[#e8e2da] bg-white md:flex md:flex-col md:items-center md:justify-end md:gap-3 md:pb-24'>
-          {['IG', 'WA'].map((item) => (
-            <React.Fragment key={item}>
-              <span className='text-[10px] font-bold uppercase text-[#4b4650]'>{item}</span>
-              {item !== 'WA' && <span className='h-5 w-px bg-[#111111]' aria-hidden='true' />}
-            </React.Fragment>
-          ))}
-        </aside>
-
+      <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[minmax(0,1.18fr)_minmax(560px,1fr)]'>
         <div className='relative min-h-[420px] overflow-hidden md:min-h-[620px]'>
           <img
             ref={imageRef}
