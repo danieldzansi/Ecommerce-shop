@@ -4,7 +4,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { useCartStore } from '../store/CartStore';
 import AssetImage from './AssetImage';
-import { FiChevronDown, FiHeart, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
+import { FiChevronDown, FiHeart, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -159,6 +159,9 @@ const Navbar = () => {
           </nav>
 
           <div className='flex items-center gap-4 text-[#111111]'>
+            <Link to='/' aria-label='Home' className='inline-flex h-10 w-10 items-center justify-center md:hidden'>
+              <FiHome className='h-6 w-6' aria-hidden='true' />
+            </Link>
             <button onClick={() => setShowSearch(true)} className='inline-flex h-10 w-10 items-center justify-center' aria-label='Search'>
               <FiSearch className='h-6 w-6' aria-hidden='true' />
             </button>

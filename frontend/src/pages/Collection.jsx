@@ -103,8 +103,8 @@ useEffect(() => {
           <div>
             <p className='mb-3 text-xs font-extrabold uppercase tracking-[0.18em]'>Categories</p>
             <div className='flex flex-wrap gap-3 text-sm text-[#6f5860]'>
-              {productCategories.map((item) => (
-                <label key={item} className='flex items-center gap-2'>
+              {productCategories.map((item, index) => (
+                <label key={`${item}-${index}`} className='flex items-center gap-2'>
                   <input className='accent-[#5A0019]' type="checkbox" value={item} checked={Category.includes(item)} onChange={toggleCategory} /> {item}
                 </label>
               ))}
