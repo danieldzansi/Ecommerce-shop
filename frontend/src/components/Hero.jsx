@@ -12,7 +12,7 @@ const Hero = () => {
   const ctaRef = useRef(null)
   const slides = assets.heroSlides || []
   const slide = slides[active] || slides[0]
-  const titleLines = slide?.title?.split('. ').filter(Boolean).map((line, index, lines) => (
+  const titleLines = slide?.titleLines || slide?.title?.split('. ').filter(Boolean).map((line, index, lines) => (
     `${line}${index < lines.length - 1 ? '.' : ''}`
   )) || []
 
@@ -43,7 +43,7 @@ const Hero = () => {
         gsap.timeline()
           .fromTo(
             imageRef.current,
-            { scale: 1.08, autoAlpha: 0.82 },
+            { scale: 1.08, autoAlpha: 0.88 },
             { scale: 1, autoAlpha: 1, duration: 1.35, ease: 'power2.out' }
           )
           .fromTo(
@@ -54,8 +54,8 @@ const Hero = () => {
           )
           .fromTo(
             titleItems,
-            { autoAlpha: 0, yPercent: 110 },
-            { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.12, ease: 'power4.out' },
+            { autoAlpha: 0, y: 46 },
+            { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12, ease: 'power4.out' },
             '-=0.25'
           )
           .fromTo(
@@ -99,76 +99,95 @@ const Hero = () => {
   return (
     <section
       ref={heroRef}
-      className='relative min-h-[560px] touch-pan-y overflow-hidden bg-white text-white md:min-h-[620px]'
+      className='relative touch-pan-y overflow-hidden border-b border-[#e8e2da] bg-white text-[#111111]'
       style={{ backgroundColor: slide.background || undefined }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <img
-        ref={imageRef}
-        src={slide.image}
-        alt=""
-        className='absolute inset-0 h-full w-full object-cover'
-        style={{
-          objectFit: slide.fit || 'cover',
-          objectPosition: slide.position || 'center center',
-        }}
-      />
-      <div className='absolute inset-0 bg-black/30' />
+      <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[56px_minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[64px_minmax(0,1.18fr)_minmax(560px,1fr)]'>
+        <aside className='hidden border-r border-[#e8e2da] bg-white md:flex md:flex-col md:items-center md:justify-end md:gap-3 md:pb-24'>
+          {['IG', 'WA'].map((item) => (
+            <React.Fragment key={item}>
+              <span className='text-[10px] font-bold uppercase text-[#4b4650]'>{item}</span>
+              {item !== 'WA' && <span className='h-5 w-px bg-[#111111]' aria-hidden='true' />}
+            </React.Fragment>
+          ))}
+        </aside>
+
+        <div className='relative min-h-[420px] overflow-hidden md:min-h-[620px]'>
+          <img
+            ref={imageRef}
+            src={slide.image}
+            alt=""
+            className='absolute inset-0 h-full w-full object-cover'
+            style={{
+              objectFit: slide.fit || 'cover',
+              objectPosition: slide.position || 'center center',
+            }}
+          />
+        </div>
+
+        <div className='relative min-h-[420px] overflow-hidden bg-white bg-[radial-gradient(#d8d0c8_1px,transparent_1px)] [background-size:22px_22px] md:min-h-[620px]'>
+          <div ref={copyRef} className='relative z-10 flex h-full min-h-[420px] min-w-0 flex-col justify-center px-7 py-16 sm:px-10 md:min-h-[620px] lg:px-12 xl:px-14'>
+            <p data-hero-eyebrow className='mb-5 text-[11px] font-extrabold uppercase tracking-[0.28em] text-[#5A0019]'>{slide.eyebrow}</p>
+            <h1 className='editorial-serif w-full max-w-full text-5xl font-semibold leading-[1.06] text-[#111111] sm:text-6xl lg:text-[4.5rem] xl:text-[5.15rem]'>
+              {titleLines.map((line) => (
+                <span key={line} className='block min-w-0 overflow-visible py-1'>
+                  <span data-hero-title-line className='block min-w-0 will-change-transform'>
+                    {line}
+                  </span>
+                </span>
+              ))}
+            </h1>
+            <p data-hero-body className='mt-7 max-w-lg text-base font-medium leading-7 text-[#4b4650]'>
+              {slide.text}
+            </p>
+            <Link
+              ref={ctaRef}
+              to='/collection'
+              className='mt-9 inline-flex w-fit items-center justify-center bg-[#111111] px-9 py-4 text-sm font-extrabold text-white transition hover:bg-[#5A0019]'
+            >
+              {slide.cta}
+            </Link>
+          </div>
+        </div>
+      </div>
 
       <button
         ref={(element) => { arrowRefs.current[0] = element }}
         type='button'
         onClick={() => goToSlide(-1)}
-        className='absolute left-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:left-5 sm:h-12 sm:w-12'
+        className='absolute bottom-7 right-24 z-20 grid h-10 w-10 place-items-center text-[#111111] transition hover:text-[#5A0019] md:right-28'
         aria-label='Previous hero slide'
       >
-        <span className='text-3xl leading-none'>&lsaquo;</span>
+        <span className='text-3xl leading-none'>&larr;</span>
       </button>
 
       <button
         ref={(element) => { arrowRefs.current[1] = element }}
         type='button'
         onClick={() => goToSlide(1)}
-        className='absolute right-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white/25 text-white backdrop-blur transition hover:bg-white/35 sm:right-5 sm:h-12 sm:w-12'
+        className='absolute bottom-7 right-8 z-20 grid h-10 w-10 place-items-center text-[#111111] transition hover:text-[#5A0019] md:right-12'
         aria-label='Next hero slide'
       >
-        <span className='text-3xl leading-none'>&rsaquo;</span>
+        <span className='text-3xl leading-none'>&rarr;</span>
       </button>
 
-      <div ref={copyRef} className='relative z-10 mx-auto flex min-h-[560px] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center md:min-h-[620px]'>
-        <p data-hero-eyebrow className='mb-4 text-xs font-extrabold uppercase tracking-[0.28em] text-white/75'>{slide.eyebrow}</p>
-        <h1 className='editorial-serif max-w-5xl text-5xl font-semibold leading-[0.95] text-white sm:text-7xl lg:text-8xl'>
-          {titleLines.map((line) => (
-            <span key={line} className='block overflow-hidden'>
-              <span data-hero-title-line className='block will-change-transform'>
-                {line}
-              </span>
-            </span>
-          ))}
-        </h1>
-        <p data-hero-body className='mt-7 max-w-2xl text-base font-medium text-white/85 sm:text-xl'>
-          {slide.text}
-        </p>
-        <Link
-          ref={ctaRef}
-          to='/collection'
-          className='mt-10 bg-white px-11 py-4 text-sm font-extrabold lowercase tracking-wide text-[#5A0019] transition hover:bg-[#DBCCB7]'
-        >
-          {slide.cta}
-        </Link>
+      <div className='absolute bottom-9 right-40 z-20 flex items-end gap-1 text-[#111111] md:right-48'>
+        <span className='text-2xl font-extrabold leading-none'>{active + 1}</span>
+        <span className='mb-1 text-sm font-bold'>/{slides.length}</span>
+      </div>
 
-        <div className='absolute bottom-8 flex items-center gap-2'>
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              type='button'
-              onClick={() => setActive(index)}
-              className={`h-2 rounded-full transition-all ${active === index ? 'w-8 bg-white' : 'w-2 bg-white/50'}`}
-              aria-label={`Show hero slide ${index + 1}`}
-            />
-          ))}
-        </div>
+      <div className='absolute right-8 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-2 md:flex'>
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            type='button'
+            onClick={() => setActive(index)}
+            className={`h-7 w-px transition-all ${active === index ? 'bg-[#111111]' : 'bg-[#b8b0a8]'}`}
+            aria-label={`Show hero slide ${index + 1}`}
+          />
+        ))}
       </div>
     </section>
   )
