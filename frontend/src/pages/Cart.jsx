@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { useCartStore } from "../store/CartStore";
+import { DEFAULT_CART_VARIANT, useCartStore } from "../store/CartStore";
 import { ShopContext } from "../context/ShopContext";
 import AssetImage from "../components/AssetImage";
 
@@ -60,7 +60,9 @@ const Cart = () => {
                 <AssetImage className="h-24 w-20 object-cover" asset={product.image?.[0]} alt={product.name} />
                 <div>
                   <p className="font-semibold">{product.name}</p>
-                  <p className="mt-2 text-sm text-[#6f5860]">Size: {item.size}</p>
+                  {item.size !== DEFAULT_CART_VARIANT && (
+                    <p className="mt-2 text-sm text-[#6f5860]">Size: {item.size}</p>
+                  )}
                   <p>
                     {currency}
                     {product.price}

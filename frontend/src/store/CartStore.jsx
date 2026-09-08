@@ -3,16 +3,20 @@ import { persist } from 'zustand/middleware';
 import { toast } from 'react-toastify';
 import { products } from '../assets/assets';
 
+export const DEFAULT_CART_VARIANT = '__default';
+
 export const useCartStore = create(
   persist(
     (set, get) => ({
       cartItems: {},
 
-      addToCart: (itemId, size) => {
-        if (!size) {
+      addToCart: (itemId, size, requiresSize = true) => {
+        if (requiresSize && !size) {
           toast.error('Select product size');
           return;
         }
+
+        const variant = size || DEFAULT_CART_VARIANT;
 
         set((state) => {
           const cart = { ...state.cartItems };
@@ -23,12 +27,16 @@ export const useCartStore = create(
 
           cart[itemId] = {
             ...cart[itemId],
-            [size]: (cart[itemId][size] || 0) + 1,
+            [variant]: (cart[itemId][variant] || 0) + 1,
           };
 
           toast.success('Item added to cart');
           return { cartItems: cart };
         });
+      },
+
+      decreaseItem: (itemId, size) => {
+        get().decreaseQuantity(itemId, size);
       },
 
       decreaseQuantity: (itemId, size) => {

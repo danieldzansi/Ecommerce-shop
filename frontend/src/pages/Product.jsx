@@ -49,6 +49,10 @@ const Product = () => {
   const numericCompareAtPrice = Number(productData.compareAtPrice || 0);
   const hasSalePrice = (productData.onSale === true || productData.onSale === "true" || numericCompareAtPrice > numericPrice) && numericCompareAtPrice > numericPrice;
   const discountPercent = hasSalePrice ? Math.round(((numericCompareAtPrice - numericPrice) / numericCompareAtPrice) * 100) : 0;
+  const productSizes = Array.isArray(productData.sizes)
+    ? productData.sizes.filter(Boolean)
+    : [];
+  const requiresSize = productSizes.length > 0;
 
   return (
     <section className="page-x section-y transition-opacity ease-in duration-100">
@@ -111,22 +115,26 @@ const Product = () => {
           <p className="mt-5 leading-7 text-[#6f5860]">{productData.description}</p>
 
           <div className="flex flex-col gap-4 my-8">
-            <p className="text-sm font-bold uppercase tracking-[0.16em]">Select Size</p>
-            <div className="flex gap-2">
-              {productData.sizes.map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSize(item)}
-                  className={`min-w-12 border px-4 py-3 text-sm font-semibold ${
-                    item === size ? "border-[#5A0019] bg-[#5A0019] text-white" : "border-[#DBCCB7] bg-white"
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
+            {requiresSize && (
+              <>
+                <p className="text-sm font-bold uppercase tracking-[0.16em]">Select Size</p>
+                <div className="flex gap-2">
+                  {productSizes.map((item, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSize(item)}
+                      className={`min-w-12 border px-4 py-3 text-sm font-semibold ${
+                        item === size ? "border-[#5A0019] bg-[#5A0019] text-white" : "border-[#DBCCB7] bg-white"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
             <button
-              onClick={() => addToCart(productData._id, size)}
+              onClick={() => addToCart(productData._id, size, requiresSize)}
               className="btn-primary w-full sm:w-auto"
             >
               Add to cart
