@@ -59,9 +59,15 @@ const pageLinks = [
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const drawerRef = useRef(null);
-  const { setShowSearch } = useContext(ShopContext);
+  const { setShowSearch, navigate } = useContext(ShopContext);
 
   const cartCount = useCartStore((state) => state.getCartCount());
+
+  const openSearch = () => {
+    setShowSearch(true);
+    setVisible(false);
+    navigate('/collection');
+  };
 
   useLayoutEffect(() => {
     const drawer = drawerRef.current;
@@ -162,7 +168,7 @@ const Navbar = () => {
             <Link to='/' aria-label='Home' className='inline-flex h-10 w-10 items-center justify-center md:hidden'>
               <FiHome className='h-6 w-6' aria-hidden='true' />
             </Link>
-            <button onClick={() => setShowSearch(true)} className='inline-flex h-10 w-10 items-center justify-center' aria-label='Search'>
+            <button onClick={openSearch} className='inline-flex h-10 w-10 items-center justify-center' aria-label='Search'>
               <FiSearch className='h-6 w-6' aria-hidden='true' />
             </button>
             <Link to='/orders' aria-label='Account' className='hidden h-10 w-10 items-center justify-center md:inline-flex'>
