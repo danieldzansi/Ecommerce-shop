@@ -1,65 +1,53 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { assets } from '../assets/assets';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { useCartStore } from '../store/CartStore';
-import AssetImage from './AssetImage';
-import { FiChevronDown, FiHeart, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
+import { FiChevronDown, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
 
 const navItems = [
   { label: 'Home', to: '/' },
-  { label: 'Shop', to: '/collection', hasMenu: true },
-  { label: 'About', to: '/about' },
-  { label: 'Pages', to: '/faq', hasPages: true },
-  { label: 'Track Order', to: '/orders' },
-];
-
-const shopColumns = [
   {
-    title: 'Men',
+    label: 'Men',
+    to: '/collection?category=Men',
     links: [
-      ['Bags', '/collection'],
-      ['Watches', '/collection'],
-      ['Shoes', '/collection'],
-      ['Accessories', '/collection'],
+      ['Bags', '/collection?category=Men&subcategory=Bags'],
+      ['Watches', '/collection?category=Men&subcategory=Watches'],
+      ['Shoes', '/collection?category=Men&subcategory=Shoes'],
+      ['Accessories', '/collection?category=Men&subcategory=Accessories'],
     ],
   },
   {
-    title: 'Women',
+    label: 'Women',
+    to: '/collection?category=Women',
     links: [
-      ['Bags', '/collection'],
-      ['Crossbody Bags', '/collection'],
-      ['Tote Bags', '/collection'],
-      ['Top Handle Bags', '/collection'],
-      ['Clutches', '/collection'],
-      ['Shoes', '/collection'],
-      ['Watches', '/collection'],
-      ['Accessories', '/collection'],
+      ['Bags', '/collection?category=Women&subcategory=Bags'],
+      ['Crossbody Bags', '/collection?category=Women&subcategory=Crossbody%20Bags'],
+      ['Tote Bags', '/collection?category=Women&subcategory=Tote%20Bags'],
+      ['Top Handle Bags', '/collection?category=Women&subcategory=Top%20Handle%20Bags'],
+      ['Clutches', '/collection?category=Women&subcategory=Clutches'],
+      ['Shoes', '/collection?category=Women&subcategory=Shoes'],
+      ['Watches', '/collection?category=Women&subcategory=Watches'],
+      ['Accessories', '/collection?category=Women&subcategory=Accessories'],
     ],
   },
   {
-    title: 'Home Aromatics',
+    label: 'Home Aromatics',
+    to: '/collection?category=Home%20Aromatics',
     links: [
-      ['Candles', '/collection'],
-      ['Diffusers', '/collection'],
-      ['Room Sprays', '/collection'],
-      ['Gift Sets', '/collection'],
+      ['Candles', '/collection?category=Home%20Aromatics&subcategory=Candles'],
+      ['Diffusers', '/collection?category=Home%20Aromatics&subcategory=Diffusers'],
+      ['Room Sprays', '/collection?category=Home%20Aromatics&subcategory=Room%20Sprays'],
     ],
   },
-];
-
-const pageLinks = [
-  ['About Us', '/about'],
-  ['Contact', '/contact'],
-  ['FAQ', '/faq'],
-  ['Shipping & Returns', '/shipping-returns'],
-  ['My Orders', '/orders'],
+  { label: 'Gift Set', to: '/collection?category=Gift%20Sets' },
 ];
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const drawerRef = useRef(null);
   const { setShowSearch, navigate } = useContext(ShopContext);
+  const location = useLocation();
 
   const cartCount = useCartStore((state) => state.getCartCount());
 
@@ -103,56 +91,25 @@ const Navbar = () => {
             <img src={assets.logo} className='h-12 w-auto max-w-[190px] object-contain' alt="Èclat De Lee logo" />
           </Link>
 
-          <nav className='hidden items-center gap-7 text-[15px] font-extrabold md:flex'>
+          <nav className='hidden items-center gap-7 text-[14px] font-extrabold md:flex'>
             {navItems.map((item) => (
               <div key={item.label} className='group/item flex h-[82px] items-center'>
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
                     `flex items-center gap-1.5 transition hover:text-[#5A0019] ${
-                      isActive ? 'text-[#5A0019]' : 'text-[#161616]'
+                      isActive || (item.to.startsWith('/collection') && location.pathname === '/collection') ? 'text-[#5A0019]' : 'text-[#161616]'
                     }`
                   }
                 >
                   <span>{item.label}</span>
-                  {(item.hasMenu || item.hasPages) && <FiChevronDown className='h-4 w-4' aria-hidden='true' />}
+                  {item.links && <FiChevronDown className='h-4 w-4' aria-hidden='true' />}
                 </NavLink>
 
-                {item.hasMenu && (
-                  <div className='invisible absolute left-0 right-0 top-full border-t border-[#f0ebe5] bg-white opacity-0 shadow-[0_22px_45px_rgba(17,17,17,0.08)] transition duration-200 group-hover/item:visible group-hover/item:opacity-100'>
-                    <div className='page-x grid gap-10 py-9 lg:grid-cols-[1fr_1fr_1fr_0.9fr]'>
-                      {shopColumns.map((column) => (
-                        <div key={column.title}>
-                          <p className='mb-5 text-[13px] font-extrabold uppercase tracking-[0.08em]'>{column.title}</p>
-                          <ul className='space-y-3 text-[15px] font-medium text-[#4b4650]'>
-                            {column.links.map(([label, to]) => (
-                              <li key={label}>
-                                <Link to={to} className='transition hover:text-[#5A0019]'>{label}</Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                      <Link to='/collection' className='relative min-h-[260px] overflow-hidden bg-[#efe7dd] text-white'>
-                        <AssetImage asset={assets.heroSlides[0].image} alt='' className='absolute inset-0 h-full w-full object-cover' />
-                        <div className='absolute inset-0 bg-black/25' />
-                        <div className='absolute inset-x-6 top-1/2 -translate-y-1/2 text-center'>
-                          <p className='text-3xl font-extrabold leading-tight'>Shop our top picks</p>
-                          <p className='mt-3 text-sm font-semibold'>Curated fashion finds</p>
-                          <span className='mt-7 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-extrabold text-[#111111]'>
-                            Shop Now
-                            <span aria-hidden='true'>↗</span>
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {item.hasPages && (
+                {item.links && (
                   <div className='invisible absolute top-full w-56 border border-[#ece7df] bg-white p-4 opacity-0 shadow-[0_18px_35px_rgba(17,17,17,0.08)] transition duration-200 group-hover/item:visible group-hover/item:opacity-100'>
                     <ul className='space-y-3 text-sm font-semibold text-[#4b4650]'>
-                      {pageLinks.map(([label, to]) => (
+                      {item.links.map(([label, to]) => (
                         <li key={label}>
                           <Link to={to} className='transition hover:text-[#5A0019]'>{label}</Link>
                         </li>
@@ -171,11 +128,8 @@ const Navbar = () => {
             <button onClick={openSearch} className='inline-flex h-10 w-10 items-center justify-center' aria-label='Search'>
               <FiSearch className='h-6 w-6' aria-hidden='true' />
             </button>
-            <Link to='/orders' aria-label='Account' className='hidden h-10 w-10 items-center justify-center md:inline-flex'>
+            <Link to='/orders' aria-label='Track order' className='hidden h-10 w-10 items-center justify-center md:inline-flex'>
               <FiUser className='h-6 w-6' aria-hidden='true' />
-            </Link>
-            <Link to='/collection' aria-label='Wishlist' className='hidden h-10 w-10 items-center justify-center md:inline-flex'>
-              <FiHeart className='h-6 w-6' aria-hidden='true' />
             </Link>
             <Link to='/cart' className='relative inline-flex h-10 w-10 items-center justify-center' aria-label='Cart'>
               <FiShoppingBag className='h-6 w-6' aria-hidden='true' />
@@ -224,7 +178,7 @@ const Navbar = () => {
             <FiX className='h-6 w-6' aria-hidden='true' />
           </button>
 
-          {[...navItems, { label: 'Contact', to: '/contact' }].map((item) => (
+          {[...navItems, { label: 'Track Order', to: '/orders' }, { label: 'Contact', to: '/contact' }].map((item) => (
             <NavLink
               key={item.label}
               onClick={() => setVisible(false)}

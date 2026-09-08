@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import ProductItem from '../components/ProductItem'
+import { useSearchParams } from 'react-router-dom'
 
 const productCategoryGroups = [
   {
@@ -26,10 +27,19 @@ const productCategories = productCategoryGroups.flatMap((item) => [item.name, ..
 
 const Collection = () => {
   const { products, search,  } = useContext(ShopContext)
+  const [searchParams] = useSearchParams()
   const [showFilter, setShowFilter] = useState(false)
   const [filterProduct, setFilterProducts] = useState([])
 
   const [Category, setCategory] = useState([])
+
+  useEffect(() => {
+    const category = searchParams.get('category')
+    const subCategory = searchParams.get('subcategory')
+    const nextFilters = [category, subCategory].filter(Boolean)
+
+    setCategory(nextFilters)
+  }, [searchParams])
 
   const toggleCategory = (e) => {
     if (Category.includes(e.target.value)) {
