@@ -1,9 +1,48 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
+import { toast } from 'react-toastify'
+import { ShopContext } from '../context/ShopContext'
 
 const NewsLeterBox = () => {
-  const onSubmitHandler=(event)=>{
-      event.preventDefault()
+  const { backend_url } = useContext(ShopContext)
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault()
+
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail) {
+      toast.error('Please enter your email address.')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const backend = backend_url || 'http://localhost:4000'
+      const url = new URL('/api/newsletter/subscribe', backend).toString()
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          source: 'homepage-newsletter',
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Newsletter signup failed.')
+      }
+
+      toast.success(data.message || "You're on the list.")
+      setEmail('')
+    } catch (error) {
+      toast.error(error.message || 'We could not join you to the list right now.')
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
     <section className='page-x section-y text-center' data-gsap-reveal>
       <p className='eyebrow'>Private list</p>
@@ -12,8 +51,17 @@ const NewsLeterBox = () => {
         Get early access to new drops, quiet restocks, and styling notes made for a more intentional wardrobe.
       </p>
       <form onSubmit={onSubmitHandler} className='mx-auto mt-8 flex w-full max-w-xl flex-col border border-[#DBCCB7] bg-white p-2 sm:flex-row'>
-         <input className='min-h-12 flex-1 px-4 outline-none' type="email" placeholder='Email address' required />
-        <button className='btn-primary' type='submit'>Join the list</button>
+         <input
+          className='min-h-12 flex-1 px-4 outline-none'
+          type="email"
+          placeholder='Email address'
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
+        <button className='btn-primary disabled:cursor-not-allowed disabled:opacity-60' type='submit' disabled={loading}>
+          {loading ? 'Joining...' : 'Join the list'}
+        </button>
       </form>
      
     </section>

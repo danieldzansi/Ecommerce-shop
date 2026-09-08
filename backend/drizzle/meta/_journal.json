@@ -15,6 +15,13 @@
       "when": 1788818339761,
       "tag": "0001_add_product_sale_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788826511202,
+      "tag": "0002_faithful_moonstone",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,7 @@ import {
   jsonb,
   numeric,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 const connectionString = process.env.DATABASE_URL;
@@ -40,6 +41,16 @@ export const store = pgTable('store', {
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
 });
+
+export const newsletterSubscribers = pgTable('newsletter_subscribers', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull(),
+  source: text('source').default('homepage'),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  emailIdx: uniqueIndex('newsletter_subscribers_email_unique').on(table.email),
+}));
 
 export const testConnection = async () => {
   try {
