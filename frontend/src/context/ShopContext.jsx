@@ -8,7 +8,7 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
   const currency = "₵";
-  const delivery_fee = 10;
+  const delivery_fee = 60;
 
   const rawBackend = import.meta.env.VITE_BACKEND_URL || "";
   const backend_url = rawBackend.replace(/\/$/, "");

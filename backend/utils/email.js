@@ -89,7 +89,7 @@ export async function sendOrderEmails(order) {
     (s, it) => s + Number(it.price || 0) * Number(it.quantity || 1),
     0
   );
-  const shipping = 10;
+  const shipping = 60;
   const total = Number(order.total_amount || 0);
 
   const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-US', {

@@ -6,7 +6,7 @@ import { ShopContext } from "../context/ShopContext";
 import AssetImage from "../components/AssetImage";
 
 const Cart = () => {
-  const { products, currency } = useContext(ShopContext);
+  const { products, currency, delivery_fee } = useContext(ShopContext);
   const { cartItems, addToCart, removeFromCart, decreaseItem } = useCartStore();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const Cart = () => {
     return product ? acc + product.price * item.quantity : acc;
   }, 0);
 
-  const shipping = cartData.length > 0 ? 10 : 0;
+  const shipping = cartData.length > 0 ? delivery_fee : 0;
   const total = subtotal + shipping;
 
   return (
