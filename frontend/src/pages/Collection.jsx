@@ -25,11 +25,19 @@ const productCategoryGroups = [
 const featuredCategories = productCategoryGroups.map((item) => item.name)
 const productCategories = productCategoryGroups.flatMap((item) => [item.name, ...item.subCategories])
 
+const isOnSale = (product) => {
+  const originalPrice = Number(product?.originalPrice || product?.oldPrice || product?.compareAtPrice)
+  const price = Number(product?.price)
+
+  return product?.onSale === true || product?.onSale === 'true' || product?.sale === true || product?.discountPercent > 0 || originalPrice > price
+}
+
 const Collection = () => {
   const { products, search,  } = useContext(ShopContext)
   const [searchParams] = useSearchParams()
   const [showFilter, setShowFilter] = useState(false)
   const [filterProduct, setFilterProducts] = useState([])
+  const saleOnly = searchParams.get('sale') === 'true'
 
   const [Category, setCategory] = useState([])
 
@@ -66,8 +74,12 @@ useEffect(() => {
     );
   }
 
+  if (saleOnly) {
+    productsCopy = productsCopy.filter(isOnSale);
+  }
+
   setFilterProducts(productsCopy);
-}, [Category, search, products]);
+}, [Category, search, products, saleOnly]);
 
   return (
     <section>

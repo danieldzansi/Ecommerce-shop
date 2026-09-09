@@ -3,6 +3,10 @@ import logo from './image.png'
 import heroDior from './Dior.jpeg'
 import heroBag from './bag.jpeg'
 import heroLook from './image copy.png'
+import categoryAromatics from './acromatics.png'
+import categoryBags from './luxury-bags.png'
+import categorySale from './sales.png'
+import categoryWatches from './watches.png'
 
 const e = React.createElement
 
@@ -154,6 +158,10 @@ const stripe_logo = createSceneAsset('Stripe')
 
 export const assets = {
     logo,
+    categoryAromatics,
+    categoryBags,
+    categorySale,
+    categoryWatches,
     heroSlides: [
         {
             image: heroLook,
