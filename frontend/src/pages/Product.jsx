@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
-import { assets } from "../assets/assets";
 import RelatedProduct from "../components/RelatedProduct";
 import { useCartStore } from "../store/CartStore";
 import AssetImage from "../components/AssetImage";
@@ -85,15 +84,6 @@ const Product = () => {
           <p className="eyebrow">{productData.category}</p>
           <h1 className="editorial-serif mt-3 text-4xl font-semibold leading-tight md:text-5xl">{productData.name}</h1>
 
-          <div className="flex items-center gap-1 mt-2">
-            <AssetImage asset={assets.star_icon} className="w-4 text-yellow-500" alt="Rating star" />
-            <AssetImage asset={assets.star_icon} className="w-4 text-yellow-500" alt="Rating star" />
-            <AssetImage asset={assets.star_icon} className="w-4 text-yellow-500" alt="Rating star" />
-            <AssetImage asset={assets.star_icon} className="w-4 text-yellow-500" alt="Rating star" />
-            <AssetImage asset={assets.star_dull_icon} className="w-4 text-yellow-500" alt="Empty rating star" />
-            <span className="ml-2 text-sm text-[#6f5860]">122 reviews</span>
-          </div>
-
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <p className="text-2xl font-bold">
               {currency}
@@ -169,7 +159,7 @@ const Product = () => {
             }`}
             onClick={() => setActiveTab("reviews")}
           >
-            Reviews (122){" "}
+            Reviews
           </button>
         </div>
 
