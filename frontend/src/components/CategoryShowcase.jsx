@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import { assets } from '../assets/assets'
@@ -29,7 +29,7 @@ const wideBanners = [
   },
 ]
 
-const BannerTile = ({ item, large = false }) => (
+const BannerTile = ({ item, large = false, canLoadImages = false }) => (
   <Link
     to={item.to}
     data-category-card
@@ -37,11 +37,16 @@ const BannerTile = ({ item, large = false }) => (
     aria-label={`Shop ${item.title}`}
   >
     <div className={large ? 'aspect-[5.15/1]' : 'aspect-[2.55/1]'}>
-      <img
-        src={item.image}
-        alt=""
-        className='h-full w-full object-cover object-center transition duration-500 group-hover/category:scale-[1.035]'
-      />
+      {canLoadImages && (
+        <img
+          src={item.image}
+          alt=""
+          loading='lazy'
+          decoding='async'
+          fetchPriority='low'
+          className='h-full w-full object-cover object-center transition duration-500 group-hover/category:scale-[1.035]'
+        />
+      )}
     </div>
     <div className='absolute inset-0 bg-black/28 transition duration-300 group-hover/category:bg-black/18' aria-hidden='true' />
     <div className='absolute inset-0 flex items-center justify-center px-5 text-center'>
@@ -54,6 +59,29 @@ const BannerTile = ({ item, large = false }) => (
 
 const CategoryShowcase = () => {
   const sectionRef = useRef(null)
+  const [canLoadImages, setCanLoadImages] = useState(false)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || canLoadImages) return undefined
+    if (!('IntersectionObserver' in window)) {
+      setCanLoadImages(true)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        setCanLoadImages(true)
+        observer.disconnect()
+      },
+      { rootMargin: '180px 0px' }
+    )
+
+    observer.observe(section)
+
+    return () => observer.disconnect()
+  }, [canLoadImages])
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -113,15 +141,15 @@ const CategoryShowcase = () => {
             </Link>
           </div>
 
-          <div className='grid gap-2 border-t border-[#eee7df] p-2'>
+          <div className='grid gap-2 border-t border-[#eee7df] p-2 [content-visibility:auto] [contain-intrinsic-size:900px]'>
             <div className='grid gap-2 md:grid-cols-2'>
               {featuredBanners.map((item) => (
-                <BannerTile key={item.title} item={item} />
+                <BannerTile key={item.title} item={item} canLoadImages={canLoadImages} />
               ))}
             </div>
 
             {wideBanners.map((item) => (
-              <BannerTile key={item.title} item={item} large />
+              <BannerTile key={item.title} item={item} large canLoadImages={canLoadImages} />
             ))}
           </div>
         </div>
