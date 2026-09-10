@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import ProductItem from '../components/ProductItem'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 const productCategoryGroups = [
   {
@@ -23,6 +23,25 @@ const productCategoryGroups = [
 ]
 
 const featuredCategories = productCategoryGroups.map((item) => item.name)
+const normalizeFilterValue = (value) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]/g, '')
+
+const matchesFilter = (actual, expected) => normalizeFilterValue(actual) === normalizeFilterValue(expected)
+const resolveCategoryName = (value) =>
+  productCategoryGroups.find((item) => matchesFilter(item.name, value))?.name || value
+
+const buildCollectionPath = ({ category = '', subCategories = [], sale = false } = {}) => {
+  const params = new URLSearchParams()
+  if (category) params.set('category', category)
+  subCategories.filter(Boolean).forEach((item) => params.append('subcategory', item))
+  if (sale) params.set('sale', 'true')
+  const query = params.toString()
+  return query ? `/collection?${query}` : '/collection'
+}
 
 const isOnSale = (product) => {
   const originalPrice = Number(product?.originalPrice || product?.oldPrice || product?.compareAtPrice)
@@ -32,42 +51,52 @@ const isOnSale = (product) => {
 }
 
 const Collection = () => {
-  const { products, search,  } = useContext(ShopContext)
+  const { products, search, navigate } = useContext(ShopContext)
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const [showFilter, setShowFilter] = useState(false)
   const [filterProduct, setFilterProducts] = useState([])
   const saleOnly = searchParams.get('sale') === 'true'
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedSubCategories, setSelectedSubCategories] = useState([])
-  const activeCategoryGroup = productCategoryGroups.find((item) => item.name === selectedCategory)
+  const canonicalSelectedCategory = resolveCategoryName(selectedCategory)
+  const activeCategoryGroup = productCategoryGroups.find((item) => matchesFilter(item.name, canonicalSelectedCategory))
   const visibleSubCategories = activeCategoryGroup
     ? activeCategoryGroup.subCategories
     : Array.from(new Set(productCategoryGroups.flatMap((item) => item.subCategories)))
 
   useEffect(() => {
     const category = searchParams.get('category')
-    const subCategory = searchParams.get('subcategory')
+    const subCategories = searchParams.getAll('subcategory')
 
-    setSelectedCategory(category || '')
-    setSelectedSubCategories(subCategory ? [subCategory] : [])
-  }, [searchParams])
+    setSelectedCategory(resolveCategoryName(category || ''))
+    setSelectedSubCategories(subCategories.filter(Boolean))
+  }, [location.search, searchParams])
 
   const toggleSubCategory = (value) => {
-    if (selectedSubCategories.includes(value)) {
-      setSelectedSubCategories(prev => prev.filter(item => item !== value))
-    } else {
-      setSelectedSubCategories(prev => [...prev, value])
-    }
+    const nextSubCategories = selectedSubCategories.includes(value)
+      ? selectedSubCategories.filter(item => item !== value)
+      : [...selectedSubCategories, value]
+
+    setSelectedSubCategories(nextSubCategories)
+    navigate(buildCollectionPath({
+      category: selectedCategory,
+      subCategories: nextSubCategories,
+      sale: saleOnly,
+    }))
   }
 
   const chooseCategory = (value) => {
-    setSelectedCategory((current) => (current === value ? '' : value))
+    const nextCategory = matchesFilter(selectedCategory, value) ? '' : value
+    setSelectedCategory(nextCategory)
     setSelectedSubCategories([])
+    navigate(buildCollectionPath({ category: nextCategory, sale: saleOnly }))
   }
 
   const clearFilters = () => {
     setSelectedCategory('')
     setSelectedSubCategories([])
+    navigate(saleOnly ? '/collection?sale=true' : '/collection')
   }
 
 useEffect(() => {
@@ -82,11 +111,13 @@ useEffect(() => {
 
   
   if (selectedCategory) {
-    productsCopy = productsCopy.filter(item => item.category === selectedCategory);
+    productsCopy = productsCopy.filter(item => matchesFilter(item.category, selectedCategory));
   }
 
   if (selectedSubCategories.length > 0) {
-    productsCopy = productsCopy.filter(item => selectedSubCategories.includes(item.subCategory));
+    productsCopy = productsCopy.filter(item =>
+      selectedSubCategories.some((subCategory) => matchesFilter(item.subCategory, subCategory))
+    );
   }
 
   if (saleOnly) {
@@ -113,7 +144,7 @@ useEffect(() => {
             <button
               key={item}
               onClick={() => chooseCategory(item)}
-              className={`pb-3 ${selectedCategory === item ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}
+              className={`pb-3 ${matchesFilter(selectedCategory, item) ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}
             >
               {item}
             </button>
@@ -148,7 +179,7 @@ useEffect(() => {
                       type="radio"
                       name="collection-category"
                       value={item.name}
-                      checked={selectedCategory === item.name}
+                      checked={matchesFilter(selectedCategory, item.name)}
                       onChange={() => chooseCategory(item.name)}
                     />
                     {item.name}
@@ -175,7 +206,7 @@ useEffect(() => {
               </div>
               {selectedCategory && (
                 <p className='mt-3 text-xs text-[#9aa2b2]'>
-                  Showing subcategories under {selectedCategory}.
+                  Showing subcategories under {canonicalSelectedCategory}.
                 </p>
               )}
             </div>
