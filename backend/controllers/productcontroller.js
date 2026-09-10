@@ -123,6 +123,80 @@ const removeProduct = async (req, res) => {
   }
 };
 
+const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      description,
+      price,
+      compareAtPrice,
+      category,
+      subCategory,
+      sizes,
+      variants,
+      bestseller,
+      onSale,
+    } = req.body;
+
+    if (!id || id === "undefined") {
+      return res.status(400).json({ success: false, message: "Product id is required" });
+    }
+
+    const productPrice = Number(price);
+    const originalPrice = compareAtPrice ? Number(compareAtPrice) : null;
+    const markedOnSale = onSale === true || onSale === "true";
+    const isOnSale = markedOnSale || Boolean(originalPrice && originalPrice > productPrice);
+
+    if (!Number.isFinite(productPrice) || productPrice <= 0) {
+      return res.status(400).json({ success: false, message: "Valid product price is required" });
+    }
+
+    if (isOnSale && !originalPrice) {
+      return res.status(400).json({ success: false, message: "Original price is required for sale products" });
+    }
+
+    if (originalPrice && originalPrice <= productPrice) {
+      return res.status(400).json({ success: false, message: "Original price must be higher than the sale price" });
+    }
+
+    const updateData = {
+      name,
+      description,
+      category,
+      subCategory,
+      price: productPrice,
+      compareAtPrice: originalPrice,
+      onSale: isOnSale,
+      bestseller: bestseller === true || bestseller === "true",
+      sizes: Array.isArray(sizes) ? sizes.filter(Boolean) : [],
+      variants: Array.isArray(variants)
+        ? variants.map((variant) => ({
+            colorName: String(variant.colorName || "").trim(),
+            colorValue: String(variant.colorValue || "").trim(),
+            sizes: Array.isArray(variant.sizes) ? variant.sizes.filter(Boolean) : [],
+            images: Array.isArray(variant.images) ? variant.images.filter(Boolean) : [],
+          }))
+        : [],
+    };
+
+    const [updated] = await db
+      .update(products)
+      .set(updateData)
+      .where(eq(products.id, id))
+      .returning();
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, message: "Product updated", product: updated });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 const singleProduct = async (req, res) => {
   try {
@@ -147,4 +221,4 @@ const singleProduct = async (req, res) => {
 
 
 
-export {listProduct,addProduct,removeProduct,singleProduct}
+export {listProduct,addProduct,removeProduct,singleProduct,updateProduct}

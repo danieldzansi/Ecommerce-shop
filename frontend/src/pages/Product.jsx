@@ -114,7 +114,7 @@ const Product = () => {
                 asset={img}
                 onClick={() => setImage(img)}
                 alt={`${productData.name} thumbnail ${index + 1}`}
-                className="aspect-[3/4] w-20 shrink-0 cursor-pointer border border-[#DBCCB7] object-cover hover:border-[#5A0019]"
+                className="aspect-[3/4] w-20 shrink-0 cursor-pointer border border-[#DBCCB7] bg-white object-contain hover:border-[#5A0019]"
               />
             ))}
           </div>
@@ -124,7 +124,7 @@ const Product = () => {
               ref={mainImageRef}
               asset={image}
               alt={productData.name}
-              className="h-[420px] w-full object-cover sm:h-[520px]"
+              className="h-[420px] w-full bg-white object-contain sm:h-[520px]"
             />
           </div>
         </div>
