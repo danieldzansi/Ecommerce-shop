@@ -43,6 +43,11 @@ const buildCollectionPath = ({ category = '', subCategories = [], sale = false }
   return query ? `/collection?${query}` : '/collection'
 }
 
+const subCategoryGroups = {
+  bags: ['Bags', 'Crossbody Bags', 'Tote Bags', 'Top Handle Bags', 'Clutches'],
+  watches: ['Watches'],
+}
+
 const isOnSale = (product) => {
   const originalPrice = Number(product?.originalPrice || product?.oldPrice || product?.compareAtPrice)
   const price = Number(product?.price)
@@ -57,6 +62,7 @@ const Collection = () => {
   const [showFilter, setShowFilter] = useState(false)
   const [filterProduct, setFilterProducts] = useState([])
   const saleOnly = searchParams.get('sale') === 'true'
+  const filterGroup = normalizeFilterValue(searchParams.get('group'))
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedSubCategories, setSelectedSubCategories] = useState([])
   const canonicalSelectedCategory = resolveCategoryName(selectedCategory)
@@ -120,12 +126,18 @@ useEffect(() => {
     );
   }
 
+  if (filterGroup && subCategoryGroups[filterGroup]) {
+    productsCopy = productsCopy.filter(item =>
+      subCategoryGroups[filterGroup].some((subCategory) => matchesFilter(item.subCategory, subCategory))
+    );
+  }
+
   if (saleOnly) {
     productsCopy = productsCopy.filter(isOnSale);
   }
 
   setFilterProducts(productsCopy);
-}, [selectedCategory, selectedSubCategories, search, products, saleOnly]);
+}, [selectedCategory, selectedSubCategories, search, products, saleOnly, filterGroup]);
 
   return (
     <section>
@@ -215,6 +227,7 @@ useEffect(() => {
 
         <p className='mb-8 text-sm font-medium text-[#9aa2b2]'>
           {filterProduct.length} {filterProduct.length === 1 ? 'product' : 'products'}
+          {filterGroup === 'bags' && <span className='ml-2 text-[#5A0019]'>in bags</span>}
         </p>
 
         <div className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4'>

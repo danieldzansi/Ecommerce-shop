@@ -7,7 +7,7 @@ const featuredBanners = [
   {
     title: 'Luxury Bags',
     image: assets.categoryBags,
-    to: '/collection?subcategory=Bags',
+    to: '/collection?group=bags',
   },
   {
     title: 'Watches',
