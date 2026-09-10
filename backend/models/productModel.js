@@ -12,6 +12,6 @@ export const products = pgTable("products", {
   category: varchar("category", { length: 255 }).notNull(),
   subCategory: varchar("subCategory", { length: 255 }).notNull(),
   sizes: jsonb("sizes").notNull(),
+  variants: jsonb("variants").default([]),
   bestseller: boolean("bestseller").default(false),
 });
-

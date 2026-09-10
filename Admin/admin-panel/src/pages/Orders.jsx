@@ -161,7 +161,14 @@ const Orders = ({ token }) => {
                     key={i}
                     className="flex items-center justify-between gap-3 rounded-[8px] bg-slate-50 px-3 py-3 text-sm"
                   >
-                    <span className="font-semibold text-slate-950">{it.name}</span>
+                    <span className="font-semibold text-slate-950">
+                      {it.name}
+                      {(it.colorName || it.size) && (
+                        <span className="mt-1 block text-xs font-medium text-slate-500">
+                          {[it.colorName && `Colour: ${it.colorName}`, it.size && `Size: ${it.size}`].filter(Boolean).join(" | ")}
+                        </span>
+                      )}
+                    </span>
                     <span className="text-slate-500">Qty {it.quantity}</span>
                     <span className="font-bold text-slate-950">{money(it.price)}</span>
                   </div>

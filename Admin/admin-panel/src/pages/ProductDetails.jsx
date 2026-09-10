@@ -137,6 +137,30 @@ const ProductDetails = () => {
                 {(product.sizes || []).join(", ") || "None"}
               </span>
             </div>
+            <div className="border-b border-slate-100 pb-3">
+              <div className="mb-2 flex justify-between">
+                <span className="text-slate-500">Colours</span>
+                <span className="font-bold text-slate-950">
+                  {(product.variants || []).length || "None"}
+                </span>
+              </div>
+              {(product.variants || []).length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((variant, index) => (
+                    <span
+                      key={`${variant.colorName}-${index}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700"
+                    >
+                      <span
+                        className="h-3 w-3 rounded-full border border-black/10"
+                        style={{ backgroundColor: variant.colorValue || "#ffffff" }}
+                      />
+                      {variant.colorName || "Colour"}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Bestseller</span>
               <span className="inline-flex items-center gap-2 font-bold text-slate-950">

@@ -3,7 +3,7 @@ import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../config";
-import { FiImage, FiPlusCircle } from "react-icons/fi";
+import { FiImage, FiPlus, FiPlusCircle, FiTrash2 } from "react-icons/fi";
 
 const productCategoryGroups = [
   {
@@ -33,6 +33,19 @@ const productCategoryGroups = [
   },
 ];
 
+const sizePresets = {
+  clothing: ["S", "M", "L", "XL", "XXL"],
+  numeric: Array.from({ length: 18 }, (_, index) => String(index + 23)),
+  oneSize: ["One Size"],
+};
+
+const emptyVariant = () => ({
+  colorName: "",
+  colorValue: "#5A0019",
+  sizes: [],
+  images: [false, false, false, false],
+});
+
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([false, false, false, false]);
@@ -45,7 +58,10 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState(productCategoryGroups[0].name);
   const [subCategory, setSubCategory] = useState(productCategoryGroups[0].subCategories[0]);
   const [bestseller, setBestseller] = useState(false);
+  const [sizeMode, setSizeMode] = useState("clothing");
+  const [customSize, setCustomSize] = useState("");
   const [sizes, setSizes] = useState([]);
+  const [variants, setVariants] = useState([]);
   const selectedCategory = productCategoryGroups.find((item) => item.name === category) || productCategoryGroups[0];
   const subCategoryOptions = selectedCategory.subCategories;
 
@@ -82,8 +98,23 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
+      formData.append(
+        "variants",
+        JSON.stringify(
+          variants.map((variant) => ({
+            colorName: variant.colorName,
+            colorValue: variant.colorValue,
+            sizes: variant.sizes.length > 0 ? variant.sizes : sizes,
+          }))
+        )
+      );
       images.forEach((image, index) => {
         if (image) formData.append(`image${index + 1}`, image);
+      });
+      variants.forEach((variant, variantIndex) => {
+        variant.images.forEach((image, imageIndex) => {
+          if (image) formData.append(`variant_${variantIndex}_image_${imageIndex + 1}`, image);
+        });
       });
 
       const response = await axios.post(
@@ -108,7 +139,10 @@ const Add = ({ token }) => {
         setCategory(productCategoryGroups[0].name);
         setSubCategory(productCategoryGroups[0].subCategories[0]);
         setBestseller(false);
+        setSizeMode("clothing");
+        setCustomSize("");
         setSizes([]);
+        setVariants([]);
       } else {
         toast.error(response.data.message);
       }
@@ -123,6 +157,61 @@ const Add = ({ token }) => {
   const updateImage = (index, file) => {
     setImages((prev) => prev.map((image, imageIndex) => (imageIndex === index ? file : image)));
   };
+
+  const toggleSize = (size) => {
+    setSizes((prev) =>
+      prev.includes(size) ? prev.filter((item) => item !== size) : [...prev, size]
+    );
+  };
+
+  const handleSizeModeChange = (mode) => {
+    setSizeMode(mode);
+    if (mode === "oneSize") {
+      setSizes(sizePresets.oneSize);
+    } else if (mode !== "custom") {
+      setSizes([]);
+    }
+  };
+
+  const addCustomSize = () => {
+    const nextSize = customSize.trim();
+    if (!nextSize) return;
+    setSizes((prev) => (prev.includes(nextSize) ? prev : [...prev, nextSize]));
+    setCustomSize("");
+  };
+
+  const addVariant = () => {
+    setVariants((prev) => [...prev, emptyVariant()]);
+  };
+
+  const updateVariant = (index, field, value) => {
+    setVariants((prev) =>
+      prev.map((variant, variantIndex) =>
+        variantIndex === index ? { ...variant, [field]: value } : variant
+      )
+    );
+  };
+
+  const updateVariantImage = (variantIndex, imageIndex, file) => {
+    setVariants((prev) =>
+      prev.map((variant, index) =>
+        index === variantIndex
+          ? {
+              ...variant,
+              images: variant.images.map((image, currentImageIndex) =>
+                currentImageIndex === imageIndex ? file : image
+              ),
+            }
+          : variant
+      )
+    );
+  };
+
+  const removeVariant = (index) => {
+    setVariants((prev) => prev.filter((_, variantIndex) => variantIndex !== index));
+  };
+
+  const activePresetSizes = sizeMode === "numeric" ? sizePresets.numeric : sizePresets.clothing;
 
   return (
     <form
@@ -249,30 +338,172 @@ const Add = ({ token }) => {
 
       <div>
         <p className="mb-2 text-sm font-semibold text-slate-700">Product Sizes</p>
-        <div className="flex gap-3">
-          {["S", "M", "L", "XL", "XXL"].map((size) => (
-            <div
-              key={size}
-              onClick={() =>
-                setSizes((prev) =>
-                  prev.includes(size)
-                    ? prev.filter((item) => item !== size)
-                    : [...prev, size]
-                )
-              }
+        <div className="mb-3 flex flex-wrap gap-2">
+          {[
+            ["clothing", "Clothing"],
+            ["numeric", "23-40"],
+            ["oneSize", "One Size"],
+            ["custom", "Custom"],
+          ].map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => handleSizeModeChange(mode)}
+              className={`rounded-full border px-4 py-2 text-sm font-bold ${
+                sizeMode === mode
+                  ? "border-[#5A0019] bg-[#5A0019] text-white"
+                  : "border-slate-200 bg-slate-50 text-slate-600"
+              }`}
             >
-              <p
-                className={`px-3 py-1 cursor-pointer rounded border  ${
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {sizeMode !== "oneSize" && sizeMode !== "custom" && (
+          <div className="flex flex-wrap gap-3">
+            {activePresetSizes.map((size) => (
+              <button
+                type="button"
+                key={size}
+                onClick={() => toggleSize(size)}
+                className={`min-w-11 cursor-pointer rounded border px-3 py-2 text-sm font-bold ${
                   sizes.includes(size)
                     ? "border-[#DBCCB7] bg-[#5A0019] text-white"
                     : "border-slate-200 bg-slate-50 text-slate-600"
-                } `}
+                }`}
               >
                 {size}
-              </p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {sizeMode === "oneSize" && (
+          <div className="inline-flex rounded-full border border-[#DBCCB7] bg-[#5A0019] px-4 py-2 text-sm font-bold text-white">
+            One Size
+          </div>
+        )}
+
+        {sizeMode === "custom" && (
+          <div className="flex flex-col gap-3">
+            <div className="flex max-w-md gap-2">
+              <input
+                value={customSize}
+                onChange={(e) => setCustomSize(e.target.value)}
+                className="min-w-0 flex-1 rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
+                type="text"
+                placeholder="Enter size, e.g. 42, 7, Mini"
+              />
+              <button
+                type="button"
+                onClick={addCustomSize}
+                className="inline-flex items-center gap-2 rounded-[8px] bg-[#5A0019] px-4 py-3 text-sm font-bold text-white"
+              >
+                <FiPlus />
+                Add
+              </button>
             </div>
-          ))}
+            <div className="flex flex-wrap gap-2">
+              {sizes.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => toggleSize(size)}
+                  className="rounded-full border border-[#DBCCB7] bg-[#5A0019] px-3 py-1 text-sm font-bold text-white"
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-[8px] border border-slate-200 bg-slate-50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-slate-700">Product Colours</p>
+            <p className="mt-1 text-xs text-slate-500">
+              Add real colour versions with their own images for storefront swatches.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={addVariant}
+            className="inline-flex items-center gap-2 rounded-[8px] border border-[#5A0019] bg-white px-4 py-2 text-sm font-bold text-[#5A0019]"
+          >
+            <FiPlus />
+            Add colour
+          </button>
         </div>
+
+        {variants.length > 0 ? (
+          <div className="mt-4 grid gap-4">
+            {variants.map((variant, variantIndex) => (
+              <div key={variantIndex} className="rounded-[8px] border border-slate-200 bg-white p-4">
+                <div className="grid gap-3 md:grid-cols-[1fr_130px_auto] md:items-end">
+                  <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Colour name</p>
+                    <input
+                      value={variant.colorName}
+                      onChange={(e) => updateVariant(variantIndex, "colorName", e.target.value)}
+                      className="w-full rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none focus:border-[#5A0019]/50"
+                      type="text"
+                      placeholder="Red, White, Gold"
+                    />
+                  </div>
+                  <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Swatch</p>
+                    <input
+                      value={variant.colorValue}
+                      onChange={(e) => updateVariant(variantIndex, "colorValue", e.target.value)}
+                      className="h-12 w-full cursor-pointer rounded-[8px] border border-slate-200 bg-white p-1"
+                      type="color"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeVariant(variantIndex)}
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-[8px] border border-rose-200 px-4 text-sm font-bold text-rose-600"
+                  >
+                    <FiTrash2 />
+                    Remove
+                  </button>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {variant.images.map((image, imageIndex) => (
+                    <label
+                      key={imageIndex}
+                      htmlFor={`variant-${variantIndex}-image-${imageIndex}`}
+                      className="group cursor-pointer rounded-[8px] border border-dashed border-slate-300 bg-slate-50 p-3 transition hover:border-[#5A0019]/40"
+                    >
+                      <img
+                        className="aspect-square w-full rounded-[8px] object-cover"
+                        src={!image ? assets.upload_area : URL.createObjectURL(image)}
+                        alt=""
+                      />
+                      <p className="mt-2 text-center text-xs font-semibold text-slate-500">
+                        Colour image {imageIndex + 1}
+                      </p>
+                      <input
+                        onChange={(e) => updateVariantImage(variantIndex, imageIndex, e.target.files[0])}
+                        type="file"
+                        id={`variant-${variantIndex}-image-${imageIndex}`}
+                        hidden
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-[8px] border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
+            No colours added. The storefront will use the main product images only.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-5 mt-2">

@@ -155,13 +155,24 @@ const OrderDetails = () => {
           >
             <div className="flex items-center gap-4">
               <img
-                src={it.image?.[0]}
+                src={Array.isArray(it.image) ? it.image[0] : it.image}
                 alt={it.name}
                 className="h-24 w-20 border border-[#DBCCB7] object-cover"
               />
               <div>
                 <p className="font-semibold">{it.name}</p>
                 <p className="mt-1 text-sm text-[#6f5860]">Quantity: {it.quantity}</p>
+                {it.colorName && (
+                  <p className="mt-1 flex items-center gap-2 text-sm text-[#6f5860]">
+                    <span
+                      className="h-3 w-3 rounded-full border border-[#DBCCB7]"
+                      style={{ backgroundColor: it.colorValue || "#ffffff" }}
+                      aria-hidden="true"
+                    />
+                    Colour: {it.colorName}
+                  </p>
+                )}
+                {it.size && <p className="mt-1 text-sm text-[#6f5860]">Size: {it.size}</p>}
                 <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[#6f5860]">Unit price: {currencySymbol} {formatMoney(it.price)}</p>
               </div>
             </div>

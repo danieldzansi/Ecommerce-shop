@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_CART_VARIANT, useCartStore } from "../store/CartStore";
+import { DEFAULT_CART_VARIANT, parseCartVariantKey, useCartStore } from "../store/CartStore";
 import { ShopContext } from "../context/ShopContext";
 import AssetImage from "../components/AssetImage";
 
@@ -10,10 +10,11 @@ const Cart = () => {
   const { cartItems, addToCart, removeFromCart, decreaseItem } = useCartStore();
   const navigate = useNavigate();
 
-  const cartData = Object.entries(cartItems).flatMap(([productId, sizes]) =>
-    Object.entries(sizes).map(([size, quantity]) => ({
+  const cartData = Object.entries(cartItems).flatMap(([productId, variants]) =>
+    Object.entries(variants).map(([variantKey, quantity]) => ({
       _id: productId,
-      size,
+      variantKey,
+      options: parseCartVariantKey(variantKey),
       quantity,
     }))
   );
@@ -53,15 +54,25 @@ const Cart = () => {
 
           return (
             <div
-              key={`${item._id}-${item.size}`}
+              key={`${item._id}-${item.variantKey}`}
               className="grid grid-cols-[1fr_auto] items-center gap-5 py-5 text-[#1d1115] md:grid-cols-[1fr_160px_100px_40px]"
             >
               <div className="flex gap-5">
-                <AssetImage className="h-24 w-20 object-cover" asset={product.image?.[0]} alt={product.name} />
+                <AssetImage className="h-24 w-20 object-cover" asset={item.options.image || product.image?.[0]} alt={product.name} />
                 <div>
                   <p className="font-semibold">{product.name}</p>
-                  {item.size !== DEFAULT_CART_VARIANT && (
-                    <p className="mt-2 text-sm text-[#6f5860]">Size: {item.size}</p>
+                  {item.options.colorName && (
+                    <p className="mt-2 flex items-center gap-2 text-sm text-[#6f5860]">
+                      <span
+                        className="h-3 w-3 rounded-full border border-[#DBCCB7]"
+                        style={{ backgroundColor: item.options.colorValue || "#ffffff" }}
+                        aria-hidden="true"
+                      />
+                      Colour: {item.options.colorName}
+                    </p>
+                  )}
+                  {item.options.size !== DEFAULT_CART_VARIANT && (
+                    <p className="mt-2 text-sm text-[#6f5860]">Size: {item.options.size}</p>
                   )}
                   <p>
                     {currency}
@@ -72,14 +83,22 @@ const Cart = () => {
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => decreaseItem(item._id, item.size)}
+                  onClick={() => decreaseItem(item._id, item.variantKey)}
                   className="grid h-9 w-9 place-items-center border border-[#DBCCB7] text-lg hover:border-[#5A0019]"
                 >
                   -
                 </button>
                 <span className="w-7 text-center">{item.quantity}</span>
                 <button
-                  onClick={() => addToCart(item._id, item.size)}
+                  onClick={() =>
+                    addToCart(
+                      item._id,
+                      item.options.size === DEFAULT_CART_VARIANT ? "" : item.options.size,
+                      false,
+                      item.options.colorName ? item.options : null,
+                      false
+                    )
+                  }
                   className="grid h-9 w-9 place-items-center border border-[#DBCCB7] text-lg hover:border-[#5A0019]"
                 >
                   +
@@ -95,7 +114,7 @@ const Cart = () => {
                 asset={assets.bin_icon}
                 alt="Remove"
                 className="w-5 sm:w-6 cursor-pointer hover:opacity-60"
-                onClick={() => removeFromCart(item._id, item.size)}
+                onClick={() => removeFromCart(item._id, item.variantKey)}
               />
             </div>
           );

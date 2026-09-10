@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCartStore } from "../store/CartStore";
+import { DEFAULT_CART_VARIANT, parseCartVariantKey, useCartStore } from "../store/CartStore";
 import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { paymentMethods } from "../assets/paymentMethods";
@@ -13,8 +13,8 @@ const PlaceOrder = () => {
       (p) => p._id === productId || p.id === productId
     );
     if (!prod) return acc;
-    for (const size in cartItems[productId]) {
-      acc += prod.price * cartItems[productId][size];
+    for (const variantKey in cartItems[productId]) {
+      acc += prod.price * cartItems[productId][variantKey];
     }
     return acc;
   }, 0);
@@ -48,20 +48,22 @@ const PlaceOrder = () => {
         (p) => p._id === productId || p.id === productId
       );
       if (!product) continue;
-      let quantity = 0;
-      for (const size in cartItems[productId]) {
-        quantity += cartItems[productId][size];
+      for (const variantKey in cartItems[productId]) {
+        const options = parseCartVariantKey(variantKey);
+        const quantity = cartItems[productId][variantKey];
+        items.push({
+          id: product._id || product.id,
+          name: product.name,
+          price: product.price,
+          quantity,
+          size: options.size === DEFAULT_CART_VARIANT ? "" : options.size,
+          colorName: options.colorName,
+          colorValue: options.colorValue,
+          image: options.image || (Array.isArray(product.image)
+            ? product.image[0]
+            : product.image || null),
+        });
       }
-      // include product id and a best-effort image (first image) so backend can persist for order details
-      items.push({
-        id: product._id || product.id,
-        name: product.name,
-        price: product.price,
-        quantity,
-        image: Array.isArray(product.image)
-          ? product.image[0]
-          : product.image || null,
-      });
     }
 
     const deliveryDetails = {

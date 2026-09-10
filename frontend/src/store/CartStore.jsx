@@ -5,18 +5,61 @@ import { products } from '../assets/assets';
 
 export const DEFAULT_CART_VARIANT = '__default';
 
+export const createCartVariantKey = ({ size = '', colorName = '', colorValue = '', image = '' } = {}) => {
+  const normalizedSize = size || DEFAULT_CART_VARIANT;
+  const normalizedColorName = colorName || '';
+
+  if (!normalizedColorName && normalizedSize === DEFAULT_CART_VARIANT) return DEFAULT_CART_VARIANT;
+  if (!normalizedColorName) return normalizedSize;
+
+  return JSON.stringify({
+    size: normalizedSize,
+    colorName: normalizedColorName,
+    colorValue,
+    image,
+  });
+};
+
+export const parseCartVariantKey = (key) => {
+  if (!key || key === DEFAULT_CART_VARIANT) {
+    return { size: DEFAULT_CART_VARIANT, colorName: '', colorValue: '', image: '' };
+  }
+
+  try {
+    const parsed = JSON.parse(key);
+    return {
+      size: parsed.size || DEFAULT_CART_VARIANT,
+      colorName: parsed.colorName || '',
+      colorValue: parsed.colorValue || '',
+      image: parsed.image || '',
+    };
+  } catch {
+    return { size: key, colorName: '', colorValue: '', image: '' };
+  }
+};
+
 export const useCartStore = create(
   persist(
     (set, get) => ({
       cartItems: {},
 
-      addToCart: (itemId, size, requiresSize = true) => {
+      addToCart: (itemId, size, requiresSize = true, color = null, requiresColor = false) => {
         if (requiresSize && !size) {
           toast.error('Select product size');
           return;
         }
 
-        const variant = size || DEFAULT_CART_VARIANT;
+        if (requiresColor && !color?.colorName) {
+          toast.error('Select product colour');
+          return;
+        }
+
+        const variant = createCartVariantKey({
+          size,
+          colorName: color?.colorName,
+          colorValue: color?.colorValue,
+          image: color?.image,
+        });
 
         set((state) => {
           const cart = { ...state.cartItems };

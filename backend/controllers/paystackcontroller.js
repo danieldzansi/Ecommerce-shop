@@ -90,7 +90,7 @@ export const initializePayment = async (req, res) => {
           .where(eq(products.id, newItem.id))
           .limit(1);
 
-        if (prod && prod.image) {
+        if (prod && prod.image && !newItem.image) {
         
           newItem.image = Array.isArray(prod.image) ? prod.image : [prod.image];
         }

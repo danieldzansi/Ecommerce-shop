@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, compareAtPrice, category, subCategory, sizes, bestseller, onSale } = req.body;
+    const { name, description, price, compareAtPrice, category, subCategory, sizes, variants, bestseller, onSale } = req.body;
     const productPrice = Number(price);
     const originalPrice = compareAtPrice ? Number(compareAtPrice) : null;
     const markedOnSale = onSale === "true";
@@ -19,18 +19,43 @@ const addProduct = async (req, res) => {
       return res.json({ success: false, message: "Original price must be higher than the sale price" });
     }
 
-    const image1 = req.files?.image1?.[0];
-    const image2 = req.files?.image2?.[0];
-    const image3 = req.files?.image3?.[0];
-    const image4 = req.files?.image4?.[0];
-
-    const images = [image1, image2, image3, image4].filter((img) => img !== undefined);
+    const uploadedFiles = Array.isArray(req.files) ? req.files : [];
+    const sortByFieldName = (a, b) => a.fieldname.localeCompare(b.fieldname, undefined, { numeric: true });
+    const baseImages = uploadedFiles
+      .filter((file) => /^image[1-4]$/.test(file.fieldname))
+      .sort(sortByFieldName);
 
     const imagesUrl = await Promise.all(
-      images.map(async (img) => {
+      baseImages.map(async (img) => {
         const result = await cloudinary.uploader.upload(img.path, { resource_type: "image" });
         return result.secure_url;
       })
+    );
+
+    const parsedSizes = sizes ? JSON.parse(sizes) : [];
+    const parsedVariants = variants ? JSON.parse(variants) : [];
+    const normalizedVariants = await Promise.all(
+      parsedVariants
+        .filter((variant) => variant?.colorName || variant?.colorValue)
+        .map(async (variant, index) => {
+          const variantFiles = uploadedFiles
+            .filter((file) => file.fieldname.startsWith(`variant_${index}_image_`))
+            .sort(sortByFieldName);
+
+          const variantImages = await Promise.all(
+            variantFiles.map(async (img) => {
+              const result = await cloudinary.uploader.upload(img.path, { resource_type: "image" });
+              return result.secure_url;
+            })
+          );
+
+          return {
+            colorName: String(variant.colorName || "").trim(),
+            colorValue: String(variant.colorValue || "").trim(),
+            sizes: Array.isArray(variant.sizes) ? variant.sizes.filter(Boolean) : parsedSizes,
+            images: variantImages,
+          };
+        })
     );
 
     const productData = {
@@ -42,7 +67,8 @@ const addProduct = async (req, res) => {
       onSale: isOnSale,
       subCategory,
       bestseller: bestseller === "true",
-      sizes: JSON.parse(sizes),
+      sizes: parsedSizes,
+      variants: normalizedVariants,
       image: imagesUrl,
       date: Date.now(),
     };
