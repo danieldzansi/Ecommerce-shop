@@ -7,6 +7,9 @@ import { paymentMethods } from "../assets/paymentMethods";
 const PlaceOrder = () => {
   const { currency, delivery_fee, products } = useContext(ShopContext);
   const cartItems = useCartStore((state) => state.cartItems);
+  const [fulfillmentMethod, setFulfillmentMethod] = useState("delivery");
+  const isPickup = fulfillmentMethod === "pickup";
+  const fulfillmentFee = isPickup ? 0 : delivery_fee;
 
   const subtotal = Object.keys(cartItems).reduce((acc, productId) => {
     const prod = products.find(
@@ -71,24 +74,36 @@ const PlaceOrder = () => {
       lastName: formData.lastName.trim(),
       email: formData.email.trim(),
       phone: formData.phone.trim(),
-      street: formData.street.trim(),
-      city: formData.city.trim(),
-      region: formData.region.trim(),
+      street: isPickup ? "" : formData.street.trim(),
+      city: isPickup ? "" : formData.city.trim(),
+      region: isPickup ? "" : formData.region.trim(),
       country: "Ghana",
+      fulfillmentMethod,
+      pickupLocation: isPickup ? "Eclat De Lee store pickup" : "",
     };
 
-    const address = [
-      `${deliveryDetails.firstName} ${deliveryDetails.lastName}`,
-      deliveryDetails.phone,
-      deliveryDetails.street,
-      deliveryDetails.city,
-      deliveryDetails.region,
-      "Ghana",
-    ]
-      .filter(Boolean)
-      .join(", ");
+    const address = isPickup
+      ? [
+          `${deliveryDetails.firstName} ${deliveryDetails.lastName}`,
+          deliveryDetails.phone,
+          "Store pickup",
+          "Eclat De Lee",
+          "Ghana",
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : [
+          `${deliveryDetails.firstName} ${deliveryDetails.lastName}`,
+          deliveryDetails.phone,
+          deliveryDetails.street,
+          deliveryDetails.city,
+          deliveryDetails.region,
+          "Ghana",
+        ]
+          .filter(Boolean)
+          .join(", ");
 
-    const totalAmount = subtotal + delivery_fee;
+    const totalAmount = subtotal + fulfillmentFee;
 
     try {
       setLoading(true);
@@ -133,10 +148,56 @@ const PlaceOrder = () => {
       >
       <div>
         <p className="eyebrow">Checkout</p>
-        <h1 className="editorial-serif mt-3 text-4xl font-semibold">Delivery information</h1>
+        <h1 className="editorial-serif mt-3 text-4xl font-semibold">How would you like your order?</h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-[#6f5860]">
-          We currently deliver within Ghana only. Tell us where to send your pieces.
+          Choose delivery to your address or collect your pieces from our store when they are ready.
         </p>
+
+        <div className="mt-8 grid gap-3">
+          <button
+            type="button"
+            onClick={() => setFulfillmentMethod("delivery")}
+            className={`flex gap-4 border p-5 text-left transition ${
+              fulfillmentMethod === "delivery"
+                ? "border-[#5A0019] bg-[#5A0019]/5"
+                : "border-[#DBCCB7] bg-white hover:border-[#5A0019]/50"
+            }`}
+          >
+            <span className={`mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border ${
+              fulfillmentMethod === "delivery" ? "border-[#5A0019]" : "border-[#DBCCB7]"
+            }`}>
+              {fulfillmentMethod === "delivery" && <span className="h-3 w-3 rounded-full bg-[#5A0019]" />}
+            </span>
+            <span>
+              <span className="block text-lg font-extrabold text-[#1d1115]">Deliver to me</span>
+              <span className="mt-1 block text-sm leading-6 text-[#6f5860]">
+                Send my order to my address within Ghana.
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFulfillmentMethod("pickup")}
+            className={`flex gap-4 border p-5 text-left transition ${
+              fulfillmentMethod === "pickup"
+                ? "border-[#5A0019] bg-[#5A0019]/5"
+                : "border-[#DBCCB7] bg-white hover:border-[#5A0019]/50"
+            }`}
+          >
+            <span className={`mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border ${
+              fulfillmentMethod === "pickup" ? "border-[#5A0019]" : "border-[#DBCCB7]"
+            }`}>
+              {fulfillmentMethod === "pickup" && <span className="h-3 w-3 rounded-full bg-[#5A0019]" />}
+            </span>
+            <span>
+              <span className="block text-lg font-extrabold text-[#1d1115]">Collect from store</span>
+              <span className="mt-1 block text-sm leading-6 text-[#6f5860]">
+                We will contact you when your order is ready for pickup.
+              </span>
+            </span>
+          </button>
+        </div>
 
         <div className="mt-8 grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -169,36 +230,6 @@ const PlaceOrder = () => {
           className="form-field"
           required
         />
-        <input
-          type="text"
-          name="street"
-          placeholder="Street address"
-          value={formData.street}
-          onChange={handleChange}
-          className="form-field"
-          required
-        />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <input
-            type="text"
-            name="city"
-            placeholder="City / town"
-            value={formData.city}
-            onChange={handleChange}
-            className="form-field"
-            required
-          />
-          <input
-            type="text"
-            name="region"
-            placeholder="Region"
-            value={formData.region}
-            onChange={handleChange}
-            className="form-field"
-            required
-          />
-        </div>
 
         <input
           type="tel"
@@ -209,6 +240,45 @@ const PlaceOrder = () => {
           className="form-field"
           required
         />
+
+        {!isPickup ? (
+          <>
+            <input
+              type="text"
+              name="street"
+              placeholder="Street address"
+              value={formData.street}
+              onChange={handleChange}
+              className="form-field"
+              required
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input
+                type="text"
+                name="city"
+                placeholder="City / town"
+                value={formData.city}
+                onChange={handleChange}
+                className="form-field"
+                required
+              />
+              <input
+                type="text"
+                name="region"
+                placeholder="Region"
+                value={formData.region}
+                onChange={handleChange}
+                className="form-field"
+                required
+              />
+            </div>
+          </>
+        ) : (
+          <div className="border border-[#DBCCB7] bg-[#f7f1ea] p-5 text-sm leading-6 text-[#5A0019]">
+            Pickup orders are confirmed online. Our team will call or message you with collection details once your order is ready.
+          </div>
+        )}
         </div>
       </div>
 
@@ -225,10 +295,10 @@ const PlaceOrder = () => {
           </div>
           <hr className="border-[#DBCCB7]/60" />
           <div className="flex justify-between">
-            <p className="text-[#6f5860]">Shipping</p>
+            <p className="text-[#6f5860]">{isPickup ? "Pickup" : "Delivery"}</p>
             <p>
               {currency}
-              {delivery_fee.toFixed(2)}
+              {fulfillmentFee.toFixed(2)}
             </p>
           </div>
           <hr className="border-[#DBCCB7]/60" />
@@ -236,7 +306,7 @@ const PlaceOrder = () => {
             <p>Total</p>
             <p>
               {currency}
-              {(subtotal + delivery_fee).toFixed(2)}
+              {(subtotal + fulfillmentFee).toFixed(2)}
             </p>
           </div>
           </div>
