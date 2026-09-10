@@ -16,6 +16,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ScrollToTop from "./components/ScrollToTop";
 import usePageAnimations from "./hooks/usePageAnimations";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +26,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#1d1115]">
+      <ScrollToTop />
       <ToastContainer />
       <Navbar />
       <SearchBar />
