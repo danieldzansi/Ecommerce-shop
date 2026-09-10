@@ -57,6 +57,11 @@ const addProduct = async (req, res) => {
           };
         })
     );
+    const fallbackImages = normalizedVariants.find((variant) => variant.images.length > 0)?.images || [];
+
+    if (imagesUrl.length === 0 && fallbackImages.length === 0) {
+      return res.json({ success: false, message: "Please upload at least one main image or colour image" });
+    }
 
     const productData = {
       name,
@@ -69,7 +74,7 @@ const addProduct = async (req, res) => {
       bestseller: bestseller === "true",
       sizes: parsedSizes,
       variants: normalizedVariants,
-      image: imagesUrl,
+      image: imagesUrl.length > 0 ? imagesUrl : fallbackImages,
       date: Date.now(),
     };
 

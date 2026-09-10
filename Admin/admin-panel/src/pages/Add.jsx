@@ -75,8 +75,11 @@ const Add = ({ token }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    if (!images[0]) {
-      toast.error("Please upload at least one image");
+    const hasMainImage = images.some(Boolean);
+    const hasColourImage = variants.some((variant) => variant.images.some(Boolean));
+
+    if (!hasMainImage && !hasColourImage) {
+      toast.error("Please upload at least one main image or colour image");
       return;
     }
 
@@ -232,6 +235,9 @@ const Add = ({ token }) => {
         <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
           <FiImage className="text-[#5A0019]" />
           Product images
+        </p>
+        <p className="mb-3 text-xs text-slate-500">
+          Optional when colour images are added. If empty, the first colour image becomes the product card image.
         </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {images.map((image, index) => (
