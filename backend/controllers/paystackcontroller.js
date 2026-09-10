@@ -14,6 +14,13 @@ const requiredDeliveryFields = [
   "region",
 ];
 
+const PAYSTACK_GHANA_FEE_RATE = 0.0195;
+
+const getPaystackGrossAmount = (amount) => {
+  if (!amount) return 0;
+  return Number((amount / (1 - PAYSTACK_GHANA_FEE_RATE)).toFixed(2));
+};
+
 const normalizeDeliveryDetails = (deliveryDetails = {}, fallbackAddress = "") => {
   const normalized = requiredDeliveryFields.reduce((acc, field) => {
     acc[field] = String(deliveryDetails[field] || "").trim();
@@ -21,6 +28,7 @@ const normalizeDeliveryDetails = (deliveryDetails = {}, fallbackAddress = "") =>
   }, {});
 
   normalized.country = "Ghana";
+  normalized.fulfillmentMethod = deliveryDetails.fulfillmentMethod === "pickup" ? "pickup" : "delivery";
 
   const missingFields = requiredDeliveryFields.filter((field) => !normalized[field]);
   if (missingFields.length > 0 && !fallbackAddress) {
@@ -75,7 +83,14 @@ export const initializePayment = async (req, res) => {
 
     const userId = req.user?._id ?? null;
     const itemsValue = Array.isArray(items) ? items : [];
-    const totalAmountValue = Number(totalAmount) || 0;
+    const requestedTotalAmount = Number(totalAmount) || 0;
+    const itemsSubtotal = itemsValue.reduce(
+      (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+      0
+    );
+    const fulfillmentFee = normalizedDelivery.deliveryDetails.fulfillmentMethod === "pickup" ? 0 : 60;
+    const minimumTotalAmount = getPaystackGrossAmount(itemsSubtotal + fulfillmentFee);
+    const totalAmountValue = Math.max(requestedTotalAmount, minimumTotalAmount);
 
     const enhancedItems = [];
 
@@ -125,11 +140,13 @@ export const initializePayment = async (req, res) => {
 
     const response = await paystack.post("/transaction/initialize", {
       email,
-      amount: Math.round(totalAmount * 100),
+      amount: Math.round(totalAmountValue * 100),
       metadata: {
         orderId: order.id,
         deliveryCountry: "Ghana",
         deliveryRegion: normalizedDelivery.deliveryDetails.region,
+        fulfillmentMethod: normalizedDelivery.deliveryDetails.fulfillmentMethod,
+        processingFee: Number((totalAmountValue - itemsSubtotal - fulfillmentFee).toFixed(2)),
       },
       callback_url: `${frontendURL}/payment-result`,
     });

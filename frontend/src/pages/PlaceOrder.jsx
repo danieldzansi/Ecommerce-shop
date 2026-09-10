@@ -4,6 +4,13 @@ import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { paymentMethods } from "../assets/paymentMethods";
 
+const PAYSTACK_GHANA_FEE_RATE = 0.0195;
+
+const getPaystackGrossAmount = (amount) => {
+  if (!amount) return 0;
+  return Number((amount / (1 - PAYSTACK_GHANA_FEE_RATE)).toFixed(2));
+};
+
 const PlaceOrder = () => {
   const { currency, delivery_fee, products } = useContext(ShopContext);
   const cartItems = useCartStore((state) => state.cartItems);
@@ -21,6 +28,9 @@ const PlaceOrder = () => {
     }
     return acc;
   }, 0);
+  const payableBeforeProcessing = subtotal + fulfillmentFee;
+  const totalAmountWithProcessing = getPaystackGrossAmount(payableBeforeProcessing);
+  const processingFee = Math.max(0, totalAmountWithProcessing - payableBeforeProcessing);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -80,6 +90,8 @@ const PlaceOrder = () => {
       country: "Ghana",
       fulfillmentMethod,
       pickupLocation: isPickup ? "Eclat De Lee store pickup" : "",
+      processingFee,
+      paystackFeeRate: PAYSTACK_GHANA_FEE_RATE,
     };
 
     const address = isPickup
@@ -103,7 +115,7 @@ const PlaceOrder = () => {
           .filter(Boolean)
           .join(", ");
 
-    const totalAmount = subtotal + fulfillmentFee;
+    const totalAmount = totalAmountWithProcessing;
 
     try {
       setLoading(true);
@@ -302,11 +314,19 @@ const PlaceOrder = () => {
             </p>
           </div>
           <hr className="border-[#DBCCB7]/60" />
+          <div className="flex justify-between">
+            <p className="text-[#6f5860]">Payment processing</p>
+            <p>
+              {currency}
+              {processingFee.toFixed(2)}
+            </p>
+          </div>
+          <hr className="border-[#DBCCB7]/60" />
           <div className="flex justify-between text-base font-bold">
             <p>Total</p>
             <p>
               {currency}
-              {(subtotal + fulfillmentFee).toFixed(2)}
+              {totalAmountWithProcessing.toFixed(2)}
             </p>
           </div>
           </div>
