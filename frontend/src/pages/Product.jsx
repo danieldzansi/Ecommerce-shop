@@ -16,6 +16,36 @@ const getInitialProductImage = (product) => {
   return firstVariant?.images?.[0] || product?.image?.[0] || "";
 };
 
+const ColourSelector = ({ productVariants, selectedVariant, selectedVariantIndex, onSelect, className = "" }) => {
+  if (productVariants.length === 0) return null;
+
+  return (
+    <div className={className}>
+      <p className="text-sm font-bold uppercase tracking-[0.16em]">
+        Colour: <span className="normal-case tracking-normal text-[#6f5860]">{selectedVariant?.colorName}</span>
+      </p>
+      <div className="mt-3 flex flex-wrap gap-3">
+        {productVariants.map((variant, index) => (
+          <button
+            key={`${variant.colorName}-${index}`}
+            type="button"
+            onClick={() => onSelect(variant, index)}
+            className={`grid h-10 w-10 place-items-center rounded-full border transition ${
+              index === selectedVariantIndex ? "border-[#5A0019]" : "border-[#DBCCB7]"
+            }`}
+            aria-label={`Select ${variant.colorName}`}
+          >
+            <span
+              className="h-7 w-7 rounded-full border border-black/10"
+              style={{ backgroundColor: variant.colorValue || "#ffffff" }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, backend_url } = useContext(ShopContext);
@@ -106,7 +136,7 @@ const Product = () => {
     <section className="page-x section-y transition-opacity ease-in duration-100">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)]">
      
-        <div className="grid min-w-0 gap-4 sm:grid-cols-[80px_minmax(0,1fr)]">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-[80px_minmax(0,1fr)] lg:self-start">
           <div className="order-2 flex gap-3 overflow-x-auto sm:order-1 sm:w-20 sm:shrink-0 sm:flex-col sm:overflow-y-auto">
             {activeImages.map((img, index) => (
               <AssetImage
@@ -127,6 +157,14 @@ const Product = () => {
               className="h-[420px] w-full bg-white object-contain sm:h-[520px]"
             />
           </div>
+
+          <ColourSelector
+            productVariants={productVariants}
+            selectedVariant={selectedVariant}
+            selectedVariantIndex={selectedVariantIndex}
+            onSelect={selectVariant}
+            className="order-3 border-t border-[#DBCCB7]/60 pt-4 lg:hidden"
+          />
         </div>
 
     
@@ -155,31 +193,13 @@ const Product = () => {
           <p className="mt-5 leading-7 text-[#6f5860]">{productData.description}</p>
 
           <div className="flex flex-col gap-4 my-8">
-            {productVariants.length > 0 && (
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.16em]">
-                  Colour: <span className="normal-case tracking-normal text-[#6f5860]">{selectedVariant?.colorName}</span>
-                </p>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {productVariants.map((variant, index) => (
-                    <button
-                      key={`${variant.colorName}-${index}`}
-                      type="button"
-                      onClick={() => selectVariant(variant, index)}
-                      className={`grid h-10 w-10 place-items-center rounded-full border transition ${
-                        index === selectedVariantIndex ? "border-[#5A0019]" : "border-[#DBCCB7]"
-                      }`}
-                      aria-label={`Select ${variant.colorName}`}
-                    >
-                      <span
-                        className="h-7 w-7 rounded-full border border-black/10"
-                        style={{ backgroundColor: variant.colorValue || "#ffffff" }}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <ColourSelector
+              productVariants={productVariants}
+              selectedVariant={selectedVariant}
+              selectedVariantIndex={selectedVariantIndex}
+              onSelect={selectVariant}
+              className="hidden lg:block"
+            />
 
             {requiresSize && (
               <>
