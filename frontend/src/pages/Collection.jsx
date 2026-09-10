@@ -23,7 +23,6 @@ const productCategoryGroups = [
 ]
 
 const featuredCategories = productCategoryGroups.map((item) => item.name)
-const productCategories = productCategoryGroups.flatMap((item) => [item.name, ...item.subCategories])
 
 const isOnSale = (product) => {
   const originalPrice = Number(product?.originalPrice || product?.oldPrice || product?.compareAtPrice)
@@ -38,23 +37,37 @@ const Collection = () => {
   const [showFilter, setShowFilter] = useState(false)
   const [filterProduct, setFilterProducts] = useState([])
   const saleOnly = searchParams.get('sale') === 'true'
-
-  const [Category, setCategory] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedSubCategories, setSelectedSubCategories] = useState([])
+  const activeCategoryGroup = productCategoryGroups.find((item) => item.name === selectedCategory)
+  const visibleSubCategories = activeCategoryGroup
+    ? activeCategoryGroup.subCategories
+    : Array.from(new Set(productCategoryGroups.flatMap((item) => item.subCategories)))
 
   useEffect(() => {
     const category = searchParams.get('category')
     const subCategory = searchParams.get('subcategory')
-    const nextFilters = [category, subCategory].filter(Boolean)
 
-    setCategory(nextFilters)
+    setSelectedCategory(category || '')
+    setSelectedSubCategories(subCategory ? [subCategory] : [])
   }, [searchParams])
 
-  const toggleCategory = (e) => {
-    if (Category.includes(e.target.value)) {
-      setCategory(prev => prev.filter(item => item !== e.target.value))
+  const toggleSubCategory = (value) => {
+    if (selectedSubCategories.includes(value)) {
+      setSelectedSubCategories(prev => prev.filter(item => item !== value))
     } else {
-      setCategory(prev => [...prev, e.target.value])
+      setSelectedSubCategories(prev => [...prev, value])
     }
+  }
+
+  const chooseCategory = (value) => {
+    setSelectedCategory((current) => (current === value ? '' : value))
+    setSelectedSubCategories([])
+  }
+
+  const clearFilters = () => {
+    setSelectedCategory('')
+    setSelectedSubCategories([])
   }
 
 useEffect(() => {
@@ -68,10 +81,12 @@ useEffect(() => {
   }
 
   
-  if (Category.length > 0) {
-    productsCopy = productsCopy.filter(item =>
-      Category.includes(item.category) || Category.includes(item.subCategory)
-    );
+  if (selectedCategory) {
+    productsCopy = productsCopy.filter(item => item.category === selectedCategory);
+  }
+
+  if (selectedSubCategories.length > 0) {
+    productsCopy = productsCopy.filter(item => selectedSubCategories.includes(item.subCategory));
   }
 
   if (saleOnly) {
@@ -79,7 +94,7 @@ useEffect(() => {
   }
 
   setFilterProducts(productsCopy);
-}, [Category, search, products, saleOnly]);
+}, [selectedCategory, selectedSubCategories, search, products, saleOnly]);
 
   return (
     <section>
@@ -93,12 +108,12 @@ useEffect(() => {
 
       <div className='page-x flex flex-col gap-5 border-b border-[#DBCCB7]/60 py-5 md:flex-row md:items-center md:justify-between' data-gsap-reveal>
         <div className='flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-semibold text-[#9aa2b2]'>
-          <button onClick={() => setCategory([])} className={`pb-3 ${Category.length === 0 ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}>All</button>
+          <button onClick={clearFilters} className={`pb-3 ${!selectedCategory && selectedSubCategories.length === 0 ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}>All</button>
           {featuredCategories.map((item) => (
             <button
               key={item}
-              onClick={() => setCategory(Category.includes(item) ? [] : [item])}
-              className={`pb-3 ${Category.includes(item) ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}
+              onClick={() => chooseCategory(item)}
+              className={`pb-3 ${selectedCategory === item ? 'border-b-2 border-[#5A0019] text-[#5A0019]' : ''}`}
             >
               {item}
             </button>
@@ -122,14 +137,47 @@ useEffect(() => {
 
       <div className='page-x py-10'>
         <div className={`mb-8 border border-[#DBCCB7] bg-white p-5 ${showFilter ? '' : 'hidden'}`}>
-          <div>
-            <p className='mb-3 text-xs font-extrabold uppercase tracking-[0.18em]'>Categories</p>
-            <div className='flex flex-wrap gap-3 text-sm text-[#6f5860]'>
-              {productCategories.map((item, index) => (
-                <label key={`${item}-${index}`} className='flex items-center gap-2'>
-                  <input className='accent-[#5A0019]' type="checkbox" value={item} checked={Category.includes(item)} onChange={toggleCategory} /> {item}
-                </label>
-              ))}
+          <div className='grid gap-6 md:grid-cols-[220px_1fr]'>
+            <div>
+              <p className='mb-3 text-xs font-extrabold uppercase tracking-[0.18em]'>Category</p>
+              <div className='grid gap-2 text-sm text-[#6f5860]'>
+                {productCategoryGroups.map((item) => (
+                  <label key={item.name} className='flex items-center gap-2'>
+                    <input
+                      className='accent-[#5A0019]'
+                      type="radio"
+                      name="collection-category"
+                      value={item.name}
+                      checked={selectedCategory === item.name}
+                      onChange={() => chooseCategory(item.name)}
+                    />
+                    {item.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className='mb-3 text-xs font-extrabold uppercase tracking-[0.18em]'>Sub categories</p>
+              <div className='flex flex-wrap gap-3 text-sm text-[#6f5860]'>
+                {visibleSubCategories.map((item) => (
+                  <label key={item} className='flex items-center gap-2'>
+                    <input
+                      className='accent-[#5A0019]'
+                      type="checkbox"
+                      value={item}
+                      checked={selectedSubCategories.includes(item)}
+                      onChange={() => toggleSubCategory(item)}
+                    />
+                    {item}
+                  </label>
+                ))}
+              </div>
+              {selectedCategory && (
+                <p className='mt-3 text-xs text-[#9aa2b2]'>
+                  Showing subcategories under {selectedCategory}.
+                </p>
+              )}
             </div>
           </div>
         </div>
