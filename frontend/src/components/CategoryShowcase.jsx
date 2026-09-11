@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useLayoutEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import { assets } from '../assets/assets'
@@ -29,24 +29,22 @@ const wideBanners = [
   },
 ]
 
-const BannerTile = ({ item, large = false, canLoadImages = false }) => (
+const BannerTile = ({ item, large = false, priority = false }) => (
   <Link
     to={item.to}
     data-category-card
-    className='group/category relative block overflow-hidden rounded-[4px] border border-white bg-[#ddd] outline-none'
+    className='group/category relative block overflow-hidden bg-[#ddd] outline-none'
     aria-label={`Shop ${item.title}`}
   >
     <div className={large ? 'aspect-[3.8/1] sm:aspect-[5.15/1]' : 'aspect-[2.35/1] sm:aspect-[2.55/1]'}>
-      {canLoadImages && (
-        <img
-          src={item.image}
-          alt=""
-          loading='lazy'
-          decoding='async'
-          fetchPriority='low'
-          className='h-full w-full object-cover object-center transition duration-500 group-hover/category:scale-[1.035]'
-        />
-      )}
+      <img
+        src={item.image}
+        alt=""
+        loading={priority ? 'eager' : 'lazy'}
+        decoding='async'
+        fetchPriority={priority ? 'high' : 'low'}
+        className='h-full w-full object-cover object-center transition duration-500 group-hover/category:scale-[1.035]'
+      />
     </div>
     <div className='absolute inset-0 bg-black/28 transition duration-300 group-hover/category:bg-black/18' aria-hidden='true' />
     <div className='absolute inset-0 flex items-center justify-center px-3 text-center sm:px-5'>
@@ -59,29 +57,6 @@ const BannerTile = ({ item, large = false, canLoadImages = false }) => (
 
 const CategoryShowcase = () => {
   const sectionRef = useRef(null)
-  const [canLoadImages, setCanLoadImages] = useState(false)
-
-  useEffect(() => {
-    const section = sectionRef.current
-    if (!section || canLoadImages) return undefined
-    if (!('IntersectionObserver' in window)) {
-      setCanLoadImages(true)
-      return undefined
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return
-        setCanLoadImages(true)
-        observer.disconnect()
-      },
-      { rootMargin: '180px 0px' }
-    )
-
-    observer.observe(section)
-
-    return () => observer.disconnect()
-  }, [canLoadImages])
 
   useLayoutEffect(() => {
     const section = sectionRef.current
@@ -127,32 +102,28 @@ const CategoryShowcase = () => {
   }, [])
 
   return (
-    <section ref={sectionRef} className='border-b border-[#ded8cf] bg-[#eeeeee] px-3 pb-5 pt-6 text-[#111111] sm:px-0 sm:pb-6 sm:pt-10'>
-      <div className='mx-auto max-w-6xl sm:px-5 lg:px-8'>
-        <div className='overflow-hidden rounded-[6px] bg-white shadow-[0_1px_4px_rgba(17,17,17,0.08)]'>
-          <div className='flex items-center justify-between gap-4 px-4 py-3'>
-            <h2 className='min-w-0 text-xl font-extrabold leading-tight text-[#1d1115] sm:text-lg'>Featured Categories</h2>
-            <Link
-              to='/collection'
-              className='inline-flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-[0.04em] text-[#5A0019] transition hover:text-[#111111]'
-            >
-              See All
-              <FiChevronRight className='h-4 w-4' aria-hidden='true' />
-            </Link>
-          </div>
+    <section ref={sectionRef} className='border-b border-[#ded8cf] bg-[#eeeeee] text-[#111111]'>
+      <div className='flex items-center justify-between gap-4 border-y border-[#ded8cf] bg-white px-4 py-3 sm:px-8 lg:px-12'>
+        <h2 className='min-w-0 text-xl font-extrabold leading-tight text-[#1d1115] sm:text-lg'>Featured Categories</h2>
+        <Link
+          to='/collection'
+          className='inline-flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-[0.04em] text-[#5A0019] transition hover:text-[#111111]'
+        >
+          See All
+          <FiChevronRight className='h-4 w-4' aria-hidden='true' />
+        </Link>
+      </div>
 
-          <div className='grid gap-2 border-t border-[#eee7df] p-2 [content-visibility:auto] [contain-intrinsic-size:900px]'>
-            <div className='grid gap-2 md:grid-cols-2'>
-              {featuredBanners.map((item) => (
-                <BannerTile key={item.title} item={item} canLoadImages={canLoadImages} />
-              ))}
-            </div>
-
-            {wideBanners.map((item) => (
-              <BannerTile key={item.title} item={item} large canLoadImages={canLoadImages} />
-            ))}
-          </div>
+      <div className='grid gap-1 bg-[#eeeeee] p-1 [content-visibility:auto] [contain-intrinsic-size:780px] sm:gap-2 sm:p-2'>
+        <div className='grid gap-1 sm:gap-2 md:grid-cols-2'>
+          {featuredBanners.map((item) => (
+            <BannerTile key={item.title} item={item} priority />
+          ))}
         </div>
+
+        {wideBanners.map((item) => (
+          <BannerTile key={item.title} item={item} large />
+        ))}
       </div>
     </section>
   )
