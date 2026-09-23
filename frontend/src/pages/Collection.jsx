@@ -63,7 +63,7 @@ const Collection = () => {
   const { products, search, navigate } = useContext(ShopContext)
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const [showFilter, setShowFilter] = useState(false)
+  const [showFilter, setShowFilter] = useState(true)
   const [filterProduct, setFilterProducts] = useState([])
   const saleOnly = searchParams.get('sale') === 'true'
   const filterGroup = normalizeFilterValue(searchParams.get('group'))
@@ -172,7 +172,7 @@ useEffect(() => {
             <svg viewBox='0 0 24 24' className='w-4' fill='none' stroke='currentColor' strokeWidth='1.8'>
               <path d='M4 7h16M7 12h10M10 17h4' />
             </svg>
-            Filter
+            {showFilter ? 'Hide filters' : 'Show filters'}
           </button>
           <span>Sort: <strong className='text-[#5A0019]'>Newest</strong></span>
         </div>
