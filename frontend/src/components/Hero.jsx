@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 
 const Hero = () => {
   const [active, setActive] = useState(0)
-  const touchStartX = useRef(null)
   const heroRef = useRef(null)
   const imageRef = useRef(null)
   const copyRef = useRef(null)
@@ -81,28 +80,11 @@ const Hero = () => {
 
   if (!slide) return null
 
-  const handleTouchStart = (event) => {
-    touchStartX.current = event.touches[0]?.clientX ?? null
-  }
-
-  const handleTouchEnd = (event) => {
-    if (touchStartX.current === null) return
-
-    const touchEndX = event.changedTouches[0]?.clientX ?? touchStartX.current
-    const deltaX = touchStartX.current - touchEndX
-    touchStartX.current = null
-
-    if (Math.abs(deltaX) < 45) return
-    goToSlide(deltaX > 0 ? 1 : -1)
-  }
-
   return (
     <section
       ref={heroRef}
-      className='relative touch-pan-y overflow-hidden border-b border-[#e8e2da] bg-white text-[#111111]'
+      className='relative overflow-hidden border-b border-[#e8e2da] bg-white text-[#111111]'
       style={{ backgroundColor: slide.background || undefined }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
     >
       <div className='grid min-h-[620px] grid-cols-1 md:grid-cols-[56px_minmax(0,1.2fr)_minmax(450px,1fr)] xl:grid-cols-[64px_minmax(0,1.18fr)_minmax(560px,1fr)]'>
         <div className='hidden border-r border-[#e8e2da] bg-white md:block' aria-hidden='true' />
@@ -173,12 +155,10 @@ const Hero = () => {
 
       <div className='absolute right-8 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-2 md:flex'>
         {slides.map((_, index) => (
-          <button
+          <span
             key={index}
-            type='button'
-            onClick={() => setActive(index)}
             className={`h-7 w-px transition-all ${active === index ? 'bg-[#111111]' : 'bg-[#b8b0a8]'}`}
-            aria-label={`Show hero slide ${index + 1}`}
+            aria-hidden='true'
           />
         ))}
       </div>
