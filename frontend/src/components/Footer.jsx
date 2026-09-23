@@ -13,6 +13,7 @@ const informationLinks = [
 ]
 
 const customerLinks = [
+  ['Delivery Policy', '/shipping-returns'],
   ['Shipping & Returns', '/shipping-returns'],
   ['Orders FAQs', '/faq'],
   ['Contact Support', '/contact'],

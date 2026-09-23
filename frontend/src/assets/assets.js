@@ -1,5 +1,7 @@
 import React from 'react'
 import logo from './image.png'
+import heroDior from './Dior.jpeg'
+import heroBag from './bag.jpeg'
 import heroLook from './image copy.png'
 import categoryAromatics from './acromatics.png'
 import categoryBags from './luxury-bags.png'
@@ -166,11 +168,29 @@ export const assets = {
             eyebrow: 'New collection',
             title: 'Meet New Arrivals',
             titleLines: ['Meet New', 'Arrivals'],
-            text: 'Polished fashion finds selected for confidence, ease, and everyday style.',
+            text: 'Beautiful pieces chosen to complement your everyday style.',
             cta: 'Shop now',
             fit: 'cover',
             position: 'center 18%',
             background: '#f5f3ef',
+        },
+        {
+            image: heroBag,
+            eyebrow: 'New arrivals',
+            title: 'The finishing touch that changes it all',
+            titleLines: ['The finishing', 'touch'],
+            text: 'Statement bags, polished details, and pieces made to carry the whole look.',
+            cta: 'Shop accessories',
+            position: 'center 45%',
+        },
+        {
+            image: heroDior,
+            eyebrow: 'Curated edit',
+            title: 'Effortless. Intentional. You.',
+            titleLines: ['Effortless.', 'Intentional.', 'You.'],
+            text: 'Wardrobe favourites for everyday moments and occasions that call for more.',
+            cta: 'Shop the edit',
+            position: 'center center',
         },
     ],
     hero_img,

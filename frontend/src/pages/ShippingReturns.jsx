@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom'
 
 const shippingSections = [
   {
+    title: 'Delivery policy',
+    items: [
+      'We deliver orders across Ghana through trusted delivery partners.',
+      'Delivery timelines begin after your order has been confirmed and processed.',
+      'Please provide an accurate address and reachable phone number so the courier can complete delivery smoothly.',
+    ],
+  },
+  {
     title: 'Order processing',
     items: [
       'Orders are processed within 24-48 hours after confirmation.',
@@ -101,14 +109,14 @@ const ShippingReturns = () => {
     <section className="page-x section-y">
       <div className="mx-auto max-w-3xl text-center">
         <p className="eyebrow">Policy</p>
-        <h1 className="editorial-serif mt-3 text-5xl font-semibold">Shipping & returns</h1>
+        <h1 className="editorial-serif mt-3 text-5xl font-semibold">Delivery, shipping & returns</h1>
         <p className="mt-4 leading-7 text-[#6f5860]">
           Every order is carefully packaged and delivered with care so your pieces arrive in excellent condition.
         </p>
       </div>
 
       <div className="mt-14">
-        <p className="eyebrow">Shipping policy</p>
+        <p className="eyebrow">Delivery & shipping policy</p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           {shippingSections.map((section) => (
             <PolicyBlock key={section.title} {...section} />

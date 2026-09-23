@@ -8,8 +8,8 @@ const OurPolicy = () => {
       <div className='flex items-start gap-4'>  
         <AssetImage asset={assets.exchange_icon} className='mt-1 w-8' alt="Exchange" />
         <div>
-       <p className='font-extrabold'>Easy exchanges</p>
-       <p className='mt-2 leading-6 text-[#6f5860]'>A smoother way to swap sizes, colors, or styles.</p>
+       <p className='font-extrabold'>Delivery policy</p>
+       <p className='mt-2 leading-6 text-[#6f5860]'>Reliable delivery across Ghana with clear timelines at checkout.</p>
         </div>
       </div>
       <div className='flex items-start gap-4'>  
