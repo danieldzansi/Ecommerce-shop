@@ -123,6 +123,25 @@ const removeProduct = async (req, res) => {
   }
 };
 
+const parseJsonField = (value, fallback) => {
+  if (value === undefined || value === null || value === "") return fallback;
+  if (typeof value !== "string") return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
+const uploadImageFiles = async (files) =>
+  Promise.all(
+    files.map(async (img) => {
+      const result = await cloudinary.uploader.upload(img.path, { resource_type: "image" });
+      return result.secure_url;
+    })
+  );
+
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -143,6 +162,12 @@ const updateProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: "Product id is required" });
     }
 
+    const [existingProduct] = await db.select().from(products).where(eq(products.id, id));
+
+    if (!existingProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
     const productPrice = Number(price);
     const originalPrice = compareAtPrice ? Number(compareAtPrice) : null;
     const markedOnSale = onSale === true || onSale === "true";
@@ -160,6 +185,24 @@ const updateProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: "Original price must be higher than the sale price" });
     }
 
+    const uploadedFiles = Array.isArray(req.files) ? req.files : [];
+    const sortByFieldName = (a, b) => a.fieldname.localeCompare(b.fieldname, undefined, { numeric: true });
+    const baseImages = uploadedFiles
+      .filter((file) => /^image[1-4]$/.test(file.fieldname))
+      .sort(sortByFieldName);
+    const uploadedImageUrls = await uploadImageFiles(baseImages);
+    const existingImages = parseJsonField(req.body.image, existingProduct.image);
+    const nextImages = [
+      ...(Array.isArray(existingImages) ? existingImages.filter(Boolean) : []),
+      ...uploadedImageUrls,
+    ];
+    const parsedSizes = parseJsonField(sizes, []);
+    const parsedVariants = parseJsonField(variants, []);
+
+    if (nextImages.length === 0) {
+      return res.status(400).json({ success: false, message: "Please keep or upload at least one product image" });
+    }
+
     const updateData = {
       name,
       description,
@@ -169,15 +212,16 @@ const updateProduct = async (req, res) => {
       compareAtPrice: originalPrice,
       onSale: isOnSale,
       bestseller: bestseller === true || bestseller === "true",
-      sizes: Array.isArray(sizes) ? sizes.filter(Boolean) : [],
-      variants: Array.isArray(variants)
-        ? variants.map((variant) => ({
+      sizes: Array.isArray(parsedSizes) ? parsedSizes.filter(Boolean) : [],
+      variants: Array.isArray(parsedVariants)
+        ? parsedVariants.map((variant) => ({
             colorName: String(variant.colorName || "").trim(),
             colorValue: String(variant.colorValue || "").trim(),
             sizes: Array.isArray(variant.sizes) ? variant.sizes.filter(Boolean) : [],
             images: Array.isArray(variant.images) ? variant.images.filter(Boolean) : [],
           }))
         : [],
+      image: nextImages,
     };
 
     const [updated] = await db
@@ -185,10 +229,6 @@ const updateProduct = async (req, res) => {
       .set(updateData)
       .where(eq(products.id, id))
       .returning();
-
-    if (!updated) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
 
     res.json({ success: true, message: "Product updated", product: updated });
   } catch (error) {

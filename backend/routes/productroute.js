@@ -9,7 +9,7 @@ const productRouter =express.Router()
 
 
 productRouter.post ('/add',adminAuth,upload.any(),addProduct)
-productRouter.put ('/update/:id',adminAuth,updateProduct)
+productRouter.put ('/update/:id',adminAuth,upload.any(),updateProduct)
 productRouter.post ('/remove',adminAuth,removeProduct)
 productRouter.get("/single/:id", singleProduct);
 productRouter.get('/list', listProduct);

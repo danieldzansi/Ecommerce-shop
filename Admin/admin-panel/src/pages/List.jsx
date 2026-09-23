@@ -2,13 +2,14 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { FiEye, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiTag, FiTrash2, FiXCircle } from "react-icons/fi";
 import { backendUrl, Currency } from "../config";
 import ConfirmDialog from "../components/ConfirmDialog";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [confirmId, setConfirmId] = useState(null);
+  const [saleBusyId, setSaleBusyId] = useState(null);
 
   const fetchList = useCallback(async () => {
     try {
@@ -58,6 +59,78 @@ const List = ({ token }) => {
     const compareAtPrice = Number(item.compareAtPrice || 0);
 
     return (item.onSale || compareAtPrice > price) && compareAtPrice > price;
+  };
+
+  const updateProductSale = async (item, nextFields) => {
+    setSaleBusyId(item.id);
+
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/product/update/${item.id}`,
+        {
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          subCategory: item.subCategory,
+          price: nextFields.price,
+          compareAtPrice: nextFields.compareAtPrice,
+          onSale: nextFields.onSale,
+          bestseller: item.bestseller,
+          sizes: Array.isArray(item.sizes) ? item.sizes : [],
+          variants: Array.isArray(item.variants) ? item.variants : [],
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || "Unable to update sale status");
+      }
+
+      toast.success(nextFields.onSale ? "Product added to sale" : "Product removed from sale");
+      fetchList();
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setSaleBusyId(null);
+    }
+  };
+
+  const handleAddToSale = (item) => {
+    const currentPrice = Number(item.price || 0);
+    const originalPrice = Number(item.compareAtPrice || 0) > currentPrice
+      ? Number(item.compareAtPrice)
+      : currentPrice;
+    const enteredPrice = window.prompt(
+      `Enter sale price for "${item.name}". It must be lower than ${Currency}${originalPrice}.`,
+      String(currentPrice)
+    );
+
+    if (enteredPrice === null) return;
+
+    const salePrice = Number(enteredPrice);
+
+    if (!Number.isFinite(salePrice) || salePrice <= 0 || salePrice >= originalPrice) {
+      toast.error(`Sale price must be lower than ${Currency}${originalPrice}`);
+      return;
+    }
+
+    updateProductSale(item, {
+      price: salePrice,
+      compareAtPrice: originalPrice,
+      onSale: true,
+    });
+  };
+
+  const handleRemoveFromSale = (item) => {
+    const restoredPrice = Number(item.compareAtPrice || item.price || 0);
+
+    updateProductSale(item, {
+      price: restoredPrice,
+      compareAtPrice: "",
+      onSale: false,
+    });
   };
 
   return (
@@ -112,6 +185,25 @@ const List = ({ token }) => {
                   <FiEye />
                   View
                 </Link>
+                {isOnSale(item) ? (
+                  <button
+                    onClick={() => handleRemoveFromSale(item)}
+                    disabled={saleBusyId === item.id}
+                    className="inline-flex items-center gap-2 rounded-[8px] border border-amber-200 px-3 py-2 font-semibold text-amber-700 hover:bg-amber-50 disabled:opacity-60"
+                  >
+                    <FiXCircle />
+                    Remove sale
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleAddToSale(item)}
+                    disabled={saleBusyId === item.id}
+                    className="inline-flex items-center gap-2 rounded-[8px] border border-emerald-200 px-3 py-2 font-semibold text-emerald-700 hover:bg-emerald-50 disabled:opacity-60"
+                  >
+                    <FiTag />
+                    Add to sale
+                  </button>
+                )}
                 <button
                   onClick={() => setConfirmId(item.id)} // open confirmation
                   className="inline-flex items-center gap-2 rounded-[8px] border border-rose-200 px-3 py-2 font-semibold text-rose-700 hover:bg-rose-50"

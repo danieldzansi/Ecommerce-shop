@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { FiArrowLeft, FiCheckCircle, FiEdit3, FiImage, FiSave, FiTag, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiCheckCircle, FiEdit3, FiImage, FiSave, FiTag, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { backendUrl, Currency } from "../config";
 
@@ -49,6 +49,7 @@ const ProductDetails = ({ token }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(false);
+  const [newImages, setNewImages] = useState([false, false, false, false]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -76,6 +77,17 @@ const ProductDetails = ({ token }) => {
     setDraft((current) => ({ ...current, [field]: value }));
   };
 
+  const removeExistingImage = (imageUrl) => {
+    setDraft((current) => ({
+      ...current,
+      image: (current.image || []).filter((image) => image !== imageUrl),
+    }));
+  };
+
+  const updateNewImage = (index, file) => {
+    setNewImages((current) => current.map((image, imageIndex) => (imageIndex === index ? file : image)));
+  };
+
   const handleCategoryChange = (value) => {
     const nextCategory = productCategoryGroups.find((item) => item.name === value) || productCategoryGroups[0];
     setDraft((current) => ({
@@ -87,23 +99,39 @@ const ProductDetails = ({ token }) => {
 
   const saveProduct = async () => {
     try {
+      const retainedImages = Array.isArray(draft.image) ? draft.image.filter(Boolean) : [];
+      const imagesToUpload = newImages.filter(Boolean);
+
+      if (retainedImages.length === 0 && imagesToUpload.length === 0) {
+        toast.error("Please keep or upload at least one product image");
+        return;
+      }
+
       setSaving(true);
+      const formData = new FormData();
+      formData.append("name", draft.name || "");
+      formData.append("description", draft.description || "");
+      formData.append("category", draft.category || "");
+      formData.append("subCategory", draft.subCategory || "");
+      formData.append("price", draft.price || "");
+      formData.append("compareAtPrice", draft.compareAtPrice || "");
+      formData.append("onSale", Boolean(draft.onSale));
+      formData.append("bestseller", Boolean(draft.bestseller));
+      formData.append("sizes", JSON.stringify(Array.isArray(draft.sizes) ? draft.sizes : []));
+      formData.append("variants", JSON.stringify(Array.isArray(draft.variants) ? draft.variants : []));
+      formData.append("image", JSON.stringify(retainedImages));
+      imagesToUpload.forEach((image, index) => {
+        formData.append(`image${index + 1}`, image);
+      });
+
       const response = await axios.put(
         `${backendUrl}/api/product/update/${id}`,
+        formData,
         {
-          name: draft.name,
-          description: draft.description,
-          category: draft.category,
-          subCategory: draft.subCategory,
-          price: draft.price,
-          compareAtPrice: draft.compareAtPrice,
-          onSale: draft.onSale,
-          bestseller: draft.bestseller,
-          sizes: Array.isArray(draft.sizes) ? draft.sizes : [],
-          variants: Array.isArray(draft.variants) ? draft.variants : [],
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -113,6 +141,7 @@ const ProductDetails = ({ token }) => {
 
       setProduct(response.data.product);
       setDraft(response.data.product);
+      setNewImages([false, false, false, false]);
       setEditing(false);
       toast.success("Product updated");
     } catch (err) {
@@ -156,6 +185,7 @@ const ProductDetails = ({ token }) => {
           type="button"
           onClick={() => {
             setDraft(product);
+            setNewImages([false, false, false, false]);
             setEditing((value) => !value);
           }}
           className="inline-flex items-center gap-2 rounded-[8px] bg-[#5A0019] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#720022]"
@@ -274,6 +304,56 @@ const ProductDetails = ({ token }) => {
                     />
                     Bestseller
                   </label>
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-semibold text-slate-700">Product images</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(draft.image || []).map((image) => (
+                      <div key={image} className="relative rounded-[8px] border border-slate-200 bg-slate-50 p-2">
+                        <img
+                          src={image}
+                          alt=""
+                          className="aspect-square w-full rounded-[6px] object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingImage(image)}
+                          className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-[8px] bg-white px-2 py-1 text-xs font-bold text-rose-700 shadow-sm hover:bg-rose-50"
+                        >
+                          <FiTrash2 />
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    {newImages.map((image, index) => (
+                      <label
+                        key={index}
+                        className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-[8px] border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm font-semibold text-slate-500 hover:border-[#5A0019]/50 hover:text-[#5A0019]"
+                      >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => updateNewImage(index, e.target.files?.[0] || false)}
+                        />
+                        {image ? (
+                          <>
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt=""
+                              className="h-full w-full rounded-[6px] object-cover"
+                            />
+                            <span>{image.name}</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiUpload className="h-6 w-6" />
+                            <span>Add image</span>
+                          </>
+                        )}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <button
                   type="button"
