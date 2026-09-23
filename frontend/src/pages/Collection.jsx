@@ -17,6 +17,10 @@ const productCategoryGroups = [
     subCategories: ['Candles', 'Diffusers', 'Room Sprays'],
   },
   {
+    name: 'Perfumes',
+    subCategories: ['Perfumes'],
+  },
+  {
     name: 'Gift Sets',
     subCategories: ['Gift Sets'],
   },
@@ -145,7 +149,7 @@ useEffect(() => {
         <p className='eyebrow'>Collection</p>
         <h1 className='editorial-serif mt-3 text-4xl font-semibold text-[#1d1115] md:text-5xl'>The Collection</h1>
         <p className='mt-4 max-w-2xl leading-7 text-[#6f5860]'>
-          Men, women, home aromatics, and gift sets, curated for you and delivered across Ghana.
+          Men, women, perfumes, home aromatics, and gift sets, curated for you and delivered across Ghana.
         </p>
       </div>
 

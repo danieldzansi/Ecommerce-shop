@@ -16,6 +16,7 @@ const About = () => {
     'Candles',
     'Diffusers',
     'Room sprays',
+    'Perfumes',
     'Gift sets',
   ]
 

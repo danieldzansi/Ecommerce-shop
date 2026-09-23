@@ -40,6 +40,7 @@ const navItems = [
       ['Room Sprays', '/collection?category=Home%20Aromatics&subcategory=Room%20Sprays'],
     ],
   },
+  { label: 'Perfumes', to: '/collection?category=Perfumes' },
   { label: 'Gift Set', to: '/collection?category=Gift%20Sets' },
 ];
 

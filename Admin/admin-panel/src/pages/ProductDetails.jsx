@@ -32,6 +32,10 @@ const productCategoryGroups = [
     subCategories: ["Candles", "Diffusers", "Room Sprays"],
   },
   {
+    name: "Perfumes",
+    subCategories: ["Perfumes"],
+  },
+  {
     name: "Gift Sets",
     subCategories: ["Gift Sets"],
   },
