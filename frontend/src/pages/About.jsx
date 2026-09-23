@@ -32,7 +32,7 @@ const About = () => {
             Whether you are dressing for work, a special occasion, or everyday elegance, Èclat De Lee brings you pieces that make a lasting impression.
           </p>
         </div>
-        <img src={assets.heroSlides?.[1]?.image} alt="" className="h-[520px] w-full object-cover" />
+        <img src={assets.categoryBags} alt="" className="h-[520px] w-full object-cover" />
       </div>
 
       <div className="mt-16 border-t border-[#DBCCB7]/60 pt-12">
