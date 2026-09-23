@@ -42,6 +42,7 @@ export const useCartStore = create(
   persist(
     (set, get) => ({
       cartItems: {},
+      favoriteItems: [],
 
       addToCart: (itemId, size, requiresSize = true, color = null, requiresColor = false) => {
         if (requiresSize && !size) {
@@ -154,6 +155,26 @@ export const useCartStore = create(
         set({ cartItems: {} });
         toast.info('Cart cleared');
       },
+
+      toggleFavorite: (itemId) => {
+        set((state) => {
+          const isFavorite = state.favoriteItems.includes(itemId);
+
+          toast[isFavorite ? 'info' : 'success'](
+            isFavorite ? 'Removed from favorites' : 'Added to favorites'
+          );
+
+          return {
+            favoriteItems: isFavorite
+              ? state.favoriteItems.filter((id) => id !== itemId)
+              : [...state.favoriteItems, itemId],
+          };
+        });
+      },
+
+      isFavorite: (itemId) => get().favoriteItems.includes(itemId),
+
+      getFavoriteCount: () => get().favoriteItems.length,
     }),
     {
       name: 'cart-storage',

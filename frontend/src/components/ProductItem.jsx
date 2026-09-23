@@ -3,16 +3,26 @@ import { ShopContext } from '../context/ShopContext'
 import { Link } from 'react-router-dom'
 import AssetImage from './AssetImage'
 import { FiArrowUpRight, FiHeart } from 'react-icons/fi'
+import { useCartStore } from '../store/CartStore'
 
 const ProductItem = ({ id, image, name, price, compareAtPrice, onSale }) => {
 
   const {currency}=useContext(ShopContext)
+  const favoriteItems = useCartStore((state) => state.favoriteItems)
+  const toggleFavorite = useCartStore((state) => state.toggleFavorite)
   const numericPrice = Number(price || 0)
   const numericCompareAtPrice = Number(compareAtPrice || 0)
   const hasSalePrice = (onSale === true || onSale === 'true' || numericCompareAtPrice > numericPrice) && numericCompareAtPrice > numericPrice
   const discountPercent = hasSalePrice ? Math.round(((numericCompareAtPrice - numericPrice) / numericCompareAtPrice) * 100) : 0
   const primaryImage = image?.[0]
   const hoverImage = image?.[1]
+  const isFavorite = favoriteItems.includes(id)
+
+  const handleFavoriteClick = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    toggleFavorite(id)
+  }
 
   return (
     <Link className='group block cursor-pointer text-[#1d1115]' to={`/product/${id}`} data-gsap-product>
@@ -35,9 +45,15 @@ const ProductItem = ({ id, image, name, price, compareAtPrice, onSale }) => {
             -{discountPercent}%
           </span>
         )}
-        <span className='absolute right-3 top-3 grid h-9 w-9 place-items-center bg-white/90 text-[#5A0019] shadow-sm transition duration-300 group-hover:-translate-y-0.5 group-hover:bg-white' aria-hidden='true'>
-          <FiHeart className='h-5 w-5' />
-        </span>
+        <button
+          type='button'
+          onClick={handleFavoriteClick}
+          className='absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center bg-white/90 text-[#5A0019] shadow-sm transition duration-300 group-hover:-translate-y-0.5 group-hover:bg-white'
+          aria-label={isFavorite ? `Remove ${name} from favorites` : `Add ${name} to favorites`}
+          aria-pressed={isFavorite}
+        >
+          <FiHeart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
+        </button>
         <span className='absolute inset-x-3 bottom-3 flex translate-y-3 items-center justify-between bg-white px-4 py-3 text-xs font-extrabold uppercase tracking-[0.12em] text-[#111111] opacity-0 shadow-sm transition duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
           View product
           <FiArrowUpRight className='h-4 w-4' aria-hidden='true' />
