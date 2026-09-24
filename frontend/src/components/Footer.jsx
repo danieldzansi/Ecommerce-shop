@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaInstagram } from 'react-icons/fa'
+import { FaInstagram, FaSnapchatGhost, FaTiktok } from 'react-icons/fa'
 import { FiArrowUpRight, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 import { assets } from '../assets/assets'
 import { paymentMethods } from '../assets/paymentMethods'
@@ -21,6 +21,8 @@ const customerLinks = [
 
 const socialLinks = [
   { label: 'Instagram', href: 'https://www.instagram.com/eclatdelee', Icon: FaInstagram },
+  { label: 'Snapchat', href: 'https://snapchat.com/t/TBJvnKYq', Icon: FaSnapchatGhost },
+  { label: 'TikTok', href: 'https://www.tiktok.com/@eclatdelee?_r=1&_t=ZS-9A0587oRm5t', Icon: FaTiktok },
 ]
 
 const Footer = () => {
