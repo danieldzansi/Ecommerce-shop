@@ -27,7 +27,7 @@ const Contact = () => {
           </p>
 
           <div className="mt-8 space-y-4 text-sm text-[#6f5860]">
-            <p><span className="font-bold text-[#5A0019]">Address:</span> 36 Asafoatse Kukudabi ST, Tse-Addo, Opposite the Goil Filling Station</p>
+            <p><span className="font-bold text-[#5A0019]">Address:</span> 36 Asafoatse Kukudabi ST, Tse-Addo, Accra. Opposite the Goil Filling Station</p>
             <p><span className="font-bold text-[#5A0019]">Phone / WhatsApp:</span> 0535364221</p>
             <p><span className="font-bold text-[#5A0019]">Instagram:</span> @eclatdelee</p>
             <p><span className="font-bold text-[#5A0019]">Website:</span> www.eclatdelee.com</p>

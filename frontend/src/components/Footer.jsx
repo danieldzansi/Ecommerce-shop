@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaInstagram, FaSnapchatGhost, FaTiktok } from 'react-icons/fa'
-import { FiArrowUpRight, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
+import { FiArrowUpRight, FiMail, FiPhone } from 'react-icons/fi'
 import { assets } from '../assets/assets'
 import { paymentMethods } from '../assets/paymentMethods'
 
@@ -59,10 +59,10 @@ const Footer = () => {
          <div className='max-w-sm'>
             <p className='mb-5 text-[15px] font-extrabold'>Contact</p>
             <p className='max-w-xs text-[15px] leading-7 text-[#4b4650]'>
-              36 Asafoatse Kukudabi ST, Tse-Addo, Accra
+              36 Asafoatse Kukudabi ST, Tse-Addo, Accra. Opposite the Goil Filling Station
             </p>
             <a
-              href='https://maps.google.com/?q=36%20Asafoatse%20Kukudabi%20ST%20Tse-Addo'
+              href='https://maps.google.com/?q=36%20Asafoatse%20Kukudabi%20ST%20Tse-Addo%20Accra%20Opposite%20the%20Goil%20Filling%20Station'
               target='_blank'
               rel='noreferrer'
               className='mt-4 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.12em] transition hover:text-[#5A0019]'
@@ -83,10 +83,6 @@ const Footer = () => {
                   <FiPhone className='h-5 w-5' aria-hidden='true' />
                   053 536 4221
                 </a>
-              </li>
-              <li className='flex items-start gap-4'>
-                <FiMapPin className='mt-0.5 h-5 w-5' aria-hidden='true' />
-                Opposite the Goil Filling Station
               </li>
             </ul>
          </div>
