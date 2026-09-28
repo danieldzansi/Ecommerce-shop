@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from './image.png'
 import heroDior from './Dior.jpeg'
-import heroBag from './bag.jpeg'
+import heroBag from './image copy 2.png'
 import heroLook from './image copy.png'
 import categoryAromatics from './acromatics.png'
 import categoryBags from './luxury-bags.png'
