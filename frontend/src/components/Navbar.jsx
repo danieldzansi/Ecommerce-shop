@@ -3,7 +3,7 @@ import { assets } from '../assets/assets';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { useCartStore } from '../store/CartStore';
-import { FiChevronDown, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
+import { FiChevronDown, FiHeart, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -53,6 +53,7 @@ const Navbar = () => {
   const location = useLocation();
 
   const cartCount = useCartStore((state) => state.getCartCount());
+  const favoriteCount = useCartStore((state) => state.getFavoriteCount());
 
   const openSearch = () => {
     setShowSearch(true);
@@ -133,6 +134,14 @@ const Navbar = () => {
             </button>
             <Link to='/orders' aria-label='Track order' className='hidden h-10 w-10 items-center justify-center md:inline-flex'>
               <FiUser className='h-6 w-6' aria-hidden='true' />
+            </Link>
+            <Link to='/collection?favorites=true' className='relative inline-flex h-10 w-10 items-center justify-center' aria-label='Favorites'>
+              <FiHeart className='h-6 w-6' aria-hidden='true' />
+              {favoriteCount > 0 && (
+                <span className='absolute right-1 top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff334a] px-1 text-[10px] font-extrabold leading-none text-white'>
+                  {favoriteCount}
+                </span>
+              )}
             </Link>
             <Link to='/cart' className='relative inline-flex h-10 w-10 items-center justify-center' aria-label='Cart'>
               <FiShoppingBag className='h-6 w-6' aria-hidden='true' />

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import ProductItem from '../components/ProductItem'
+import { useCartStore } from '../store/CartStore'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 const productCategoryGroups = [
@@ -38,11 +39,12 @@ const matchesFilter = (actual, expected) => normalizeFilterValue(actual) === nor
 const resolveCategoryName = (value) =>
   productCategoryGroups.find((item) => matchesFilter(item.name, value))?.name || value
 
-const buildCollectionPath = ({ category = '', subCategories = [], sale = false } = {}) => {
+const buildCollectionPath = ({ category = '', subCategories = [], sale = false, favorites = false } = {}) => {
   const params = new URLSearchParams()
   if (category) params.set('category', category)
   subCategories.filter(Boolean).forEach((item) => params.append('subcategory', item))
   if (sale) params.set('sale', 'true')
+  if (favorites) params.set('favorites', 'true')
   const query = params.toString()
   return query ? `/collection?${query}` : '/collection'
 }
@@ -71,8 +73,10 @@ const Collection = () => {
   const [showFilter, setShowFilter] = useState(true)
   const [filterProduct, setFilterProducts] = useState([])
   const saleOnly = searchParams.get('sale') === 'true'
+  const favoritesOnly = searchParams.get('favorites') === 'true'
   const filterGroup = normalizeFilterValue(searchParams.get('group'))
   const [selectedCategory, setSelectedCategory] = useState('')
+  const favoriteItems = useCartStore((state) => state.favoriteItems)
   const [selectedSubCategories, setSelectedSubCategories] = useState([])
   const canonicalSelectedCategory = resolveCategoryName(selectedCategory)
   const activeCategoryGroup = productCategoryGroups.find((item) => matchesFilter(item.name, canonicalSelectedCategory))
@@ -98,6 +102,7 @@ const Collection = () => {
       category: selectedCategory,
       subCategories: nextSubCategories,
       sale: saleOnly,
+      favorites: favoritesOnly,
     }))
   }
 
@@ -105,13 +110,13 @@ const Collection = () => {
     const nextCategory = matchesFilter(selectedCategory, value) ? '' : value
     setSelectedCategory(nextCategory)
     setSelectedSubCategories([])
-    navigate(buildCollectionPath({ category: nextCategory, sale: saleOnly }))
+    navigate(buildCollectionPath({ category: nextCategory, sale: saleOnly, favorites: favoritesOnly }))
   }
 
   const clearFilters = () => {
     setSelectedCategory('')
     setSelectedSubCategories([])
-    navigate(saleOnly ? '/collection?sale=true' : '/collection')
+    navigate(saleOnly ? '/collection?sale=true' : favoritesOnly ? '/collection?favorites=true' : '/collection')
   }
 
 useEffect(() => {
@@ -145,8 +150,12 @@ useEffect(() => {
     productsCopy = productsCopy.filter((item) => isOnSale(item) && !isBagProduct(item));
   }
 
+  if (favoritesOnly) {
+    productsCopy = productsCopy.filter((item) => favoriteItems.includes(item._id || item.id));
+  }
+
   setFilterProducts(productsCopy);
-}, [selectedCategory, selectedSubCategories, search, products, saleOnly, filterGroup]);
+}, [selectedCategory, selectedSubCategories, search, products, saleOnly, favoritesOnly, favoriteItems, filterGroup]);
 
   return (
     <section>
@@ -237,6 +246,7 @@ useEffect(() => {
         <p className='mb-8 text-sm font-medium text-[#9aa2b2]'>
           {filterProduct.length} {filterProduct.length === 1 ? 'product' : 'products'}
           {filterGroup === 'bags' && <span className='ml-2 text-[#5A0019]'>in bags</span>}
+          {favoritesOnly && <span className='ml-2 text-[#5A0019]'>in favorites</span>}
         </p>
 
         <div className='grid grid-cols-2 gap-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4'>
