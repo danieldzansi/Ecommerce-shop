@@ -313,14 +313,7 @@ const PlaceOrder = () => {
               {fulfillmentFee.toFixed(2)}
             </p>
           </div>
-          <hr className="border-[#DBCCB7]/60" />
-          <div className="flex justify-between">
-            <p className="text-[#6f5860]">Payment processing</p>
-            <p>
-              {currency}
-              {processingFee.toFixed(2)}
-            </p>
-          </div>
+
           <hr className="border-[#DBCCB7]/60" />
           <div className="flex justify-between text-base font-bold">
             <p>Total</p>
