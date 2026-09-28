@@ -52,12 +52,17 @@ const subCategoryGroups = {
   watches: ['Watches'],
 }
 
+const bagSubCategories = subCategoryGroups.bags
+
 const isOnSale = (product) => {
   const originalPrice = Number(product?.originalPrice || product?.oldPrice || product?.compareAtPrice)
   const price = Number(product?.price)
 
   return product?.onSale === true || product?.onSale === 'true' || product?.sale === true || product?.discountPercent > 0 || originalPrice > price
 }
+
+const isBagProduct = (product) =>
+  bagSubCategories.some((subCategory) => matchesFilter(product?.subCategory, subCategory))
 
 const Collection = () => {
   const { products, search, navigate } = useContext(ShopContext)
@@ -137,7 +142,7 @@ useEffect(() => {
   }
 
   if (saleOnly) {
-    productsCopy = productsCopy.filter(isOnSale);
+    productsCopy = productsCopy.filter((item) => isOnSale(item) && !isBagProduct(item));
   }
 
   setFilterProducts(productsCopy);

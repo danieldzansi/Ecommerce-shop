@@ -23,18 +23,6 @@ const faqs = [
     answer: 'Use the Track Order page with your email address and order number to check your order status.',
   },
   {
-    question: 'Can I change or cancel my order?',
-    answer: 'Orders can only be changed or cancelled before they have been processed for delivery. Please contact customer support as soon as possible.',
-  },
-  {
-    question: 'Do you accept returns or exchanges?',
-    answer: 'Yes. Eligible unused items in their original condition may be returned or exchanged within the return period.',
-  },
-  {
-    question: 'What if I receive a damaged or incorrect item?',
-    answer: 'Please contact us within 48 hours of delivery with your order number and clear photos of the item and packaging.',
-  },
-  {
     question: 'Are your products authentic?',
     answer: 'We are committed to offering high-quality fashion products. Product descriptions reflect each item’s quality, features, and specifications.',
   },
@@ -59,7 +47,7 @@ const FAQ = () => {
         <p className="eyebrow">Help</p>
         <h1 className="editorial-serif mt-3 text-5xl font-semibold">Frequently asked questions</h1>
         <p className="mt-4 leading-7 text-[#6f5860]">
-          Clear answers about ordering, delivery, returns, and shopping with Èclat De Lee.
+          Clear answers about ordering, delivery, and shopping with Èclat De Lee.
         </p>
       </div>
 
@@ -78,7 +66,7 @@ const FAQ = () => {
       <div className="mx-auto mt-12 max-w-4xl border border-[#DBCCB7]/70 bg-white p-6 text-center">
         <h2 className="editorial-serif text-2xl font-semibold">Still need help?</h2>
         <p className="mt-3 text-sm leading-6 text-[#6f5860]">
-          Our customer care team is happy to assist with orders, deliveries, exchanges, and returns.
+          Our customer care team is happy to assist with orders and deliveries.
         </p>
         <Link to="/contact" className="btn-primary mt-6">
           Contact us

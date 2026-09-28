@@ -7,6 +7,8 @@ import { FiChevronDown, FiHome, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } f
 
 const navItems = [
   { label: 'Home', to: '/' },
+  { label: 'Bags', to: '/collection?group=bags' },
+  { label: 'Sales', to: '/collection?sale=true' },
   {
     label: 'Men',
     to: '/collection?category=Men',

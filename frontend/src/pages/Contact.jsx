@@ -1,6 +1,13 @@
 import React from 'react'
 
+const whatsappUrl = 'https://wa.me/233535364221?text=Hello%20%C3%88clat%20De%20Lee%2C%20I%20need%20support.'
+
 const Contact = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <section className="page-x section-y">
       <div className="mx-auto max-w-3xl text-center">
@@ -34,7 +41,7 @@ const Contact = () => {
         </div>
 
        
-        <form className="space-y-5 border border-[#DBCCB7] p-6">
+        <form onSubmit={handleSubmit} className="space-y-5 border border-[#DBCCB7] p-6">
           <div>
             <label className="mb-2 block text-sm font-bold">Name</label>
             <input

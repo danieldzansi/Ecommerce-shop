@@ -32,6 +32,17 @@ const isOnSale = (product) => {
   return product?.onSale === true || product?.sale === true || product?.discountPercent > 0 || originalPrice > price
 }
 
+const normalizeFilterValue = (value) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]/g, '')
+
+const bagSubCategories = ['Bags', 'Crossbody Bags', 'Tote Bags', 'Top Handle Bags', 'Clutches']
+const isBagProduct = (product) =>
+  bagSubCategories.some((subCategory) => normalizeFilterValue(product?.subCategory) === normalizeFilterValue(subCategory))
+
 const ProductTabs = () => {
   const { products } = useContext(ShopContext)
   const [activeTab, setActiveTab] = useState('new')
@@ -46,7 +57,7 @@ const ProductTabs = () => {
     return {
       new: sortedProducts.slice(0, 8),
       best: sortedProducts.filter(isBestSeller).slice(0, 8),
-      sale: sortedProducts.filter(isOnSale).slice(0, 8),
+      sale: sortedProducts.filter((product) => isOnSale(product) && !isBagProduct(product)).slice(0, 8),
     }
   }, [products])
 

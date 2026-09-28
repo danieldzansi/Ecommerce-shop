@@ -29,7 +29,6 @@ const shippingSections = [
   {
     title: 'Shipping fees',
     items: [
-      'Shipping costs are shown during checkout based on your delivery details.',
       'Free nationwide shipping may be offered during selected promotional periods.',
     ],
   },
@@ -51,13 +50,6 @@ const shippingSections = [
 
 const returnSections = [
   {
-    title: 'Return eligibility',
-    items: [
-      'Items may be returned within 7 days of receiving your order.',
-      'Items must be unused, unworn, in original packaging, with tags attached and proof of purchase provided.',
-    ],
-  },
-  {
     title: 'Non-returnable items',
     items: [
       'Clearance or sale items.',
@@ -72,20 +64,6 @@ const returnSections = [
       'Contact us within 48 hours of delivery.',
       'Provide your order number, clear item photos, and packaging photos.',
       'Our team will review your request and arrange a replacement or refund where appropriate.',
-    ],
-  },
-  {
-    title: 'Exchanges',
-    items: [
-      'Eligible items may be exchanged for another size, colour, or product of equal value, subject to availability.',
-      'If the replacement item costs more, you only pay the price difference.',
-    ],
-  },
-  {
-    title: 'Refund policy',
-    items: [
-      'Approved refunds are processed within 5-10 business days using the original payment method where applicable.',
-      'Shipping charges are only refundable if the error was caused by us.',
     ],
   },
 ]
@@ -125,7 +103,7 @@ const ShippingReturns = () => {
       </div>
 
       <div className="mt-16">
-        <p className="eyebrow">Returns & exchanges</p>
+        <p className="eyebrow">Returns</p>
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           {returnSections.map((section) => (
             <PolicyBlock key={section.title} {...section} />

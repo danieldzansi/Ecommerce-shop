@@ -5,7 +5,7 @@ import { assets } from '../assets/assets'
 
 const featuredBanners = [
   {
-    title: 'Luxury Bags',
+    title: 'Bag',
     image: assets.categoryBags,
     to: '/collection?group=bags',
   },
