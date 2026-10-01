@@ -1,71 +1,9 @@
 {
-  "id": "5065ca8d-a330-498f-bc03-19ab5a92b642",
-  "prevId": "aff00e6f-4490-40cc-92d8-9ac594bb48c4",
+  "id": "e9f00d8e-0a84-4d70-a83d-8350d09582ea",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.newsletter_subscribers": {
-      "name": "newsletter_subscribers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'homepage'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "newsletter_subscribers_email_unique": {
-          "name": "newsletter_subscribers_email_unique",
-          "columns": [
-            {
-              "expression": "email",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.store": {
       "name": "store",
       "schema": "",
@@ -217,19 +155,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "compareAtPrice": {
-          "name": "compareAtPrice",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "onSale": {
-          "name": "onSale",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
         "image": {
           "name": "image",
           "type": "jsonb",
@@ -253,13 +178,6 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true
-        },
-        "variants": {
-          "name": "variants",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
         },
         "bestseller": {
           "name": "bestseller",

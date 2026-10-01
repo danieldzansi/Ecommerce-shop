@@ -40,6 +40,12 @@ export const store = pgTable('store', {
   paid_at: timestamp('paid_at'),
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
+  subtotal: numeric('subtotal', { precision: 12, scale: 2 }),
+  fulfillment_fee: numeric('fulfillment_fee', { precision: 12, scale: 2 }).default('0').notNull(),
+  processing_fee: numeric('processing_fee', { precision: 12, scale: 2 }).default('0').notNull(),
+  gift_card_amount: numeric('gift_card_amount', { precision: 12, scale: 2 }).default('0').notNull(),
+  paystack_amount: numeric('paystack_amount', { precision: 12, scale: 2 }).default('0').notNull(),
+  gift_card_masked: text('gift_card_masked'),
 });
 
 export const newsletterSubscribers = pgTable('newsletter_subscribers', {

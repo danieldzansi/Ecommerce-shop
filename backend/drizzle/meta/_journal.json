@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768297225893,
-      "tag": "0000_left_wolfsbane",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1788818339761,
-      "tag": "0001_add_product_sale_fields",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1788826511202,
-      "tag": "0002_faithful_moonstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1789022976764,
-      "tag": "0004_brown_firebrand",
+      "when": 1790866302691,
+      "tag": "0000_gift_cards",
       "breakpoints": true
     }
   ]

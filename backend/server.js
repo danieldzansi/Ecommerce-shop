@@ -8,6 +8,7 @@ import adminRouter from "./routes/adminroute.js";
 import productRouter from "./routes/productroute.js";
 import orderRouter from "./routes/orderroute.js";
 import newsletterRouter from "./routes/newsletterroute.js";
+import giftCardRouter from "./routes/giftcardroute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -76,6 +77,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/product", productRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/newsletter", newsletterRouter);
+app.use("/api/gift-cards", giftCardRouter);
 
 const start = async () => {
   try {

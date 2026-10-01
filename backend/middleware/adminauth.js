@@ -16,6 +16,7 @@ const adminAuth = (req, res, next) => {
     if (decoded.id !== process.env.ADMIN_EMAIL) {
       return res.status(401).json({ success: false, message: "Not authorized. Login again." });
     }
+    req.adminEmail = decoded.id;
     next();
   } catch (error) {
     console.error(error);
