@@ -7,6 +7,7 @@ import List from "./pages/List";
 import Orders from "./pages/Orders";
 import Dashboard from "./pages/Dashboard";
 import ProductDetails from "./pages/ProductDetails";
+import GiftCards from "./pages/GiftCards";
 import Login from "./components/Login";
 import React from "react";
 import { ToastContainer } from "react-toastify";
@@ -41,6 +42,7 @@ const App = () => {
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/products/:id" element={<ProductDetails token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
+                <Route path="/gift-cards" element={<GiftCards token={token} />} />
               </Routes>
             </main>
           </div>

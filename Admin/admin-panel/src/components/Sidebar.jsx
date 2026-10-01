@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { FiBarChart2, FiBox, FiClock, FiGrid, FiPlusCircle, FiX } from "react-icons/fi";
+import { FiBarChart2, FiBox, FiClock, FiGift, FiGrid, FiPlusCircle, FiX } from "react-icons/fi";
 
 const links = [
   { to: "/", label: "Dashboard", icon: FiGrid },
   { to: "/list", label: "View Products", icon: FiBox },
   { to: "/add", label: "Add Product", icon: FiPlusCircle },
   { to: "/orders", label: "Orders", icon: FiClock },
+  { to: "/gift-cards", label: "Gift Cards", icon: FiGift },
 ];
 
 const Sidebar = ({ open = false, onClose = () => {} }) => {
