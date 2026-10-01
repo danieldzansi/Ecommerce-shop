@@ -10,7 +10,7 @@ const csvCell = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 const readApiJson = async (response) => {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("application/json")) {
-    throw new Error("Gift card API is unavailable. Check VITE_BACKEND_URL and deploy the updated backend.");
+    throw new Error("The deployed backend does not include the gift card API yet. Deploy the latest backend changes.");
   }
   return response.json();
 };

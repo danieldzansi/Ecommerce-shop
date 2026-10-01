@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DEFAULT_CART_VARIANT, parseCartVariantKey, useCartStore } from "../store/CartStore";
 import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
@@ -12,6 +13,7 @@ const getPaystackGrossAmount = (amount) => {
 };
 
 const PlaceOrder = () => {
+  const navigate = useNavigate();
   const { currency, delivery_fee, products } = useContext(ShopContext);
   const cartItems = useCartStore((state) => state.cartItems);
   const [fulfillmentMethod, setFulfillmentMethod] = useState("delivery");
@@ -29,8 +31,15 @@ const PlaceOrder = () => {
     return acc;
   }, 0);
   const payableBeforeProcessing = subtotal + fulfillmentFee;
-  const totalAmountWithProcessing = getPaystackGrossAmount(payableBeforeProcessing);
-  const processingFee = Math.max(0, totalAmountWithProcessing - payableBeforeProcessing);
+  const [giftCardCode, setGiftCardCode] = useState("");
+  const [giftCard, setGiftCard] = useState(null);
+  const [giftCardError, setGiftCardError] = useState("");
+  const [validatingGiftCard, setValidatingGiftCard] = useState(false);
+  const giftCardAmount = Math.min(Number(giftCard?.availableBalance || 0), payableBeforeProcessing);
+  const cashBeforeProcessing = Math.max(0, payableBeforeProcessing - giftCardAmount);
+  const totalAmountWithProcessing = getPaystackGrossAmount(cashBeforeProcessing);
+  const processingFee = Math.max(0, totalAmountWithProcessing - cashBeforeProcessing);
+  const orderTotal = payableBeforeProcessing + processingFee;
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -45,6 +54,22 @@ const PlaceOrder = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const applyGiftCard = async () => {
+    if (!giftCardCode.trim()) return;
+    setValidatingGiftCard(true);
+    setGiftCardError("");
+    try {
+      const backend = (import.meta.env.VITE_BACKEND_URL || "http://localhost:4000").replace(/\/$/, "");
+      const response = await fetch(backend + "/api/gift-cards/validate", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: giftCardCode }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Gift card is invalid");
+      setGiftCard(data.data);
+    } catch (error) { setGiftCard(null); setGiftCardError(error.message); }
+    finally { setValidatingGiftCard(false); }
   };
 
   const handleSubmit = async (e) => {
@@ -115,7 +140,7 @@ const PlaceOrder = () => {
           .filter(Boolean)
           .join(", ");
 
-    const totalAmount = totalAmountWithProcessing;
+    const totalAmount = orderTotal;
 
     try {
       setLoading(true);
@@ -133,16 +158,20 @@ const PlaceOrder = () => {
           address,
           deliveryDetails,
           totalAmount,
+          giftCardCode: giftCard ? giftCardCode : "",
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.authorization_url) {
+      if (response.ok && data.fullyPaid) {
+        useCartStore.getState().clearCart();
+        navigate("/order-details?orderId=" + encodeURIComponent(data.orderId), { replace: true, state: { paymentSuccess: true } });
+      } else if (response.ok && data.authorization_url) {
         window.location.href = data.authorization_url;
       } else {
         console.error("Paystack init error:", data);
-        alert("Payment initialization failed.");
+        alert(data.message || "Payment initialization failed.");
         setLoading(false);
       }
     } catch (err) {
@@ -314,9 +343,25 @@ const PlaceOrder = () => {
             </p>
           </div>
 
+          <div className="border-y border-[#DBCCB7] py-4">
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.16em]">Gift card</p>
+            {giftCard ? (
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-emerald-700">{giftCard.maskedCode} applied</span>
+                <button type="button" className="font-bold text-[#5A0019]" onClick={() => { setGiftCard(null); setGiftCardCode(""); }}>Remove</button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input value={giftCardCode} onChange={(e) => { setGiftCardCode(e.target.value.toUpperCase()); setGiftCardError(""); }} placeholder="ECLAT-XXXX-XXXX-XXXX-XXXX" className="min-w-0 flex-1 border border-[#DBCCB7] px-3 py-2 uppercase" />
+                <button type="button" onClick={applyGiftCard} disabled={validatingGiftCard || !giftCardCode.trim()} className="border border-[#5A0019] px-3 py-2 text-xs font-bold text-[#5A0019] disabled:opacity-50">{validatingGiftCard ? "Checking..." : "Apply"}</button>
+              </div>
+            )}
+            {giftCardError && <p className="mt-2 text-xs text-red-600">{giftCardError}</p>}
+          </div>
+          {giftCardAmount > 0 && <div className="flex justify-between text-emerald-700"><p>Gift card</p><p>-{currency}{giftCardAmount.toFixed(2)}</p></div>}
           <hr className="border-[#DBCCB7]/60" />
           <div className="flex justify-between text-base font-bold">
-            <p>Total</p>
+            <p>Amount due</p>
             <p>
               {currency}
               {totalAmountWithProcessing.toFixed(2)}
@@ -364,7 +409,7 @@ const PlaceOrder = () => {
                   Processing...
                 </span>
               ) : (
-                "Pay online"
+                cashBeforeProcessing === 0 ? "Place order with gift card" : "Pay online"
               )}
             </button>
           </div>
